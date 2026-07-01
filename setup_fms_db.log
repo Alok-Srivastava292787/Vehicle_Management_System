@@ -1,0 +1,121 @@
+[2026-07-01 15:14:16] ======================================================
+[2026-07-01 15:14:16]   PostgreSQL 17 Setup + Hardening Script
+[2026-07-01 15:14:16] ======================================================
+[2026-07-01 15:14:17] Target DB:   fms
+[2026-07-01 15:14:17] App User:    fleet_user
+[2026-07-01 15:14:17] ------------------------------------------------------
+[2026-07-01 15:14:17] Creating user fleet_user and fms database...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_guKXzS.sql:24: NOTICE:  Role fleet_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_guKXzS.sql:24: NOTICE:  Role workshop_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_guKXzS.sql:24: NOTICE:  Role driver_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_guKXzS.sql:24: NOTICE:  Role management_user already exists, updating password...
+DO
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_guKXzS.sql:55: NOTICE:  Role fleet_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_guKXzS.sql:55: NOTICE:  Role workshop_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_guKXzS.sql:55: NOTICE:  Role driver_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_guKXzS.sql:55: NOTICE:  Role management_user already exists, updating timeout details...
+DO
+ pg_terminate_backend 
+----------------------
+ t
+(1 row)
+
+DROP DATABASE
+CREATE DATABASE
+COMMENT
+GRANT
+Database fms created and CONNECT granted to fleet_user
+[2026-07-01 15:14:28] fleet_user and fms database created
+[2026-07-01 15:14:29] ------------------------------------------------------
+[2026-07-01 15:14:29] Setting schema-level permissions for fleet_user on fms...
+[2026-07-01 15:14:29] Granting schema permissions to fleet_user on fms...
+[2026-07-01 15:14:29] SQL permissions script: /tmp/pg_perms_og233z.sql
+[2026-07-01 15:14:29] This will grant USAGE on schema and SELECT/INSERT/UPDATE/DELETE on all tables, plus future object permissions.
+You are now connected to database "fms" as user "postgres".
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+GRANT
+GRANT
+GRANT
+GRANT
+ALTER ROLE
+ALTER ROLE
+GRANT
+GRANT
+GRANT
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+REVOKE
+GRANT
+Schema permissions set for fleet_user on fms
+[2026-07-01 15:14:34] Creating required tables and views in database fms ---START---
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+ALTER TABLE
+CREATE TABLE
+CREATE INDEX
+[2026-07-01 15:14:46] Creating required tables and views in database fms ---DONE---
+[2026-07-01 15:14:46] Schema permissions granted
+[2026-07-01 15:14:47] ------------------------------------------------------
+[2026-07-01 15:14:47] Verifying fleet_user access...
+ employee 
+----------
+        0
+(1 row)
+
+[2026-07-01 15:14:47] ------------------------------------------------------
+[2026-07-01 15:14:48] Table inventory in fms:
+ schemaname  |        tablename        |    size    
+-------------+-------------------------+------------
+ transaction | attendance_tracking     | 16 kB
+ master      | employee_master         | 8192 bytes
+ transaction | employee_salary         | 16 kB
+ reference   | fuel_rate_reference     | 16 kB
+ transaction | fuel_transactions       | 16 kB
+ timeseries  | gps_raw_data            | 24 kB
+ transaction | inventory               | 16 kB
+ transaction | job_card_parts          | 8192 bytes
+ transaction | maintenance_job_card    | 16 kB
+ transaction | maintenance_parts_usage | 16 kB
+ reference   | maintenance_type_ref    | 16 kB
+ master      | vehicle_master          | 24 kB
+ reference   | vehicle_type_ref        | 16 kB
+(13 rows)
+
+[2026-07-01 15:15:00] ------------------------------------------------------
+[2026-07-01 15:15:00] .env already exists — skipping
+[2026-07-01 15:15:00] ======================================================
+[2026-07-01 15:15:01]   PostgreSQL Setup Complete
+[2026-07-01 15:15:01] ======================================================
+[2026-07-01 15:15:01] Database:   fms
+[2026-07-01 15:15:01] App User:   fleet_user
+[2026-07-01 15:15:01] Host:       127.0.0.1:5432
+[2026-07-01 15:15:01] Auth:       scram-sha-256 (pg_hba.conf)
+[2026-07-01 15:15:02] Log:        setup_fms_db.log
+[2026-07-01 15:15:02] 
+[2026-07-01 15:15:02] Connection string:
+[2026-07-01 15:15:02]   postgresql://fleet_user:***@127.0.0.1:5432/fms
+[2026-07-01 15:15:03] 
+[2026-07-01 15:15:03] Test with:
+[2026-07-01 15:15:03]   PGPASSWORD='FleetUser@2024!' psql -h 127.0.0.1 -U fleet_user -d fms
+[2026-07-01 15:15:03] ======================================================

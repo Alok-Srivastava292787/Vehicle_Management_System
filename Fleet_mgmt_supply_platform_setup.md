@@ -56,14 +56,14 @@ sudo -u postgres psql
 ```
 
 ```sql
-CREATE DATABASE fleet_db;
+CREATE DATABASE fms;
 
-CREATE USER fleet_user WITH PASSWORD 'password';
+CREATE USER fleet_user WITH PASSWORD 'FleetUser@2024!';
 
 ALTER ROLE fleet_user SET client_encoding TO 'utf8';
 ALTER ROLE fleet_user SET default_transaction_isolation TO 'read committed';
 
-GRANT ALL PRIVILEGES ON DATABASE fleet_db TO fleet_user;
+GRANT ALL PRIVILEGES ON DATABASE fms TO fleet_user;
 ```
 
 ***
