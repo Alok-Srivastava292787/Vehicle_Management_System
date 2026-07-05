@@ -28,7 +28,8 @@ APP_PASS="FleetUser@2024!"   # ⚠️  Change this in production
 #DB_NAME="dev_pharma"
 #APP_USER="pharma"
 #APP_PASS="PharmaUser@2024!"   # ⚠️  Change this in production
-
+DB=$DB_NAME
+PGUSER="postgres"
 log "Target DB:   $DB_NAME"
 log "App User:    $APP_USER"
 
@@ -155,15 +156,21 @@ cat > "$SQL_PERMS" << SQLEOF
 -- Create schems
 CREATE SCHEMA IF NOT EXISTS master AUTHORIZATION ${APP_USER};
 CREATE SCHEMA IF NOT EXISTS reference AUTHORIZATION ${APP_USER};
-CREATE SCHEMA IF NOT EXISTS transaction AUTHORIZATION ${APP_USER};
+CREATE SCHEMA IF NOT EXISTS transact AUTHORIZATION ${APP_USER};
 CREATE SCHEMA IF NOT EXISTS timeseries AUTHORIZATION ${APP_USER};
+CREATE SCHEMA IF NOT EXISTS maintenance AUTHORIZATION ${APP_USER};
+CREATE SCHEMA IF NOT EXISTS inventory AUTHORIZATION ${APP_USER};
+CREATE SCHEMA IF NOT EXISTS operations AUTHORIZATION ${APP_USER};
+CREATE SCHEMA IF NOT EXISTS integration AUTHORIZATION ${APP_USER};
+CREATE SCHEMA IF NOT EXISTS analytics  AUTHORIZATION ${APP_USER};
+
 
 -- Grant schema usage
-GRANT USAGE ON SCHEMA master,reference,transaction,timeseries TO ${APP_USER};
+GRANT USAGE ON SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics TO ${APP_USER};
 -- grant
 GRANT ALL PRIVILEGES ON DATABASE fms TO fleet_user;
 -- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA master TO fleet_user;
-GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA transaction TO workshop_user;
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA transact TO workshop_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA timeseries TO management_user;
 
 ALTER ROLE fleet_user SET client_encoding TO 'utf8';
@@ -171,22 +178,22 @@ ALTER ROLE fleet_user SET default_transaction_isolation TO 'read committed';
 
 -- Current objects
 GRANT SELECT, INSERT, UPDATE, DELETE
-    ON ALL TABLES IN SCHEMA master,reference,transaction,timeseries TO ${APP_USER};
+    ON ALL TABLES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics TO ${APP_USER};
 GRANT USAGE, SELECT
-    ON ALL SEQUENCES IN SCHEMA master,reference,transaction,timeseries TO ${APP_USER};
+    ON ALL SEQUENCES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics TO ${APP_USER};
 GRANT EXECUTE
-    ON ALL FUNCTIONS IN SCHEMA master,reference,transaction,timeseries TO ${APP_USER};
+    ON ALL FUNCTIONS IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics TO ${APP_USER};
 
 -- Future objects (ALTER DEFAULT PRIVILEGES for postgres role)
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transaction,timeseries
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
     GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO ${APP_USER};
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transaction,timeseries
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
     GRANT USAGE, SELECT ON SEQUENCES TO ${APP_USER};
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transaction,timeseries
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
     GRANT EXECUTE ON FUNCTIONS TO ${APP_USER};
-ALTER DEFAULT PRIVILEGES IN SCHEMA master,reference,transaction,timeseries
+ALTER DEFAULT PRIVILEGES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
     GRANT ALL ON TABLES TO ${APP_USER};
-ALTER DEFAULT PRIVILEGES IN SCHEMA master,reference,transaction,timeseries
+ALTER DEFAULT PRIVILEGES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
     GRANT ALL ON SEQUENCES TO ${APP_USER};
 
 
@@ -212,7 +219,7 @@ fi
 # Create required tables
 # -------------------------------------------------------
 log "Creating required tables and views in database ${DB_NAME} ---START---"
-psql -U "postgres" -d ${DB_NAME} -f "create_schema_fms.sql" -v ON_ERROR_STOP=1 2>&1 | tee -a "$LOG_FILE"
+psql -U "postgres" -d ${DB_NAME} -f "create_schema_fms_v7.3.sql" -v ON_ERROR_STOP=1 2>&1 | tee -a "$LOG_FILE"
 log "Creating required tables and views in database ${DB_NAME} ---DONE---"
 
 log "Schema permissions granted"
@@ -241,9 +248,52 @@ log "Table inventory in $DB_NAME:"
 
 #if [ "$OS" = "Linux" ]; then
      psql -U postgres -d $DB_NAME \
-        -c "SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(quote_ident(schemaname)||'.'||quote_ident(tablename)::text)) AS size FROM pg_tables WHERE schemaname in ('master','reference','transaction','timeseries') ORDER BY tablename;" \
+        -c "SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(quote_ident(schemaname)||'.'||quote_ident(tablename)::text)) AS size FROM pg_tables WHERE schemaname in ('master','reference','transact','timeseries','maintenance','inventory','operations','integration','analytics') ORDER BY tablename;" \
         2>&1 | tee -a "$LOG_FILE"
 #fi
+log "Record count of each table"
+
+# QUERY=$(psql -U postgres -d $DB_NAME -At -c "
+#  SELECT string_agg(
+#      'SELECT ''' ||
+#      schemaname || '.' || tablename ||
+#      ''' AS tablename, COUNT(*) AS count FROM ' ||
+#      quote_ident(schemaname) || '.' || quote_ident(tablename),
+#      ' UNION ALL '
+#  ) FROM pg_tables WHERE schemaname IN ('master','reference','transact','timeseries','maintenance','inventory','operations','integration','analytics')")
+
+QUERY=$(psql -U postgres -d "$DB_NAME" -At -c "
+SELECT string_agg(
+    format(
+        'SELECT %L AS tablename, COUNT(*) AS count FROM %I.%I',
+        schemaname || '.' || tablename,
+        schemaname,
+        tablename
+    ),
+    ' UNION ALL '
+)
+FROM pg_tables
+WHERE schemaname IN (
+    'master',
+    'reference',
+    'transact',
+    'timeseries',
+    'maintenance',
+    'inventory',
+    'operations',
+    'integration',
+    'analytics'
+);
+")
+
+ psql -U "postgres" -d "$DB_NAME" -c "$QUERY"
+ 
+#     psql -U postgres -d $DB_NAME \
+#     -c "SELECT 'SELECT '''||schemaname||'.'|| tablename|| ''' as tablename ,COUNT(*) as count FROM '||schemaname||'.'|| tablename||' ;' FROM pg_tables WHERE schemaname in ('master','reference','transact','timeseries','pharma')  group by schemaname,tablename ORDER BY tablename;
+#" \
+#     2>&1 | tee -a "$LOG_FILE" |tee -a "table_count.sql"
+#     psql -U "postgres" -d ${DB_NAME} -f "table_count.sql" -v ON_ERROR_STOP=1 2>&1 | tee -a "$LOG_FILE"
+
 
 # -------------------------------------------------------
 # 10. Create .env file template

@@ -1,0 +1,31 @@
+
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+
+from app.db.base import Base
+
+
+class WhatsAppMessageLog(Base):
+
+    __tablename__ = "whatsapp_message_log"
+    __table_args__ = {"schema": "integration"}
+
+    message_id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+
+    approval_id: Mapped[int | None] = mapped_column(
+        ForeignKey(
+            "inventory.approval_request.approval_id"
+        )
+    )
+
+    recipient_mobile: Mapped[str] = mapped_column(
+        String(20)
+    )
+
+    send_status: Mapped[str | None] = mapped_column(
+        String(30)
+    )
