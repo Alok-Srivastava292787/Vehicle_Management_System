@@ -10,32 +10,52 @@ from app.db.mixins import AuditMixin
 from app.db.mixins import TimestampMixin
 
 
+from sqlalchemy import DateTime
+from sqlalchemy import Text
+
 class VehicleComplaint(
     Base,
     AuditMixin,
     TimestampMixin,
 ):
-
     __tablename__ = "vehicle_complaint"
     __table_args__ = {"schema": "maintenance"}
 
     complaint_id: Mapped[int] = mapped_column(primary_key=True)
-
-    vehicle_id: Mapped[int] = mapped_column(
-        ForeignKey("master.vehicle_master.vehicle_id")
+    
+    vehicle_id = mapped_column(
+        ForeignKey(
+            "master.vehicle_master.vehicle_id"
+        )
     )
 
     driver_id: Mapped[int] = mapped_column(
         ForeignKey("master.driver_master.driver_id")
     )
 
-    issue_description: Mapped[str | None] = mapped_column(Text)
+    complaint_date = mapped_column(
+        DateTime,
+        nullable=True
+    )
 
+    issue_description: Mapped[str | None]  = mapped_column(
+        Text,
+        nullable=True
+    )
+
+    driver_reason = mapped_column(
+        Text,
+        nullable=True
+    )
+
+    vehicle_received_at = mapped_column(
+        DateTime,
+        nullable=True
+    )
     vehicle = relationship(
         "VehicleMaster",
         back_populates="complaints"
     )
-
 
 
 class TechnicianInspection(

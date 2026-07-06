@@ -21,7 +21,7 @@ def test_create_complaint(db):
     complaint = VehicleComplaint(
         vehicle_id=vehicle.vehicle_id,
         driver_id=driver.driver_id,
-        issue_description="Battery Problem"
+        issue_description="Battery issue"
     )
 
     db.add(complaint)
