@@ -29,3 +29,24 @@ class WhatsAppMessageLog(Base):
     send_status: Mapped[str | None] = mapped_column(
         String(30)
     )
+
+class ApprovalRequest(Base):
+
+    __tablename__ = "approval_request"
+    __table_args__ = {"schema": "inventory"}
+
+    approval_id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+
+    request_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "inventory.part_request.request_id"
+        )
+    )
+
+    approver_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "master.employee_master.employee_id"
+        )
+    )

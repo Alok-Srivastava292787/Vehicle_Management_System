@@ -1,19 +1,22 @@
-import os
-from urllib.parse import quote_plus
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, URL
 from sqlalchemy.orm import sessionmaker
 
-pwd=quote_plus("FleetUser@2024!")
+from app.core.config import get_settings
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    f"postgresql+psycopg://fleet_user:{pwd}@localhost:5432/fms"
+settings = get_settings()
+
+DATABASE_URL = URL.create(
+    drivername="postgresql+psycopg2",
+    username=settings.DB_USER,
+    password=settings.DB_PASSWORD,
+    host=settings.DB_HOST,
+    port=settings.DB_PORT,
+    database=settings.DB_NAME
 )
 
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True,
-    echo=False
+    pool_pre_ping=True
 )
 
 SessionLocal = sessionmaker(

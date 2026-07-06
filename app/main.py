@@ -1,0 +1,29 @@
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+
+from app.api.health_router import ( router as health_router )
+from app.api.vehicle_router import ( router as vehicle_router,)
+from app.api.driver_router import (  router as driver_router,)
+from app.api.complaint_router import ( router as complaint_router,)
+from app.core.exception_handlers import ( register_exception_handlers,)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("FMS Started")
+    yield
+    print("FMS Stopped")
+
+app = FastAPI(
+    title="Fleet Management System",
+    version="1.0.0",
+)
+
+register_exception_handlers(    app)
+
+app.include_router(    vehicle_router)
+
+app.include_router(    driver_router)
+
+app.include_router(    complaint_router)
+
+app.include_router(    health_router)

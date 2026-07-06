@@ -110,6 +110,13 @@ class ComplaintService:
 
         return complaint
 
+    def get_all_complaint(self):
+
+        return (
+            self.complaint_repo.get_all()
+        )
+
+
     def get_vehicle_complaints(
         self,
         vehicle_id: int
@@ -146,4 +153,18 @@ class ComplaintService:
                 complaint,
                 update_data
             )
+        )
+    def delete_complaint(
+        self,
+        complaint_id: int
+    ):
+
+        complaint = (
+            self.get_complaint(
+                complaint_id
+            )
+        )
+
+        self.complaint_repo.delete(
+            complaint
         )

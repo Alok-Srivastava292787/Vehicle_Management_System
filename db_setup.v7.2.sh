@@ -24,10 +24,6 @@ DB_PORT="5432"
 DB_NAME="fms"
 APP_USER="fleet_user"
 APP_PASS="FleetUser@2024!"   # ⚠️  Change this in production
-#python -c "from db_connection import _db_config; _db_config($DB_NAME)"
-#DB_NAME="dev_pharma"
-#APP_USER="pharma"
-#APP_PASS="PharmaUser@2024!"   # ⚠️  Change this in production
 DB=$DB_NAME
 PGUSER="postgres"
 log "Target DB:   $DB_NAME"
