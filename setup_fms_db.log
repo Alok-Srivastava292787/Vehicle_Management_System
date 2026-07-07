@@ -3440,3 +3440,144 @@ CREATE INDEX
 
 [2026-07-06 03:23:12] ------------------------------------------------------
 [2026-07-06 03:23:12] Table inventory in fms:
+[2026-07-07 17:45:05] ======================================================
+[2026-07-07 17:45:05]   PostgreSQL 17 Setup + Hardening Script
+[2026-07-07 17:45:06] ======================================================
+[2026-07-07 17:45:06] Target DB:   fms
+[2026-07-07 17:45:06] App User:    fleet_user
+[2026-07-07 17:45:06] ------------------------------------------------------
+[2026-07-07 17:45:06] Creating user fleet_user and fms database...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_euSuvf.sql:24: NOTICE:  Role fleet_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_euSuvf.sql:24: NOTICE:  Role workshop_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_euSuvf.sql:24: NOTICE:  Role driver_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_euSuvf.sql:24: NOTICE:  Role management_user already exists, updating password...
+DO
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_euSuvf.sql:55: NOTICE:  Role fleet_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_euSuvf.sql:55: NOTICE:  Role workshop_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_euSuvf.sql:55: NOTICE:  Role driver_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_euSuvf.sql:55: NOTICE:  Role management_user already exists, updating timeout details...
+DO
+ pg_terminate_backend 
+----------------------
+ t
+(1 row)
+
+DROP DATABASE
+CREATE DATABASE
+COMMENT
+GRANT
+Database fms created and CONNECT granted to fleet_user
+[2026-07-07 17:45:12] fleet_user and fms database created
+[2026-07-07 17:45:12] ------------------------------------------------------
+[2026-07-07 17:45:12] Setting schema-level permissions for fleet_user on fms...
+[2026-07-07 17:45:12] Granting schema permissions to fleet_user on fms...
+[2026-07-07 17:45:13] SQL permissions script: /tmp/pg_perms_JySdLL.sql
+[2026-07-07 17:45:13] This will grant USAGE on schema and SELECT/INSERT/UPDATE/DELETE on all tables, plus future object permissions.
+You are now connected to database "fms" as user "postgres".
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+GRANT
+GRANT
+GRANT
+GRANT
+ALTER ROLE
+ALTER ROLE
+GRANT
+GRANT
+GRANT
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+REVOKE
+GRANT
+Schema permissions set for fleet_user on fms
+[2026-07-07 17:45:17] Creating required tables and views in database fms ---START---
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 6
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 8
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE VIEW
+CREATE VIEW
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+[2026-07-07 17:45:21] Creating required tables and views in database fms ---DONE---
+[2026-07-07 17:45:21] Schema permissions granted
+[2026-07-07 17:45:22] ------------------------------------------------------
+[2026-07-07 17:45:22] Verifying fleet_user access...
+ employee 
+----------
+        0
+(1 row)
+
+[2026-07-07 17:45:23] ------------------------------------------------------
+[2026-07-07 17:45:23] Table inventory in fms:

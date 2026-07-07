@@ -3,9 +3,9 @@ from fastapi.testclient import (
 )
 
 from app.main import app
-import uuid
 client = TestClient(app)
 
+import uuid
 
 def test_create_vehicle():
 

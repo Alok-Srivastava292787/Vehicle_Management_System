@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from pydantic import ConfigDict
 
-
+#InspectionCreate
 class InspectionCreate(BaseModel):
 
     complaint_id: int
@@ -16,7 +16,7 @@ class InspectionCreate(BaseModel):
 
     status: str | None = None
 
-
+#InspectionUpdate
 class InspectionUpdate(BaseModel):
 
     observed_issue: str | None = None
@@ -25,7 +25,7 @@ class InspectionUpdate(BaseModel):
 
     status: str | None = None
 
-
+#InspectionResponse
 class InspectionResponse(BaseModel):
 
     model_config = ConfigDict(

@@ -1,6 +1,6 @@
 
 from sqlalchemy import ForeignKey
-from sqlalchemy import Text, String
+from sqlalchemy import Text, String, Numeric
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -56,6 +56,17 @@ class VehicleComplaint(
         "VehicleMaster",
         back_populates="complaints"
     )
+    inspections = relationship(
+        "TechnicianInspection",
+        back_populates="complaint"
+    )
+
+    job_cards = relationship(
+        "MaintenanceJobCard",
+        back_populates="complaint"
+    )
+
+
 
 
 class TechnicianInspection(
@@ -80,6 +91,21 @@ class TechnicianInspection(
         ForeignKey(
             "master.employee_master.employee_id"
         )
+    )
+#relationships
+    technician = relationship(
+        "EmployeeMaster",
+        back_populates="inspections"
+    )
+
+    complaint = relationship(
+        "VehicleComplaint",
+        back_populates="inspections"
+    )
+
+    job_cards = relationship(
+        "MaintenanceJobCard",
+        back_populates="inspection"
     )
 
     observed_issue: Mapped[str | None] = mapped_column(Text)
@@ -111,3 +137,125 @@ class MaintenanceJobCard(
             "maintenance.technician_inspection.inspection_id"
         )
     )
+    
+    vehicle_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "master.vehicle_master.vehicle_id"
+        )
+    )
+    vehicle = relationship(
+        "VehicleMaster",
+        back_populates="job_cards"
+    )
+    complaint = relationship(
+        "VehicleComplaint",
+        back_populates="job_cards"
+    )
+
+    inspection = relationship(
+        "TechnicianInspection",
+        back_populates="job_cards"
+    )
+
+    parts = relationship(
+        "JobCardPart",
+        back_populates="job_card"
+    )
+
+    parts = relationship(
+        "JobCardPart",
+        back_populates="job_card"
+    )
+
+
+
+class JobCardPart(
+    Base,
+    AuditMixin,
+    TimestampMixin,
+):
+
+    __tablename__ = "job_card_part"
+    __table_args__ = {"schema": "maintenance"}
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+
+    job_card_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "transact.maintenance_job_card.job_card_id"
+        )
+    )
+
+    part_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "inventory.part_master.part_id"
+        )
+    )
+
+    quantity: Mapped[float | None] = mapped_column(
+        Numeric(12, 2)
+    )
+
+    unit_price: Mapped[float | None] = mapped_column(
+        Numeric(12, 2)
+    )
+
+    total_price: Mapped[float | None] = mapped_column(
+        Numeric(12, 2)
+    )
+    job_card = relationship(
+    "MaintenanceJobCard",
+    back_populates="parts"
+    )
+    
+class PreventiveMaintenanceChecklist(
+    Base
+):
+
+    __tablename__ = (
+        "preventive_maintenance_checklist"
+    )
+
+    __table_args__ = {
+        "schema": "maintenance"
+    }
+
+    checklist_id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+
+    vehicle_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "master.vehicle_master.vehicle_id"
+        )
+    )
+
+    technician_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "master.employee_master.employee_id"
+        )
+    )
+
+    observation: Mapped[str | None] = mapped_column(
+        Text
+    )
+    vehicle = relationship(
+    "VehicleMaster",
+    back_populates="pm_checklists"
+    )
+    issue_found: Mapped[bool | None]
+
+    issue_description: Mapped[str | None] = (
+        mapped_column(Text)
+    )
+
+    maintenance_action: Mapped[
+        str | None
+    ] = mapped_column(Text)
+
+    final_status: Mapped[
+        str | None
+    ] = mapped_column(String(30))
+

@@ -1,0 +1,28 @@
+from pydantic import BaseModel
+from pydantic import ConfigDict
+
+
+class PMChecklistCreate(BaseModel):
+
+    vehicle_id: int
+
+    technician_id: int
+
+    observation: str | None = None
+
+    issue_found: bool = False
+
+    issue_description: str | None = None
+
+
+class PMChecklistResponse(BaseModel):
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+    checklist_id: int
+
+    vehicle_id: int
+
+    technician_id: int

@@ -24,6 +24,11 @@ class EmployeeMaster(Base):
     full_name: Mapped[str | None] = mapped_column(String(100))
 
     phone_number: Mapped[str] = mapped_column(String(15))
+    
+    inspections = relationship(
+        "TechnicianInspection",
+        back_populates="technician"
+    )
 
 
 class DriverMaster(Base):
@@ -95,3 +100,13 @@ class VehicleMaster(Base):
         "VehicleComplaint",
         back_populates="vehicle"
     )
+    
+    job_cards = relationship(
+        "MaintenanceJobCard",
+        back_populates="vehicle"
+    )
+    pm_checklists = relationship(
+        "PreventiveMaintenanceChecklist",
+        back_populates="vehicle"
+    )
+

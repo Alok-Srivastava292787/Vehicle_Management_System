@@ -3,7 +3,7 @@ from datetime import date
 from pydantic import BaseModel
 from pydantic import ConfigDict
 
-
+#Create JobCard
 class JobCardCreate(BaseModel):
 
     complaint_id: int
@@ -20,7 +20,7 @@ class JobCardCreate(BaseModel):
 
     description: str | None = None
 
-
+#Update
 class JobCardUpdate(BaseModel):
 
     severity_id: int | None = None
@@ -37,7 +37,7 @@ class JobCardUpdate(BaseModel):
 
     completion_date: date | None = None
 
-
+#Response
 class JobCardResponse(BaseModel):
 
     model_config = ConfigDict(
