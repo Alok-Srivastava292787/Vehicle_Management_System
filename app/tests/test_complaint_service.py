@@ -1,4 +1,3 @@
-import uuid
 
 from app.models.master import (
     DriverMaster,
@@ -25,19 +24,28 @@ from app.services.complaint_service import (
     ComplaintService,
 )
 
+import random
+def rand_n_digits(n: int) -> int:
+    return random.randint(
+        10**(n-1),
+        10**n - 1
+    )
+
 
 def test_create_complaint_service(
     db
 ):
 
     vehicle = VehicleMaster(
-        rc_number=f"TS-{uuid.uuid4()}"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="Driver",
-        mobile_number="9999999999",
-        dl_number=f"DL-{uuid.uuid4()}",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
     db.add(vehicle)

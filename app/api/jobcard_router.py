@@ -48,7 +48,6 @@ def create_JobCard(
     service = JobCardService(
         JobCardRepository(db),
         ComplaintRepository(db),
-        InspectionRepository(db),
         VehicleRepository(db),
     )
 
@@ -67,12 +66,11 @@ def get_all_JobCards(
     service = JobCardService(
         JobCardRepository(db),
         ComplaintRepository(db),
-        InspectionRepository(db),
         VehicleRepository(db),
     )
 
     return (
-        service.get_all_jobcards()
+        service.get_all_jobcard()
     )
 
 #GET    /{JobCard_id}
@@ -89,7 +87,6 @@ def get_JobCard(
     service = JobCardService(
         JobCardRepository(db),
         ComplaintRepository(db),
-        InspectionRepository(db),
         VehicleRepository(db),
     )
 
@@ -112,11 +109,10 @@ def update_JobCard(
     service = JobCardService(
         JobCardRepository(db),
         ComplaintRepository(db),
-        InspectionRepository(db),
         VehicleRepository(db),
     )
 
-    return service.update_JobCard(
+    return service.update_jobcard(
         JobCard_id,
         payload,
     )
@@ -134,7 +130,6 @@ def delete_JobCard(
     service = JobCardService(
         JobCardRepository(db),
         ComplaintRepository(db),
-        InspectionRepository(db),
         VehicleRepository(db),
     )
 

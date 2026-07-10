@@ -67,8 +67,6 @@ class VehicleComplaint(
     )
 
 
-
-
 class TechnicianInspection(
     Base,
     AuditMixin,
@@ -143,6 +141,15 @@ class MaintenanceJobCard(
             "master.vehicle_master.vehicle_id"
         )
     )
+    labour_charges: Mapped[float | None] = mapped_column(
+    Numeric(12, 2)
+    )
+    
+    description: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
+    
     vehicle = relationship(
         "VehicleMaster",
         back_populates="job_cards"

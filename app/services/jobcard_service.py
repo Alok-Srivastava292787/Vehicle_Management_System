@@ -1,11 +1,13 @@
 from app.models.maintenance import MaintenanceJobCard
+from app.schemas.jobcard import JobCardCreate,JobCardUpdate,JobCardResponse
+from app.services.exceptions import NotFoundException
+
 class JobCardService:
 
     def __init__(
         self,
         jobcard_repo,
         complaint_repo,
-        inspection_repo,
         vehicle_repo,
     ):
 
@@ -17,8 +19,8 @@ class JobCardService:
             complaint_repo
         )
 
-        self.inspection_repo = (
-            inspection_repo
+        self.jobcard_repo = (
+            jobcard_repo
         )
 
         self.vehicle_repo = (
@@ -27,7 +29,7 @@ class JobCardService:
     def create_jobcard(
         self,
         payload
-    ) -> jobcard_master:
+    ) -> JobCardCreate:
 
         jobcard = (
             MaintenanceJobCard(
@@ -55,34 +57,32 @@ class JobCardService:
             )
         )
 
-
-
     def get_jobcard(
         self,
-        inspection_id: int,
+        jobcard_id: int,
     ) :
 
-        inspection = (
-            self.inspection_repo.get_by_id(
-                inspection_id
+        jobcard = (
+            self.jobcard_repo.get_by_id(
+                jobcard_id
             )
         )
 
-        if not inspection:
+        if not jobcard:
             raise NotFoundException(
                 f"Inspection "
-                f"{inspection_id} "
+                f"{jobcard_id} "
                 f"not found"
             )
 
-        return inspection
+        return jobcard
 
-    def get_all_inspections(
+    def get_all_jobcard(
         self,
     ):
 
         return (
-            self.inspection_repo.get_all()
+            self.jobcard_repo.get_all()
         )
 
     def get_by_complaint(
@@ -91,21 +91,21 @@ class JobCardService:
     ):
 
         return (
-            self.inspection_repo
+            self.jobcard_repo
             .get_by_complaint(
                 complaint_id
             )
         )
 
-    def update_inspection(
+    def update_jobcard(
         self,
-        inspection_id: int,
-        payload: InspectionUpdate,
+        jobcard_id: int,
+        payload: JobCardUpdate,
     ):
 
-        inspection = (
-            self.get_inspection(
-                inspection_id
+        update = (
+            self.get_jobcard(
+                jobcard_id
             )
         )
 
@@ -116,24 +116,24 @@ class JobCardService:
         )
 
         return (
-            self.inspection_repo
-            .update_inspection(
-                inspection,
+            self.jobcard_repo
+            .update_job(
+                update,
                 update_data
             )
         )
 
-    def delete_inspection(
+    def delete_jobcard(
         self,
-        inspection_id: int,
+        jobcard_id: int,
     ) -> None:
 
-        inspection = (
-            self.get_inspection(
-                inspection_id
+        jobcard = (
+            self.get_jobcard(
+                jobcard_id
             )
         )
 
-        self.inspection_repo.delete(
-            inspection
+        self.jobcard_repo.delete(
+            jobcard
         )

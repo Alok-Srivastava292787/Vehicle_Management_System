@@ -1,17 +1,23 @@
-import uuid
+
 
 from app.models.master import DriverMaster
 from app.repositories.driver_repository import (
     DriverRepository,
 )
+import random
+def rand_n_digits(n: int) -> int:
+    return random.randint(
+        10**(n-1),
+        10**n - 1
+    )
 
 
 def test_driver_by_dl(db):
 
     driver = DriverMaster(
-        driver_name="Test Driver",
-        mobile_number="9999999999",
-        dl_number=f"DL-{uuid.uuid4()}",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
     repo = DriverRepository(db)

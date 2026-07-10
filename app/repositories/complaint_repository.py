@@ -21,7 +21,6 @@ class ComplaintRepository(
         self,
         vehicle_id: int
     ):
-
         return (
             self.db.query(
                 VehicleComplaint
@@ -37,7 +36,6 @@ class ComplaintRepository(
         self,
         driver_id: int
     ):
-
         return (
             self.db.query(
                 VehicleComplaint
@@ -82,4 +80,14 @@ class ComplaintRepository(
                 == complaint_id
             )
             .first()
+        )
+
+    def exists(
+    self,
+    complaint_id: int
+    ) -> bool:
+    
+        return (
+            self.get_by_id(complaint_id)
+            is not None
         )

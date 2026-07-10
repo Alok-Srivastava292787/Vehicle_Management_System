@@ -24,3 +24,14 @@ class JobCardPartResponse(BaseModel):
     job_card_id: int
 
     part_id: int
+
+
+class JobCardPartUpdate(BaseModel):
+
+    job_card_id: int
+
+    part_id: int
+
+    quantity: float
+
+    unit_price: float

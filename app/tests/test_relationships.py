@@ -3,17 +3,25 @@
 from app.db.base import Base
 from app.models import *
 from app.db.session import engine
+import random
+def rand_n_digits(n: int) -> int:
+    return random.randint(
+        10**(n-1),
+        10**n - 1
+    )
 
-import uuid
 
 def test_vehicle_complaint_relationship(db,):
     vehicle = VehicleMaster(
-    rc_number=f"TS-{uuid.uuid4()}"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="Driver",
-        mobile_number="9999999999",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
     db.add(vehicle)
@@ -49,12 +57,15 @@ def test_vehicle_complaint_relationship(db,):
 def test_complaint_inspection_relationship(db,):
 
     vehicle = VehicleMaster(
-    rc_number=f"TS-{uuid.uuid4()}"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="Driver",
-        mobile_number="9999999999",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
     db.add(vehicle)
@@ -98,12 +109,15 @@ def test_complaint_inspection_relationship(db,):
 def test_employee_inspection_relationship(db,):
 
     vehicle = VehicleMaster(
-    rc_number=f"TS-{uuid.uuid4()}"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="Driver",
-        mobile_number="9999999999",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
 
@@ -158,12 +172,15 @@ def test_employee_inspection_relationship(db,):
 def test_vehicle_jobcard_relationship( db,):
 
     vehicle = VehicleMaster(
-    rc_number=f"TS-{uuid.uuid4()}"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="Driver",
-        mobile_number="9999999999",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
 
@@ -193,13 +210,6 @@ def test_vehicle_jobcard_relationship( db,):
     )
     db.add(inspection)
     db.commit()
-    print(
-    "TECH ID =",
-    technician.employee_id
-    )
-    print(
-    inspection.technician_id
-    )
 
 
 
@@ -226,12 +236,15 @@ def test_vehicle_jobcard_relationship( db,):
 def test_jobcard_part_relationship( db,):
 
     vehicle = VehicleMaster(
-    rc_number=f"TS-{uuid.uuid4()}"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="Driver",
-        mobile_number="9999999999",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
 
@@ -270,7 +283,7 @@ def test_jobcard_part_relationship( db,):
 
 
     part = PartMaster(
-        part_code=f"PART-{uuid.uuid4()}",
+        part_code=f"PART-{rand_n_digits(6)}",
         part_name="Battery",
     )
 
@@ -299,12 +312,15 @@ def test_jobcard_part_relationship( db,):
 def test_vehicle_checklist_relationship( db,):
 
     vehicle = VehicleMaster(
-    rc_number=f"TS-{uuid.uuid4()}"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="Driver",
-        mobile_number="9999999999",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
 
@@ -362,12 +378,15 @@ def test_vehicle_checklist_relationship( db,):
 def test_full_maintenance_flow(db):
 
     vehicle = VehicleMaster(
-        rc_number=f"TS-{uuid.uuid4()}",
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="Driver",
-        mobile_number="9999999999",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
     technician = EmployeeMaster(
@@ -377,7 +396,7 @@ def test_full_maintenance_flow(db):
     )
 
     part = PartMaster(
-        part_code=f"P-{uuid.uuid4()}",
+        part_code=f"P-{rand_n_digits(6)}",
         part_name="Battery",
     )
 

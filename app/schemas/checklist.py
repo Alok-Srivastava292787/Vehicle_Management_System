@@ -14,6 +14,17 @@ class PMChecklistCreate(BaseModel):
 
     issue_description: str | None = None
 
+class PMChecklistUpdate(BaseModel):
+
+    vehicle_id: int
+
+    technician_id: int
+
+    observation: str | None = None
+
+    issue_found: bool = False
+
+    issue_description: str | None = None
 
 class PMChecklistResponse(BaseModel):
 

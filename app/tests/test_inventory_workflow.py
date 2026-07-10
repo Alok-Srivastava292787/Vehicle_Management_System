@@ -1,8 +1,13 @@
 from app.models.inventory import PartMaster, PartRequest
 from app.models.master import VehicleMaster,EmployeeMaster
 from app.db.session import SessionLocal
-import uuid
 from datetime import datetime
+import random
+def rand_n_digits(n: int) -> int:
+    return random.randint(
+        10**(n-1),
+        10**n - 1
+    )
 
 def inventory_workflow_test(db):
     #create
@@ -12,12 +17,15 @@ def inventory_workflow_test(db):
     )
 
     employee = EmployeeMaster(
-            full_name="Johny",
-            phone_number="9099999909"
+        employee_type="TECHNICIAN",
+        full_name="Tech User",
+        phone_number="8888888888",
         )
 
     vehicle = VehicleMaster(
-        rc_number=f"KA01-{uuid.uuid4()}"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
     
     session=SessionLocal()
@@ -26,7 +34,7 @@ def inventory_workflow_test(db):
 
     #then
     request = PartRequest(
-        request_number="REQ001",
+        request_number=f"REQ-{rand_n_digits(6)}",
         vehicle_id=vehicle.vehicle_id,
         request_id=employee.employee_id
     )

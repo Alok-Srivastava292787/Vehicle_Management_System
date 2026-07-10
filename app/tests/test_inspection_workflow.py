@@ -3,19 +3,30 @@ from app.models.master import VehicleMaster,DriverMaster, EmployeeMaster
 
 from app.db.session import SessionLocal 
 
+import random
+def rand_n_digits(n: int) -> int:
+    return random.randint(
+        10**(n-1),
+        10**n - 1
+    )
+
 def test_create_complaint(db):
     vehicle = VehicleMaster(
-        rc_number="KA01AA1002"
+        rc_number= f"TEST-{rand_n_digits(6)}",
+        engine_no= f"ENG-{rand_n_digits(6)}",
+        chassis_no= f"CH-{rand_n_digits(6)}",
     )
 
     driver = DriverMaster(
-        driver_name="John",
-        mobile_number="8888888888"
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
     employee = EmployeeMaster(
-        full_name="Johny",
-        phone_number="9099999999"
+        employee_type="TECHNICIAN",
+        full_name="Tech User",
+        phone_number="8888888888",
     )
 
     db.add_all([vehicle, driver, employee])

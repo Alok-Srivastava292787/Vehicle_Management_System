@@ -5,7 +5,7 @@ from typing import TypeVar
 
 from sqlalchemy.orm import Session
 from app.repositories.base_repository import BaseRepository
-from app.models.maintenance import MaintenanceJobCard
+from app.models.maintenance import PreventiveMaintenanceChecklist
 
 class ChecklistRepository(
     BaseRepository[

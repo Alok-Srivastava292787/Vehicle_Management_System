@@ -36,6 +36,7 @@ router = APIRouter(
 @router.post(
     "",
     response_model=ComplaintResponse,
+    status_code=201
 )
 def create_complaint(
     payload: ComplaintCreate,
@@ -86,9 +87,13 @@ def get_all_complaint(
         DriverRepository(db),
     )
 
-    return  (
-        service.get_all_complaint()
-    ) 
+    complaints = service.get_all_complaint()
+#    print(complaints)
+    return complaints
+
+#    return  (
+#        service.get_all_complaint()
+#    ) 
 
 
 #Update Driver

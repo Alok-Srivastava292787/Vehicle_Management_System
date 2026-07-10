@@ -6,19 +6,22 @@ from app.db.dependencies import get_db
 from app.repositories.jobcard_part_repository import (
     JobCardPartRepository,
 )
-
+from app.repositories.complaint_repository import ( ComplaintRepository )
+from app.repositories.inspection_repository import (InspectionRepository )
+from app.repositories.vehicle_repository import (VehicleRepository )
 from app.schemas.jobcard_part import (
     JobCardPartCreate,
     JobCardPartResponse,
+    JobCardPartUpdate
 )
 
-from app.services.jobcard_service import (
-    JobCardService,
+from app.services.jobcard_part_service import (
+    JobCardPartService
 )
 
 
 router = APIRouter(
-    prefix="/api/v1/jobcards",
+    prefix="/api/v1/jobcard-parts",
     tags=["Job Card Part"]
 )
 
@@ -34,11 +37,11 @@ def create_JobCardPart(
     db: Session = Depends(get_db),
 ):
 
-    service = JobCardService(
-        JobCardPartRepository(db)
+    service = JobCardPartService(
+        JobCardPartRepository(db),
     )
 
-    return service.create_JobCardPart(
+    return service.create_jobcard_part(
         payload
     )
 #Get All
@@ -55,7 +58,7 @@ def get_all_JobCardParts(
     )
 
     return (
-        service.get_all_JobCardParts()
+        service.get_all_jobcard_parts()
     )
 
 #GET    /{JobCardPart_id}
@@ -73,7 +76,7 @@ def get_JobCardPart(
         JobCardPartRepository(db)
     )
 
-    return service.get_JobCardPart(
+    return service.get_jobcard_part(
         JobCardPart_id
     )
 
@@ -93,7 +96,7 @@ def update_JobCardPart(
         JobCardPartRepository(db)
     )
 
-    return service.update_JobCardPart(
+    return service.update_jobcard_part(
         JobCardPart_id,
         payload,
     )
@@ -112,7 +115,7 @@ def delete_JobCardPart(
         JobCardPartRepository(db)
     )
 
-    service.delete_JobCardPart(
+    service.delete_jobcard_part(
         JobCardPart_id
     )
 

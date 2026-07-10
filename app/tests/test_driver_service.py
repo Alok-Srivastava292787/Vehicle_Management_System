@@ -1,4 +1,4 @@
-import uuid
+
 
 from app.schemas.driver import (
     DriverCreate,
@@ -12,6 +12,12 @@ from app.services.driver_service import (
     DriverService,
 )
 
+import random
+def rand_n_digits(n: int) -> int:
+    return random.randint(
+        10**(n-1),
+        10**n - 1
+    )
 
 def test_create_driver_service(
     db
@@ -24,9 +30,9 @@ def test_create_driver_service(
     )
 
     payload = DriverCreate(
-        driver_name="Driver",
-        mobile_number="9999999999",
-        dl_number=f"DL-{uuid.uuid4()}",
+        driver_name=     f"Test-Driver-{rand_n_digits(6)}",
+        mobile_number=   f"901{rand_n_digits(7)}",
+        dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
     driver = (

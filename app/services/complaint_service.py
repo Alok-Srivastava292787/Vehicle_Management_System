@@ -17,6 +17,7 @@ from app.repositories.vehicle_repository import (
 from app.schemas.complaint import (
     ComplaintCreate,
     ComplaintUpdate,
+    ComplaintResponse
 )
 
 from app.services.exceptions import (
@@ -92,26 +93,21 @@ class ComplaintService:
         self,
         complaint_id: int
     ):
-
         complaint = (
             self.complaint_repo
             .get_by_id(
                 complaint_id
             )
         )
-
         if not complaint:
-
             raise (
                 NotFoundException(
                     "Complaint not found"
                 )
             )
-
         return complaint
 
     def get_all_complaint(self):
-
         return (
             self.complaint_repo.get_all()
         )
