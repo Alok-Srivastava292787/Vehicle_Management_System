@@ -1,21 +1,14 @@
 from app.models.maintenance import TechnicianInspection
 
-from app.repositories.complaint_repository import (
-    ComplaintRepository,
-)
+from app.repositories.complaint_repository import (    ComplaintRepository,)
 
-from app.repositories.inspection_repository import (
-    InspectionRepository,
-)
+from app.repositories.inspection_repository import (    InspectionRepository,)
 
-from app.schemas.inspection import (
-    InspectionCreate,
-    InspectionUpdate,
-)
+from app.schemas.inspection import (    InspectionCreate,   InspectionUpdate,)
 
-from app.services.exceptions import (
-    NotFoundException,
-)
+from app.services.exceptions import (    NotFoundException,)
+
+from app.repositories.employee_repository import ( EmployeeRepository,)
 
 
 class InspectionService:
@@ -24,10 +17,12 @@ class InspectionService:
         self,
         inspection_repo: InspectionRepository,
         complaint_repo: ComplaintRepository,
+        employee_repo: EmployeeRepository,
     ):
 
         self.inspection_repo = inspection_repo
         self.complaint_repo = complaint_repo
+        self.employee_repo = employee_repo
 
     def create_inspection(
         self,
@@ -44,6 +39,12 @@ class InspectionService:
                 f"{payload.complaint_id} "
                 f"not found"
             )
+        if not self.employee_repo.exists(
+            payload.technician_id
+            ):
+                raise NotFoundException(
+                    "Technician not found"
+                )
 
         inspection = TechnicianInspection(
             complaint_id=payload.complaint_id,

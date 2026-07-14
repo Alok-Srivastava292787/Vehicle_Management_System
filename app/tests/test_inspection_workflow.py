@@ -48,6 +48,6 @@ def test_create_complaint(db):
         observed_issue="Dead Battery"
     )
 
-    session=SessionLocal()
-    session.add(inspection)
-    session.commit()
+    db.add(inspection)
+    db.commit()
+

@@ -79,3 +79,34 @@ def test_create_inspection():
     response = client.post( "/api/v1/inspections",  json=payload )
 
     assert response.status_code == 201
+
+def test_create_inspection_missing_complaint():
+
+    response = client.post(
+        "/api/v1/inspections",
+        json={
+            "technician_id": 1
+        }
+    )
+
+    assert response.status_code == 422
+
+def test_no_orphan_inspections():
+
+    response = client.get(
+        "/api/v1/inspections"
+    )
+
+    inspections = response.json()
+
+    for inspection in inspections:
+
+        assert (
+            inspection["complaint_id"]
+            is not None
+        )
+
+        assert (
+            inspection["technician_id"]
+            is not None
+        )

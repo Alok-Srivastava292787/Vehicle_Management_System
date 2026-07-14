@@ -118,3 +118,13 @@ class JobCardRepository(
         )
 
         self.db.commit()
+    
+    def exists(
+    self,
+    job_card_id: int
+    ) -> bool:
+    
+        return (
+            self.get_by_id(job_card_id)
+            is not None
+        )

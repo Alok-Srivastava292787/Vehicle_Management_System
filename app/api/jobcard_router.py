@@ -49,6 +49,7 @@ def create_JobCard(
         JobCardRepository(db),
         ComplaintRepository(db),
         VehicleRepository(db),
+        InspectionRepository(db),
     )
 
     return service.create_jobcard(
@@ -57,7 +58,7 @@ def create_JobCard(
 #Get All
 @router.get(
     "",
-    response_model=list[JobCardResponse],
+#    response_model=list[JobCardResponse],
 )
 def get_all_JobCards(
     db: Session = Depends(get_db),
@@ -67,8 +68,12 @@ def get_all_JobCards(
         JobCardRepository(db),
         ComplaintRepository(db),
         VehicleRepository(db),
+        InspectionRepository(db),
     )
-
+#    res=service.get_all_jobcard()
+#    for item in res:
+#        print(item.__dict__)
+#return service.get_all_inspections()
     return (
         service.get_all_jobcard()
     )
@@ -88,6 +93,7 @@ def get_JobCard(
         JobCardRepository(db),
         ComplaintRepository(db),
         VehicleRepository(db),
+        InspectionRepository(db),
     )
 
     return service.get_jobcard(
@@ -110,6 +116,7 @@ def update_JobCard(
         JobCardRepository(db),
         ComplaintRepository(db),
         VehicleRepository(db),
+        InspectionRepository(db),
     )
 
     return service.update_jobcard(
@@ -131,6 +138,7 @@ def delete_JobCard(
         JobCardRepository(db),
         ComplaintRepository(db),
         VehicleRepository(db),
+        InspectionRepository(db),
     )
 
     service.delete_jobcard(

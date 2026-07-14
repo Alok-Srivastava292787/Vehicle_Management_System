@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 
 from app.repositories.checklist_repository import (
-    ChecklistRepository,
-)
+    ChecklistRepository,)
+from app.repositories.employee_repository import EmployeeRepository
+from app.repositories.vehicle_repository import ( VehicleRepository)
 from app.models.maintenance import PreventiveMaintenanceChecklist
 
 from app.schemas.checklist import (
@@ -37,7 +38,9 @@ def create_checklist(
 ):
 
     service = ChecklistService(
-        ChecklistRepository(db)
+        ChecklistRepository(db),
+        VehicleRepository(db),
+        EmployeeRepository(db),
     )
 
     return service.create_checklist(
@@ -55,7 +58,9 @@ def get_checklist(
 ):
 
     service = ChecklistService(
-        ChecklistRepository(db)
+        ChecklistRepository(db),
+        VehicleRepository(db),
+        EmployeeRepository(db),
     )
 
     return service.get_checklist(
@@ -72,7 +77,9 @@ def get_all_checklists(
 ):
 
     service = ChecklistService(
-        ChecklistRepository(db)
+        ChecklistRepository(db),
+        VehicleRepository(db),
+        EmployeeRepository(db),
     )
 
     return (
@@ -91,7 +98,9 @@ def update_checklist(
 ):
 
     service = ChecklistService(
-        ChecklistRepository(db)
+        ChecklistRepository(db),
+        VehicleRepository(db),
+        EmployeeRepository(db),
     )
 
     return service.update_checklist(
@@ -109,7 +118,9 @@ def delete_checklist(
 ):
 
     service = ChecklistService(
-        ChecklistRepository(db)
+        ChecklistRepository(db),
+        VehicleRepository(db),
+        EmployeeRepository(db),
     )
 
     service.delete_checklist(

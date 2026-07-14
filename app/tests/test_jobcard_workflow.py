@@ -38,7 +38,7 @@ def test_create_job_card(db):
         issue_description="Battery issue"
     )
     db.add(complaint)
-    db.commit
+    db.commit()
     inspection = TechnicianInspection(
         complaint_id=complaint.complaint_id,
         technician_id=employee.employee_id,
@@ -55,8 +55,7 @@ def test_create_job_card(db):
     inspection_id=inspection.inspection_id,
     vehicle_id=vehicle.vehicle_id
     )
+    db.add_all([job_card])
+    db.commit()
 
-    session=SessionLocal()
-    session.add(job_card)
-    session.commit()
 

@@ -102,3 +102,13 @@ class InspectionRepository(
         )
 
         self.db.commit()
+
+    def exists(
+    self,
+    inspection_id: int
+    ) -> bool:
+    
+        return (
+            self.get_by_id(inspection_id)
+            is not None
+        )

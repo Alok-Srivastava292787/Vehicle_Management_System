@@ -1,50 +1,53 @@
 from app.models.maintenance import MaintenanceJobCard
 from app.schemas.jobcard import JobCardCreate,JobCardUpdate,JobCardResponse
 from app.services.exceptions import NotFoundException
+from app.repositories.jobcard_part_repository import JobCardPartRepository
+from app.repositories.complaint_repository import ComplaintRepository
+from app.repositories.vehicle_repository import VehicleRepository
+from app.repositories.inspection_repository import InspectionRepository
 
 class JobCardService:
-
     def __init__(
         self,
-        jobcard_repo,
-        complaint_repo,
-        vehicle_repo,
+        jobcard_repo: JobCardPartRepository,
+        complaint_repo: ComplaintRepository,
+        vehicle_repo: VehicleRepository,
+        inspection_repo: InspectionRepository,
     ):
+        self.jobcard_repo = (          jobcard_repo)
+        self.complaint_repo = (        complaint_repo)
+        self.inspection_repo = (       inspection_repo)
+        self.vehicle_repo = (          vehicle_repo)
 
-        self.jobcard_repo = (
-            jobcard_repo
-        )
-
-        self.complaint_repo = (
-            complaint_repo
-        )
-
-        self.jobcard_repo = (
-            jobcard_repo
-        )
-
-        self.vehicle_repo = (
-            vehicle_repo
-        )
     def create_jobcard(
         self,
         payload
     ) -> JobCardCreate:
 
+        if not self.vehicle_repo.exists(  payload.vehicle_id
+        ):
+            raise NotFoundException(        "Vehicle not found")
+
+        if not self.complaint_repo.exists(
+            payload.complaint_id
+        ):
+            raise NotFoundException(         "Complaint not found")
+
+        if not self.inspection_repo.exists(
+            payload.inspection_id
+        ):
+            raise NotFoundException(          "Inspection not found")
+ 
         jobcard = (
             MaintenanceJobCard(
                 complaint_id=
                 payload.complaint_id,
-
                 inspection_id=
                 payload.inspection_id,
-
                 vehicle_id=
                 payload.vehicle_id,
-
                 labour_charges=
                 payload.labour_charges,
-
                 description=
                 payload.description,
             )
@@ -117,7 +120,7 @@ class JobCardService:
 
         return (
             self.jobcard_repo
-            .update_job(
+            .update_jobcard(
                 update,
                 update_data
             )

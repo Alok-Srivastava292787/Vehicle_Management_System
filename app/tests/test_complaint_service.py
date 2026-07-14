@@ -1,29 +1,12 @@
-
 from app.models.master import (
     DriverMaster,
     VehicleMaster,
 )
-
-from app.repositories.complaint_repository import (
-    ComplaintRepository,
-)
-
-from app.repositories.driver_repository import (
-    DriverRepository,
-)
-
-from app.repositories.vehicle_repository import (
-    VehicleRepository,
-)
-
-from app.schemas.complaint import (
-    ComplaintCreate,
-)
-
-from app.services.complaint_service import (
-    ComplaintService,
-)
-
+from app.repositories.complaint_repository import (ComplaintRepository,)
+from app.repositories.driver_repository import (DriverRepository,)
+from app.repositories.vehicle_repository import (VehicleRepository,)
+from app.schemas.complaint import (ComplaintCreate,)
+from app.services.complaint_service import (ComplaintService,)
 import random
 def rand_n_digits(n: int) -> int:
     return random.randint(
@@ -35,7 +18,6 @@ def rand_n_digits(n: int) -> int:
 def test_create_complaint_service(
     db
 ):
-
     vehicle = VehicleMaster(
         rc_number= f"TEST-{rand_n_digits(6)}",
         engine_no= f"ENG-{rand_n_digits(6)}",

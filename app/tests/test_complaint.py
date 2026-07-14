@@ -35,3 +35,4 @@ def test_create_complaint(db):
     db.commit()
 
     assert complaint.complaint_id
+

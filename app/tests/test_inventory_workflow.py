@@ -15,22 +15,21 @@ def inventory_workflow_test(db):
         part_code=f"BAT-{datetime.now().timestamp()}",
         part_name="Battery"
     )
-
+    db.add(part)
     employee = EmployeeMaster(
         employee_type="TECHNICIAN",
         full_name="Tech User",
         phone_number="8888888888",
         )
+    db.add(employee)
 
     vehicle = VehicleMaster(
         rc_number= f"TEST-{rand_n_digits(6)}",
         engine_no= f"ENG-{rand_n_digits(6)}",
         chassis_no= f"CH-{rand_n_digits(6)}",
     )
+    db.add(vehicle)
     
-    session=SessionLocal()
-    session.add(part)
-    session.commit()
 
     #then
     request = PartRequest(
@@ -38,6 +37,5 @@ def inventory_workflow_test(db):
         vehicle_id=vehicle.vehicle_id,
         request_id=employee.employee_id
     )
-
-    session.add(request)
-    session.commit()
+    db.add(request)
+    db.commit()

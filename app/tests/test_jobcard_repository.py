@@ -167,7 +167,9 @@ def test_update_jobcard(
         dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
-
+    db.add(vehicle)
+    db.add(driver)
+    db.commit()
     complaint = VehicleComplaint(
     vehicle_id=vehicle.vehicle_id,
     driver_id=driver.driver_id,
@@ -181,8 +183,6 @@ def test_update_jobcard(
     )
 
 
-    db.add(vehicle)
-    db.add(driver)
     db.add(complaint)
     db.add(technician)
     db.commit()
@@ -236,7 +236,9 @@ def test_delete_jobcard(
         dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
-
+    db.add(vehicle)
+    db.add(driver)
+    db.commit()
     complaint = VehicleComplaint(
     vehicle_id=vehicle.vehicle_id,
     driver_id=driver.driver_id,
@@ -250,8 +252,6 @@ def test_delete_jobcard(
     )
 
 
-    db.add(vehicle)
-    db.add(driver)
     db.add(complaint)
     db.add(technician)
     db.commit()

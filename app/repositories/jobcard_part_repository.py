@@ -103,3 +103,13 @@ class JobCardPartRepository(
         )
 
         self.db.commit()
+
+    def exists(
+    self,
+    part_id: int
+    ) -> bool:
+    
+        return (
+            self.get_by_id(part_id)
+            is not None
+        )

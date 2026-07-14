@@ -198,12 +198,48 @@ def test_create_complaint_invalid_vehicle():
 def test_create_complaint_invalid_driver():
     vehicle = create_vehicle()
     payload = {
-        "vehicle_id":        vehicle["vehicle_id"],
-        "driver_id":         999999999,
-        "issue_description": "Invalid driver test",
+        "vehicle_id": vehicle["vehicle_id"],
+        
+        "driver_id": 999999999,
+
+        "issue_description":
+        "Invalid Driver test",
     }
     response = client.post(
         "/api/v1/complaints",
         json=payload,
     )
     assert response.status_code == 404
+
+def test_create_complaint_missing_vehicle():
+
+    response = client.post(
+        "/api/v1/complaints",
+        json={
+            "driver_id": 1,
+            "issue_description":
+            "Battery"
+        }
+    )
+
+    assert response.status_code == 422
+
+def test_no_orphan_complaints():
+
+    response = client.get(
+        "/api/v1/complaints"
+    )
+
+    complaints = response.json()
+
+    for complaint in complaints:
+
+        assert (
+            complaint["vehicle_id"]
+            is not None
+        )
+
+        assert (
+            complaint["driver_id"]
+            is not None
+        )

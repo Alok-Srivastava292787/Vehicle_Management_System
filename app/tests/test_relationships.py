@@ -96,7 +96,6 @@ def test_complaint_inspection_relationship(db,):
     db.add(inspection)
     db.commit()
 
-    db.refresh(complaint)
 
     assert len(complaint.inspections) == 1
 
@@ -119,7 +118,9 @@ def test_employee_inspection_relationship(db,):
         mobile_number=   f"901{rand_n_digits(7)}",
         dl_number=       f"DL-{rand_n_digits(6)}",
     )
-
+    db.add(vehicle)
+    db.add(driver)
+    db.commit()
 
     complaint = VehicleComplaint(
     vehicle_id=vehicle.vehicle_id,
@@ -134,11 +135,10 @@ def test_employee_inspection_relationship(db,):
     )
 
 
-    db.add(vehicle)
-    db.add(driver)
     db.add(complaint)
     db.add(technician)
     db.commit()
+
     inspection = TechnicianInspection(
         complaint_id=complaint.complaint_id,
         technician_id=technician.employee_id,
@@ -147,10 +147,6 @@ def test_employee_inspection_relationship(db,):
     db.add(inspection)
     db.commit()
 
-    db.refresh(vehicle)
-    db.refresh(driver)
-    db.refresh(complaint)
-    db.refresh(technician)
     db.refresh(inspection)
 
 
@@ -183,6 +179,8 @@ def test_vehicle_jobcard_relationship( db,):
         dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
+    db.add_all([vehicle, driver])
+    db.commit()
 
     complaint = VehicleComplaint(
     vehicle_id=vehicle.vehicle_id,
@@ -197,11 +195,13 @@ def test_vehicle_jobcard_relationship( db,):
     )
 
 
-    db.add(vehicle)
-    db.add(driver)
     db.add(complaint)
     db.add(technician)
     db.commit()
+    db.refresh(vehicle)
+    db.refresh(driver)
+    db.refresh(complaint)
+    db.refresh(technician)
 
     inspection = TechnicianInspection(
         complaint_id=complaint.complaint_id,
@@ -222,7 +222,6 @@ def test_vehicle_jobcard_relationship( db,):
     db.add(jobcard)
     db.commit()
 
-    db.refresh(vehicle)
 
     assert len(
         vehicle.job_cards
@@ -247,7 +246,9 @@ def test_jobcard_part_relationship( db,):
         dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
-
+    db.add(vehicle)
+    db.add(driver)
+    db.commit()
     complaint = VehicleComplaint(
     vehicle_id=vehicle.vehicle_id,
     driver_id=driver.driver_id,
@@ -261,17 +262,20 @@ def test_jobcard_part_relationship( db,):
     )
 
 
-    db.add(vehicle)
-    db.add(driver)
     db.add(complaint)
     db.add(technician)
     db.commit()
+    db.refresh(vehicle)
+    db.refresh(driver)
+    db.refresh(complaint)
+    db.refresh(technician)
     inspection = TechnicianInspection(
         complaint_id=complaint.complaint_id,
         technician_id=technician.employee_id,
         observed_issue="Dead Battery",
     )
-
+    db.add(inspection)
+    db.commit()
     jobcard = MaintenanceJobCard(
         complaint_id=complaint.complaint_id,
         inspection_id=inspection.inspection_id,
@@ -323,7 +327,9 @@ def test_vehicle_checklist_relationship( db,):
         dl_number=       f"DL-{rand_n_digits(6)}",
     )
 
-
+    db.add(vehicle)
+    db.add(driver)
+    db.commit()
     complaint = VehicleComplaint(
     vehicle_id=vehicle.vehicle_id,
     driver_id=driver.driver_id,
@@ -342,6 +348,10 @@ def test_vehicle_checklist_relationship( db,):
     db.add(complaint)
     db.add(technician)
     db.commit()
+    db.refresh(vehicle)
+    db.refresh(driver)
+    db.refresh(complaint)
+    db.refresh(technician)
     inspection = TechnicianInspection(
         complaint_id=complaint.complaint_id,
         technician_id=technician.employee_id,
@@ -388,7 +398,9 @@ def test_full_maintenance_flow(db):
         mobile_number=   f"901{rand_n_digits(7)}",
         dl_number=       f"DL-{rand_n_digits(6)}",
     )
-
+    db.add(vehicle)
+    db.add(driver)
+    db.commit()
     technician = EmployeeMaster(
         employee_type="TECHNICIAN",
         full_name="Tech User",
@@ -402,8 +414,6 @@ def test_full_maintenance_flow(db):
 
     db.add_all(
         [
-            vehicle,
-            driver,
             technician,
             part,
         ]

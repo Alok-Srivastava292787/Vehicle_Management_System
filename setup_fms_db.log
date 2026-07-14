@@ -3581,3 +3581,698 @@ CREATE INDEX
 
 [2026-07-07 17:45:23] ------------------------------------------------------
 [2026-07-07 17:45:23] Table inventory in fms:
+[2026-07-10 18:52:24] ======================================================
+[2026-07-10 18:52:24]   PostgreSQL 17 Setup + Hardening Script
+[2026-07-10 18:52:25] ======================================================
+[2026-07-10 18:52:25] Target DB:   fms
+[2026-07-10 18:52:25] App User:    fleet_user
+[2026-07-10 18:52:25] ------------------------------------------------------
+[2026-07-10 18:52:25] Creating user fleet_user and fms database...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_V2Yit0.sql:24: NOTICE:  Role fleet_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_V2Yit0.sql:24: NOTICE:  Role workshop_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_V2Yit0.sql:24: NOTICE:  Role driver_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_V2Yit0.sql:24: NOTICE:  Role management_user already exists, updating password...
+DO
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_V2Yit0.sql:55: NOTICE:  Role fleet_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_V2Yit0.sql:55: NOTICE:  Role workshop_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_V2Yit0.sql:55: NOTICE:  Role driver_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_V2Yit0.sql:55: NOTICE:  Role management_user already exists, updating timeout details...
+DO
+ pg_terminate_backend 
+----------------------
+ t
+ t
+(2 rows)
+
+DROP DATABASE
+CREATE DATABASE
+COMMENT
+GRANT
+Database fms created and CONNECT granted to fleet_user
+[2026-07-10 18:52:31] fleet_user and fms database created
+[2026-07-10 18:52:31] ------------------------------------------------------
+[2026-07-10 18:52:31] Setting schema-level permissions for fleet_user on fms...
+[2026-07-10 18:52:31] Granting schema permissions to fleet_user on fms...
+[2026-07-10 18:52:32] SQL permissions script: /tmp/pg_perms_JoBQth.sql
+[2026-07-10 18:52:32] This will grant USAGE on schema and SELECT/INSERT/UPDATE/DELETE on all tables, plus future object permissions.
+You are now connected to database "fms" as user "postgres".
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+GRANT
+GRANT
+GRANT
+GRANT
+ALTER ROLE
+ALTER ROLE
+GRANT
+GRANT
+GRANT
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+REVOKE
+GRANT
+Schema permissions set for fleet_user on fms
+[2026-07-10 18:52:37] Creating required tables and views in database fms ---START---
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 6
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 8
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE VIEW
+CREATE VIEW
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+[2026-07-10 18:52:41] Creating required tables and views in database fms ---DONE---
+[2026-07-10 18:52:41] Schema permissions granted
+[2026-07-10 18:52:41] ------------------------------------------------------
+[2026-07-10 18:52:42] Verifying fleet_user access...
+ employee 
+----------
+        0
+(1 row)
+
+[2026-07-10 18:52:43] ------------------------------------------------------
+[2026-07-10 18:52:43] Table inventory in fms:
+ schemaname  |            tablename             |    size    
+-------------+----------------------------------+------------
+ inventory   | approval_request                 | 16 kB
+ inventory   | approval_response_audit          | 16 kB
+ transact    | attendance_tracking              | 16 kB
+ maintenance | checklist_master                 | 96 kB
+ maintenance | checklist_result                 | 16 kB
+ reference   | component_type                   | 48 kB
+ master      | driver_document                  | 16 kB
+ master      | driver_master                    | 24 kB
+ operations  | driver_vehicle_assignment        | 16 kB
+ master      | employee_master                  | 8192 bytes
+ transact    | employee_salary                  | 16 kB
+ reference   | fuel_rate_reference              | 16 kB
+ transact    | fuel_transactions                | 16 kB
+ reference   | fuel_type_ref                    | 48 kB
+ operations  | gate_pass_regular                | 16 kB
+ operations  | gate_pass_technical              | 16 kB
+ timeseries  | gps_raw_data                     | 24 kB
+ operations  | helper_vehicle_assignment        | 8192 bytes
+ maintenance | job_card_part                    | 16 kB
+ master      | location                         | 8192 bytes
+ transact    | maintenance_job_card             | 16 kB
+ reference   | maintenance_type_ref             | 16 kB
+ inventory   | part_issue                       | 48 kB
+ inventory   | part_issue_item                  | 8192 bytes
+ inventory   | part_master                      | 24 kB
+ inventory   | part_receipt                     | 24 kB
+ inventory   | part_receipt_item                | 16 kB
+ inventory   | part_request                     | 56 kB
+ inventory   | part_request_item                | 16 kB
+ maintenance | preventive_maintenance_checklist | 16 kB
+ reference   | severity                         | 48 kB
+ inventory   | stock_transaction                | 8192 bytes
+ reference   | stock_transaction_ref            | 40 kB
+ maintenance | technician_inspection            | 16 kB
+ master      | tool_kit                         | 24 kB
+ maintenance | vehicle_complaint                | 16 kB
+ master      | vehicle_component                | 8192 bytes
+ master      | vehicle_master                   | 40 kB
+ master      | vehicle_rc_document              | 16 kB
+ reference   | vehicle_status_ref               | 48 kB
+ reference   | vehicle_type_ref                 | 16 kB
+ master      | vendor                           | 24 kB
+ master      | warehouse                        | 24 kB
+ integration | whatsapp_message_log             | 16 kB
+ master      | workshop                         | 24 kB
+(45 rows)
+
+[2026-07-10 18:52:48] Record count of each table
+[2026-07-10 18:52:57] ------------------------------------------------------
+[2026-07-10 18:52:58] .env already exists — skipping
+[2026-07-10 18:52:58] ======================================================
+[2026-07-10 18:52:58]   PostgreSQL Setup Complete
+[2026-07-10 18:52:58] ======================================================
+[2026-07-10 18:52:58] Database:   fms
+[2026-07-10 18:52:59] App User:   fleet_user
+[2026-07-10 18:52:59] Host:       127.0.0.1:5432
+[2026-07-10 18:52:59] Auth:       scram-sha-256 (pg_hba.conf)
+[2026-07-10 18:52:59] Log:        setup_fms_db.log
+[2026-07-10 18:52:59] 
+[2026-07-10 18:52:59] Connection string:
+[2026-07-10 18:53:00]   postgresql://fleet_user:***@127.0.0.1:5432/fms
+[2026-07-10 18:53:00] 
+[2026-07-10 18:53:00] Test with:
+[2026-07-10 18:53:00]   PGPASSWORD='FleetUser@2024!' psql -h 127.0.0.1 -U fleet_user -d fms
+[2026-07-10 18:53:01] ======================================================
+[2026-07-13 13:06:51] ======================================================
+[2026-07-13 13:06:51]   PostgreSQL 17 Setup + Hardening Script
+[2026-07-13 13:06:51] ======================================================
+[2026-07-13 13:06:51] Target DB:   fms
+[2026-07-13 13:06:52] App User:    fleet_user
+[2026-07-13 13:06:52] ------------------------------------------------------
+[2026-07-13 13:06:52] Creating user fleet_user and fms database...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_RLqbVP.sql:24: NOTICE:  Role fleet_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_RLqbVP.sql:24: NOTICE:  Role workshop_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_RLqbVP.sql:24: NOTICE:  Role driver_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_RLqbVP.sql:24: NOTICE:  Role management_user already exists, updating password...
+DO
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_RLqbVP.sql:55: NOTICE:  Role fleet_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_RLqbVP.sql:55: NOTICE:  Role workshop_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_RLqbVP.sql:55: NOTICE:  Role driver_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_RLqbVP.sql:55: NOTICE:  Role management_user already exists, updating timeout details...
+DO
+ pg_terminate_backend 
+----------------------
+(0 rows)
+
+DROP DATABASE
+CREATE DATABASE
+COMMENT
+GRANT
+Database fms created and CONNECT granted to fleet_user
+[2026-07-13 13:06:58] fleet_user and fms database created
+[2026-07-13 13:06:58] ------------------------------------------------------
+[2026-07-13 13:06:59] Setting schema-level permissions for fleet_user on fms...
+[2026-07-13 13:06:59] Granting schema permissions to fleet_user on fms...
+[2026-07-13 13:06:59] SQL permissions script: /tmp/pg_perms_jyRfxq.sql
+[2026-07-13 13:06:59] This will grant USAGE on schema and SELECT/INSERT/UPDATE/DELETE on all tables, plus future object permissions.
+You are now connected to database "fms" as user "postgres".
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+GRANT
+GRANT
+GRANT
+GRANT
+ALTER ROLE
+ALTER ROLE
+GRANT
+GRANT
+GRANT
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+REVOKE
+GRANT
+Schema permissions set for fleet_user on fms
+[2026-07-13 13:07:03] Creating required tables and views in database fms ---START---
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 6
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 8
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE VIEW
+CREATE VIEW
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+[2026-07-13 13:07:07] Creating required tables and views in database fms ---DONE---
+[2026-07-13 13:07:07] Schema permissions granted
+[2026-07-13 13:07:08] ------------------------------------------------------
+[2026-07-13 13:07:08] Verifying fleet_user access...
+ employee 
+----------
+        0
+(1 row)
+
+[2026-07-13 13:07:08] ------------------------------------------------------
+[2026-07-13 13:07:09] Table inventory in fms:
+psql: error: connection to server at "localhost" (::1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+[2026-07-14 12:57:53] ======================================================
+[2026-07-14 12:57:53]   PostgreSQL 17 Setup + Hardening Script
+[2026-07-14 12:57:54] ======================================================
+[2026-07-14 12:57:54] Target DB:   fms
+[2026-07-14 12:57:54] App User:    fleet_user
+[2026-07-14 12:57:54] ------------------------------------------------------
+[2026-07-14 12:57:55] Creating user fleet_user and fms database...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_X2aPkQ.sql:24: NOTICE:  Role fleet_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_X2aPkQ.sql:24: NOTICE:  Role workshop_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_X2aPkQ.sql:24: NOTICE:  Role driver_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_X2aPkQ.sql:24: NOTICE:  Role management_user already exists, updating password...
+DO
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_X2aPkQ.sql:55: NOTICE:  Role fleet_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_X2aPkQ.sql:55: NOTICE:  Role workshop_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_X2aPkQ.sql:55: NOTICE:  Role driver_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_X2aPkQ.sql:55: NOTICE:  Role management_user already exists, updating timeout details...
+DO
+ pg_terminate_backend 
+----------------------
+ t
+ t
+(2 rows)
+
+DROP DATABASE
+CREATE DATABASE
+COMMENT
+GRANT
+Database fms created and CONNECT granted to fleet_user
+[2026-07-14 12:58:05] fleet_user and fms database created
+[2026-07-14 12:58:05] ------------------------------------------------------
+[2026-07-14 12:58:05] Setting schema-level permissions for fleet_user on fms...
+[2026-07-14 12:58:06] Granting schema permissions to fleet_user on fms...
+[2026-07-14 12:58:06] SQL permissions script: /tmp/pg_perms_u22YWh.sql
+[2026-07-14 12:58:07] This will grant USAGE on schema and SELECT/INSERT/UPDATE/DELETE on all tables, plus future object permissions.
+You are now connected to database "fms" as user "postgres".
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+GRANT
+GRANT
+GRANT
+GRANT
+ALTER ROLE
+ALTER ROLE
+GRANT
+GRANT
+GRANT
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+REVOKE
+GRANT
+Schema permissions set for fleet_user on fms
+[2026-07-14 12:58:11] Creating required tables and views in database fms ---START---
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 6
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 8
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE VIEW
+CREATE VIEW
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+[2026-07-14 12:58:16] Creating required tables and views in database fms ---DONE---
+[2026-07-14 12:58:16] Schema permissions granted
+[2026-07-14 12:58:17] ------------------------------------------------------
+[2026-07-14 12:58:17] Verifying fleet_user access...
+ employee 
+----------
+        0
+(1 row)
+
+[2026-07-14 12:58:19] ------------------------------------------------------
+[2026-07-14 12:58:19] Table inventory in fms:
+[2026-07-14 13:39:03] ======================================================
+[2026-07-14 13:39:03]   PostgreSQL 17 Setup + Hardening Script
+[2026-07-14 13:39:03] ======================================================
+[2026-07-14 13:39:03] Target DB:   fms
+[2026-07-14 13:39:04] App User:    fleet_user
+[2026-07-14 13:39:04] ------------------------------------------------------
+[2026-07-14 13:39:04] Creating user fleet_user and fms database...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_5mqQrc.sql:24: NOTICE:  Role fleet_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_5mqQrc.sql:24: NOTICE:  Role workshop_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_5mqQrc.sql:24: NOTICE:  Role driver_user already exists, updating password...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_5mqQrc.sql:24: NOTICE:  Role management_user already exists, updating password...
+DO
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_5mqQrc.sql:55: NOTICE:  Role fleet_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_5mqQrc.sql:55: NOTICE:  Role workshop_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_5mqQrc.sql:55: NOTICE:  Role driver_user already exists, updating timeout details...
+psql:C:/Users/292787/AppData/Local/Temp/pg_setup_5mqQrc.sql:55: NOTICE:  Role management_user already exists, updating timeout details...
+DO
+ pg_terminate_backend 
+----------------------
+ t
+(1 row)
+
+DROP DATABASE
+CREATE DATABASE
+COMMENT
+GRANT
+Database fms created and CONNECT granted to fleet_user
+[2026-07-14 13:39:09] fleet_user and fms database created
+[2026-07-14 13:39:09] ------------------------------------------------------
+[2026-07-14 13:39:09] Setting schema-level permissions for fleet_user on fms...
+[2026-07-14 13:39:09] Granting schema permissions to fleet_user on fms...
+[2026-07-14 13:39:09] SQL permissions script: /tmp/pg_perms_nd7YqD.sql
+[2026-07-14 13:39:10] This will grant USAGE on schema and SELECT/INSERT/UPDATE/DELETE on all tables, plus future object permissions.
+You are now connected to database "fms" as user "postgres".
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+CREATE SCHEMA
+GRANT
+GRANT
+GRANT
+GRANT
+ALTER ROLE
+ALTER ROLE
+GRANT
+GRANT
+GRANT
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+REVOKE
+GRANT
+Schema permissions set for fleet_user on fms
+[2026-07-14 13:39:13] Creating required tables and views in database fms ---START---
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 6
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+INSERT 0 5
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 8
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE VIEW
+CREATE VIEW
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+[2026-07-14 13:39:18] Creating required tables and views in database fms ---DONE---
+[2026-07-14 13:39:19] Schema permissions granted
+[2026-07-14 13:39:19] ------------------------------------------------------
+[2026-07-14 13:39:19] Verifying fleet_user access...
+ employee 
+----------
+        0
+(1 row)
+
+[2026-07-14 13:39:20] ------------------------------------------------------
+[2026-07-14 13:39:20] Table inventory in fms:
+ schemaname  |            tablename             |    size    
+-------------+----------------------------------+------------
+ inventory   | approval_request                 | 16 kB
+ inventory   | approval_response_audit          | 16 kB
+ transact    | attendance_tracking              | 16 kB
+ maintenance | checklist_master                 | 96 kB
+ maintenance | checklist_result                 | 16 kB
+ reference   | component_type                   | 48 kB
+ master      | driver_document                  | 16 kB
+ master      | driver_master                    | 24 kB
+ operations  | driver_vehicle_assignment        | 16 kB
+ master      | employee_master                  | 8192 bytes
+ transact    | employee_salary                  | 16 kB
+ reference   | fuel_rate_reference              | 16 kB
+ transact    | fuel_transactions                | 16 kB
+ reference   | fuel_type_ref                    | 48 kB
+ operations  | gate_pass_regular                | 16 kB
+ operations  | gate_pass_technical              | 16 kB
+ timeseries  | gps_raw_data                     | 24 kB
+ operations  | helper_vehicle_assignment        | 8192 bytes
+ maintenance | job_card_part                    | 16 kB
+ master      | location                         | 8192 bytes
+ transact    | maintenance_job_card             | 16 kB
+ reference   | maintenance_type_ref             | 16 kB
+ inventory   | part_issue                       | 48 kB
+ inventory   | part_issue_item                  | 8192 bytes
+ inventory   | part_master                      | 24 kB
+ inventory   | part_receipt                     | 24 kB
+ inventory   | part_receipt_item                | 16 kB
+ inventory   | part_request                     | 56 kB
+ inventory   | part_request_item                | 16 kB
+ maintenance | preventive_maintenance_checklist | 16 kB
+ reference   | severity                         | 48 kB
+ inventory   | stock_transaction                | 8192 bytes
+ reference   | stock_transaction_ref            | 40 kB
+ maintenance | technician_inspection            | 16 kB
+ master      | tool_kit                         | 24 kB
+ maintenance | vehicle_complaint                | 16 kB
+ master      | vehicle_component                | 8192 bytes
+ master      | vehicle_master                   | 40 kB
+ master      | vehicle_rc_document              | 16 kB
+ reference   | vehicle_status_ref               | 48 kB
+ reference   | vehicle_type_ref                 | 16 kB
+ master      | vendor                           | 24 kB
+ master      | warehouse                        | 24 kB
+ integration | whatsapp_message_log             | 16 kB
+ master      | workshop                         | 24 kB
+(45 rows)
+
+[2026-07-14 13:39:26] Record count of each table

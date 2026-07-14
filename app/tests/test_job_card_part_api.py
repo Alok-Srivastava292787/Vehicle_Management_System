@@ -58,6 +58,8 @@ def test_create_jobcard_part(db):
         technician_id=technician.employee_id,
         observed_issue="Dead Battery",
     )
+    db.add(inspection)
+    db.commit()
 
     jobcard = MaintenanceJobCard(
         complaint_id=complaint.complaint_id,

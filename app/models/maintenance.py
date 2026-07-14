@@ -26,11 +26,13 @@ class VehicleComplaint(
     vehicle_id = mapped_column(
         ForeignKey(
             "master.vehicle_master.vehicle_id"
-        )
+        ),
+        nullable=False
     )
 
     driver_id: Mapped[int] = mapped_column(
-        ForeignKey("master.driver_master.driver_id")
+        ForeignKey("master.driver_master.driver_id"),
+        nullable=False
     )
 
     complaint_date = mapped_column(
@@ -82,13 +84,13 @@ class TechnicianInspection(
     complaint_id: Mapped[int] = mapped_column(
         ForeignKey(
             "maintenance.vehicle_complaint.complaint_id"
-        )
+        ),nullable=False
     )
 
     technician_id: Mapped[int] = mapped_column(
         ForeignKey(
             "master.employee_master.employee_id"
-        )
+        ),nullable=False
     )
 #relationships
     technician = relationship(
@@ -127,19 +129,19 @@ class MaintenanceJobCard(
     complaint_id: Mapped[int] = mapped_column(
         ForeignKey(
             "maintenance.vehicle_complaint.complaint_id"
-        )
+        ),nullable=False
     )
 
     inspection_id: Mapped[int] = mapped_column(
         ForeignKey(
             "maintenance.technician_inspection.inspection_id"
-        )
+        ),nullable=False
     )
     
     vehicle_id: Mapped[int] = mapped_column(
         ForeignKey(
             "master.vehicle_master.vehicle_id"
-        )
+        ),nullable=False
     )
     labour_charges: Mapped[float | None] = mapped_column(
     Numeric(12, 2)
@@ -192,13 +194,13 @@ class JobCardPart(
     job_card_id: Mapped[int] = mapped_column(
         ForeignKey(
             "transact.maintenance_job_card.job_card_id"
-        )
+        ),nullable=False
     )
 
     part_id: Mapped[int] = mapped_column(
         ForeignKey(
             "inventory.part_master.part_id"
-        )
+        ),nullable=False
     )
 
     quantity: Mapped[float | None] = mapped_column(
@@ -236,13 +238,13 @@ class PreventiveMaintenanceChecklist(
     vehicle_id: Mapped[int] = mapped_column(
         ForeignKey(
             "master.vehicle_master.vehicle_id"
-        )
+        ),nullable=False
     )
 
     technician_id: Mapped[int] = mapped_column(
         ForeignKey(
             "master.employee_master.employee_id"
-        )
+        ),nullable=False
     )
 
     observation: Mapped[str | None] = mapped_column(

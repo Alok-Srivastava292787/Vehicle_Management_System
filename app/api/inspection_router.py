@@ -3,13 +3,11 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 
-from app.repositories.inspection_repository import (
-    InspectionRepository,
-)
+from app.repositories.inspection_repository import (    InspectionRepository,)
 
-from app.repositories.complaint_repository import (
-    ComplaintRepository,
-)
+from app.repositories.complaint_repository import (    ComplaintRepository,)
+
+from app.repositories.employee_repository import ( EmployeeRepository,)
 from app.schemas.inspection import (
     InspectionCreate,
     InspectionUpdate,
@@ -40,6 +38,7 @@ def create_Inspection(
     service = InspectionService(
         InspectionRepository(db),
         ComplaintRepository(db),
+        EmployeeRepository(db),
     )
 
     return service.create_inspection(
@@ -48,7 +47,7 @@ def create_Inspection(
 #Get All
 @router.get(
     "",
-    response_model=list[InspectionResponse],
+#    response_model=list[InspectionResponse],
 )
 def get_all_Inspections(
     db: Session = Depends(get_db),
@@ -57,8 +56,9 @@ def get_all_Inspections(
     service = InspectionService(
         InspectionRepository(db),
         ComplaintRepository(db),
+        EmployeeRepository(db),
     )
-
+#return service.get_all_inspections()
     return (
         service.get_all_inspections()
     )
@@ -77,6 +77,7 @@ def get_Inspection(
     service = InspectionService(
         InspectionRepository(db),
         ComplaintRepository(db),
+        EmployeeRepository(db),
     )
 
     return service.get_inspection(
@@ -98,6 +99,7 @@ def update_Inspection(
     service = InspectionService(
         InspectionRepository(db),
         ComplaintRepository(db),
+        EmployeeRepository(db),
     )
 
     return service.update_inspection(
@@ -118,6 +120,7 @@ def delete_Inspection(
     service = InspectionService(
         InspectionRepository(db),
         ComplaintRepository(db),
+        EmployeeRepository(db),
     )
 
     service.delete_inspection(

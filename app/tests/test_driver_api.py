@@ -99,7 +99,7 @@ def test_update_driver():
     response = client.put(
         f"/api/v1/drivers/{driver_id}",
         json={
-            "fuel_capacity": 45
+            "dl_issue_city": "Delhi"
         },
     )
 

@@ -1001,6 +1001,43 @@ JOIN master.vehicle_master v
     ON a.vehicle_id = v.vehicle_id;
 
 
+-- adding constriants for fk integrity
+ALTER TABLE transact.maintenance_job_card
+ALTER COLUMN inspection_id SET NOT NULL;
+
+ALTER TABLE transact.maintenance_job_card
+ALTER COLUMN complaint_id SET NOT NULL;
+
+ALTER TABLE transact.maintenance_job_card
+ALTER COLUMN vehicle_id SET NOT NULL;
+
+ALTER TABLE maintenance.vehicle_complaint
+ALTER COLUMN vehicle_id SET NOT NULL;
+
+ALTER TABLE maintenance.vehicle_complaint
+ALTER COLUMN driver_id SET NOT NULL;
+
+ALTER TABLE maintenance.technician_inspection
+ALTER COLUMN complaint_id SET NOT NULL;
+
+ALTER TABLE transact.maintenance_job_card
+ALTER COLUMN complaint_id SET NOT NULL;
+
+ALTER TABLE transact.maintenance_job_card
+ALTER COLUMN inspection_id SET NOT NULL;
+
+ALTER TABLE transact.maintenance_job_card
+ALTER COLUMN vehicle_id SET NOT NULL;
+
+ALTER TABLE maintenance.job_card_part
+ALTER COLUMN job_card_id SET NOT NULL;
+
+ALTER TABLE maintenance.job_card_part
+ALTER COLUMN part_id SET NOT NULL;
+
+ALTER TABLE maintenance.preventive_maintenance_checklist
+ALTER COLUMN vehicle_id SET NOT NULL;
+
 --  CREATE TABLE IF NOT EXISTS master.fuel_station
 
 -- Missing analytics tables

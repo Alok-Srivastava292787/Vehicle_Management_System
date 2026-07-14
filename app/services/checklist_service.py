@@ -3,7 +3,7 @@ from app.models.maintenance import PreventiveMaintenanceChecklist
 from app.repositories.checklist_repository import (
     ChecklistRepository,
 )
-
+from app.repositories.vehicle_repository import ( VehicleRepository)
 from app.schemas.checklist import (
     PMChecklistCreate,
     PMChecklistResponse,
@@ -23,18 +23,41 @@ class ChecklistService:
 
     def __init__(
         self,
-        checklist_repo: ChecklistRepository
+        checklist_repo,
+        vehicle_repo,
+        employee_repo,
     ):
 
         self.checklist_repo = (
             checklist_repo
         )
 
+        self.vehicle_repo = (
+            vehicle_repo
+        )
+
+        self.employee_repo = (
+            employee_repo
+        )
+    
     def create_checklist(
         self,
         payload
     ):
-
+        if not self.vehicle_repo.exists(
+            payload.vehicle_id
+        ):
+            raise NotFoundException(
+                "Vehicle not found"
+            )
+        
+        if not self.employee_repo.exists(
+            payload.technician_id
+        ):
+            raise NotFoundException(
+                "Technician not found"
+            )
+        
         checklist = (
             PreventiveMaintenanceChecklist(
                 vehicle_id=

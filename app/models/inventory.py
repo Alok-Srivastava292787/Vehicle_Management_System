@@ -40,7 +40,7 @@ class PartRequest(Base):
     vehicle_id: Mapped[int] = mapped_column(
         ForeignKey(
             "master.vehicle_master.vehicle_id"
-        )
+        ),nullable=False
     )
 
 

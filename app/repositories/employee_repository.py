@@ -58,9 +58,7 @@ class EmployeeRepository(
         employee: EmployeeMaster,
         data: dict,
     ):
-
         for key, value in data.items():
-
             setattr(
                 employee,
                 key,
@@ -68,9 +66,17 @@ class EmployeeRepository(
             )
 
         self.db.commit()
-
         self.db.refresh(
             employee
         )
-
         return employee
+    
+    def exists(
+    self,
+    employee_id: int
+    ) -> bool:
+    
+        return (
+            self.get_by_id(employee_id)
+            is not None
+        )
