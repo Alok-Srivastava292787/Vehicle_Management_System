@@ -29,6 +29,7 @@ class EmployeeService:
     def create_employee(
         self,
         payload: EmployeeCreate,
+        user_id: int| None = None,
     ):
 
         existing = (
@@ -52,6 +53,9 @@ class EmployeeService:
 
             phone_number=
             payload.phone_number,
+            
+            modified_by=
+            user_id,
         )
 
         return (
@@ -89,6 +93,7 @@ class EmployeeService:
         self,
         employee_id: int,
         payload: EmployeeUpdate,
+        user_id: int| None = None,
     ):
 
         employee = (
@@ -102,7 +107,8 @@ class EmployeeService:
                 exclude_unset=True
             )
         )
-
+        update_data["modified_by"] = user_id
+        
         return (
             self.employee_repo
             .update_employee(

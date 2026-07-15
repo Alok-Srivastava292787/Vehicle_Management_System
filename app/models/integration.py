@@ -5,9 +5,12 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 from app.db.base import Base
+from app.db.mixins import AuditMixin,TimestampMixin
 
-
-class WhatsAppMessageLog(Base):
+class WhatsAppMessageLog(Base,
+    AuditMixin,
+    TimestampMixin,
+                         ):
 
     __tablename__ = "whatsapp_message_log"
     __table_args__ = {"schema": "integration"}
@@ -30,7 +33,10 @@ class WhatsAppMessageLog(Base):
         String(30)
     )
 
-class ApprovalRequest(Base):
+class ApprovalRequest(Base,
+    AuditMixin,
+    TimestampMixin,
+                      ):
 
     __tablename__ = "approval_request"
     __table_args__ = {"schema": "inventory"}

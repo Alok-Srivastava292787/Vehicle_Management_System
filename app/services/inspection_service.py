@@ -27,6 +27,7 @@ class InspectionService:
     def create_inspection(
         self,
         payload: InspectionCreate,
+        user_id: int| None = None,
     ) -> TechnicianInspection:
 
         complaint = self.complaint_repo.get_by_id(
@@ -52,6 +53,7 @@ class InspectionService:
             observed_issue=payload.observed_issue,
             operator_notes=payload.operator_notes,
             status=payload.status,
+            modified_by=user_id,
         )
 
         return self.inspection_repo.create(
@@ -102,6 +104,7 @@ class InspectionService:
         self,
         inspection_id: int,
         payload: InspectionUpdate,
+        user_id: int| None = None,
     ):
 
         inspection = (
@@ -115,7 +118,7 @@ class InspectionService:
                 exclude_unset=True
             )
         )
-
+        update_data["modified_by"] = user_id
         return (
             self.inspection_repo
             .update_inspection(

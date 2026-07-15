@@ -1,9 +1,8 @@
 import pytest
 
 from app.db.session import SessionLocal
-from app.models.master import VehicleMaster, EmployeeMaster
-from app.models.master import DriverMaster
-
+from app.models.master import VehicleMaster, EmployeeMaster, DriverMaster 
+from app.db.mixins import AuditMixin, TimestampMixin
 import random
 def rand_n_digits(n: int) -> int:
     return random.randint(

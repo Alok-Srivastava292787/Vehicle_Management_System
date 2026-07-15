@@ -158,11 +158,12 @@ CREATE SCHEMA IF NOT EXISTS maintenance AUTHORIZATION ${APP_USER};
 CREATE SCHEMA IF NOT EXISTS inventory AUTHORIZATION ${APP_USER};
 CREATE SCHEMA IF NOT EXISTS operations AUTHORIZATION ${APP_USER};
 CREATE SCHEMA IF NOT EXISTS integration AUTHORIZATION ${APP_USER};
-CREATE SCHEMA IF NOT EXISTS analytics  AUTHORIZATION ${APP_USER};
+CREATE SCHEMA IF NOT EXISTS analytics AUTHORIZATION ${APP_USER};
+CREATE SCHEMA IF NOT EXISTS audit AUTHORIZATION ${APP_USER};
 
 
 -- Grant schema usage
-GRANT USAGE ON SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics TO ${APP_USER};
+GRANT USAGE ON SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit  TO ${APP_USER};
 -- grant
 GRANT ALL PRIVILEGES ON DATABASE fms TO fleet_user;
 -- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA master TO fleet_user;
@@ -174,22 +175,22 @@ ALTER ROLE fleet_user SET default_transaction_isolation TO 'read committed';
 
 -- Current objects
 GRANT SELECT, INSERT, UPDATE, DELETE
-    ON ALL TABLES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics TO ${APP_USER};
+    ON ALL TABLES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit  TO ${APP_USER};
 GRANT USAGE, SELECT
-    ON ALL SEQUENCES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics TO ${APP_USER};
+    ON ALL SEQUENCES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit  TO ${APP_USER};
 GRANT EXECUTE
-    ON ALL FUNCTIONS IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics TO ${APP_USER};
+    ON ALL FUNCTIONS IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit  TO ${APP_USER};
 
 -- Future objects (ALTER DEFAULT PRIVILEGES for postgres role)
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit 
     GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO ${APP_USER};
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit 
     GRANT USAGE, SELECT ON SEQUENCES TO ${APP_USER};
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit 
     GRANT EXECUTE ON FUNCTIONS TO ${APP_USER};
-ALTER DEFAULT PRIVILEGES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
+ALTER DEFAULT PRIVILEGES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit 
     GRANT ALL ON TABLES TO ${APP_USER};
-ALTER DEFAULT PRIVILEGES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics
+ALTER DEFAULT PRIVILEGES IN SCHEMA master,reference,transact,timeseries,maintenance,inventory,operations,integration,analytics,audit 
     GRANT ALL ON SEQUENCES TO ${APP_USER};
 
 
@@ -244,7 +245,7 @@ log "Table inventory in $DB_NAME:"
 
 #if [ "$OS" = "Linux" ]; then
      psql -U postgres -d $DB_NAME \
-        -c "SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(quote_ident(schemaname)||'.'||quote_ident(tablename)::text)) AS size FROM pg_tables WHERE schemaname in ('master','reference','transact','timeseries','maintenance','inventory','operations','integration','analytics') ORDER BY tablename;" \
+        -c "SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(quote_ident(schemaname)||'.'||quote_ident(tablename)::text)) AS size FROM pg_tables WHERE schemaname in ('master','reference','transact','timeseries','maintenance','inventory','operations','integration','analytics','audit') ORDER BY tablename;" \
         2>&1 | tee -a "$LOG_FILE"
 #fi
 log "Record count of each table"
@@ -256,7 +257,7 @@ log "Record count of each table"
 #      ''' AS tablename, COUNT(*) AS count FROM ' ||
 #      quote_ident(schemaname) || '.' || quote_ident(tablename),
 #      ' UNION ALL '
-#  ) FROM pg_tables WHERE schemaname IN ('master','reference','transact','timeseries','maintenance','inventory','operations','integration','analytics')")
+#  ) FROM pg_tables WHERE schemaname IN ('master','reference','transact','timeseries','maintenance','inventory','operations','integration','analytics','audit')")
 
 QUERY=$(psql -U postgres -d "$DB_NAME" -At -c "
 SELECT string_agg(
@@ -278,7 +279,8 @@ WHERE schemaname IN (
     'inventory',
     'operations',
     'integration',
-    'analytics'
+    'analytics',
+    'audit'
 );
 ")
 

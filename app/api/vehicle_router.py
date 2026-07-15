@@ -17,6 +17,7 @@ from app.schemas.vehicle import (
 from app.services.vehicle_service import (
     VehicleService,
 )
+from app.api.dependencies import get_current_user_id
 
 router = APIRouter(
     prefix="/api/v1/vehicles",
@@ -31,6 +32,7 @@ router = APIRouter(
 def create_vehicle(
     payload: VehicleCreate,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
 
     service = VehicleService(

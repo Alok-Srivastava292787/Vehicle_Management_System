@@ -42,7 +42,8 @@ class ChecklistService:
     
     def create_checklist(
         self,
-        payload
+        payload,
+        user_id: int| None = None,
     ):
         if not self.vehicle_repo.exists(
             payload.vehicle_id
@@ -74,6 +75,8 @@ class ChecklistService:
 
                 issue_description=
                 payload.issue_description,
+
+                modified_by=user_id
             )
         )
 
@@ -110,7 +113,8 @@ class ChecklistService:
     def update_checklist(
         self,
         checklist_id: int,
-        payload: PMChecklistUpdate
+        payload: PMChecklistUpdate,
+        user_id: int| None = None,
     ):
 
         checklist = (
@@ -124,7 +128,7 @@ class ChecklistService:
                 exclude_unset=True
             )
         )
-
+        update_data["modified_by"] = user_id
         return (
             self.checklist_repo
             .update_checklist(

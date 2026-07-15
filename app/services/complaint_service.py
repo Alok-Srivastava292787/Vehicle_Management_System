@@ -48,7 +48,8 @@ class ComplaintService:
 
     def create_complaint(
         self,
-        payload: ComplaintCreate
+        payload: ComplaintCreate,
+        user_id: int| None = None,
     ):
 
         if not self.vehicle_repo.exists(
@@ -79,6 +80,7 @@ class ComplaintService:
                 driver_reason=(
                     payload.driver_reason
                 ),
+                modified_by=user_id,
             )
         )
 
@@ -128,7 +130,8 @@ class ComplaintService:
     def update_complaint(
         self,
         complaint_id: int,
-        payload: ComplaintUpdate
+        payload: ComplaintUpdate,
+        user_id: int| None = None,
     ):
 
         complaint = (
@@ -142,7 +145,7 @@ class ComplaintService:
                 exclude_unset=True
             )
         )
-
+        update_data["modified_by"] = user_id
         return (
             self.complaint_repo
             .update_complaint(

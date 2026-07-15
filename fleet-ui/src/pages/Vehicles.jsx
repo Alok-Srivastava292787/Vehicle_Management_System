@@ -8,6 +8,7 @@ import {
   Modal,
   Popconfirm,
   Space,
+  Switch,
   Table,
   Typography,
   message,
@@ -62,6 +63,9 @@ const Vehicles = () => {
   const openCreateModal = () => {
     setEditingVehicle(null);
     form.resetFields();
+    form.setFieldsValue({
+        active_flag: true,
+    });
     setModalOpen(true);
   };
 
@@ -81,7 +85,7 @@ const Vehicles = () => {
       chassis_no: record.chassis_no,
       gps_id: record.gps_id,
         
-      fuel_capacity: record.fuel_capacity ?? null,
+      fuel_capacity: record.fuel_capacity ?? true,
     });
     
     setModalOpen(true);
@@ -213,6 +217,24 @@ const Vehicles = () => {
       dataIndex: "rc_expiry_date",
       key: "rc_expiry_date",
       render: (value) => value ?? "-",
+    },
+    {
+      title: "Last Updated",
+      dataIndex: "modified_at",
+      key: "modified_at",
+      render: (value) => value ?? "-",
+    },
+    {
+      title: "Updated By",
+      dataIndex: "modified_by",
+      key: "modified_by",
+      render: (value) => value ?? "-",
+    },
+    {
+      title: "Active",
+      dataIndex: "active_flag",
+      key: "active_flag",
+      render: (value) => (value ? "Yes" : "No"),
     },
     {
       title: "Actions",
@@ -384,13 +406,20 @@ const Vehicles = () => {
           >
             <Input type="date" />
           </Form.Item>
-                    
           <Form.Item
             label="GPS ID"
             name="gps_id"
           >
             <Input placeholder="GPS Device ID" />
           </Form.Item>
+          <Form.Item
+            label="Active"
+            name="active_flag"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+
         </Form>
       </Modal>
     </>

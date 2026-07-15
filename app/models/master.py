@@ -1,4 +1,5 @@
 from datetime import date
+from app.db.mixins import AuditMixin,TimestampMixin
 
 from sqlalchemy import Boolean
 from sqlalchemy import Date
@@ -12,7 +13,7 @@ from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
-class EmployeeMaster(Base):
+class EmployeeMaster(Base,AuditMixin,TimestampMixin,):
 
     __tablename__ = "employee_master"
     __table_args__ = {"schema": "master"}
@@ -31,7 +32,7 @@ class EmployeeMaster(Base):
     )
 
 
-class DriverMaster(Base):
+class DriverMaster(Base,AuditMixin,TimestampMixin):
 
     __tablename__ = "driver_master"
     __table_args__ = {"schema": "master"}
@@ -50,50 +51,79 @@ class DriverMaster(Base):
     dl_expiry_date: Mapped[date | None] = mapped_column(Date)
 
 
-class VehicleMaster(Base):
+class VehicleMaster(Base,AuditMixin,TimestampMixin):
 
     __tablename__ = "vehicle_master"
     __table_args__ = {"schema": "master"}
 
-    vehicle_id: Mapped[int] = mapped_column(primary_key=True)
-
+    vehicle_id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+    
     vehicle_type_id: Mapped[int | None] = mapped_column(
         ForeignKey(
             "reference.vehicle_type_ref.vehicle_type_id"
-        )
+        ),
+        nullable=True,
     )
-
+    
     fuel_type_id: Mapped[int | None] = mapped_column(
         ForeignKey(
             "reference.fuel_type_ref.fuel_type_id"
-        )
+        ),
+        nullable=True,
     )
-
+    
+    vehicle_status_id: Mapped[int | None] = mapped_column(
+        ForeignKey(
+            "reference.vehicle_status_ref.vehicle_status_id"
+        ),
+        nullable=True,
+    )
+    
     rc_number: Mapped[str] = mapped_column(
         String(50),
         unique=True,
-        nullable=False
+        nullable=False,
     )
-
+    
+    purchase_date: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True,
+    )
+    
+    rc_expiry_date: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True,
+    )
+    
     engine_no: Mapped[str | None] = mapped_column(
         String(100),
-        unique=True
+        unique=True,
+        nullable=True,
     )
-
+    
     chassis_no: Mapped[str | None] = mapped_column(
         String(100),
-        unique=True
+        unique=True,
+        nullable=True,
     )
-
-    purchase_date: Mapped[date | None] = mapped_column(Date)
-
+    
+    gps_id: Mapped[str | None] = mapped_column(
+        String(50),
+        unique=True,
+        nullable=True,
+    )
+    
     fuel_capacity: Mapped[float | None] = mapped_column(
-        Numeric(4, 2)
+        Numeric(4, 2),
+        nullable=True,
     )
-
-    active_flag: Mapped[bool] = mapped_column(
+    
+    active_flag: Mapped[bool | None] = mapped_column(
         Boolean,
-        default=True
+        default=True,
+        nullable=True,
     )
 
     complaints = relationship(

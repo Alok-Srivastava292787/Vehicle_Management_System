@@ -29,6 +29,7 @@ class JobCardPartService:
     def create_jobcard_part(
         self,
         payload: JobCardPartCreate,
+        user_id: int| None = None,
     ):
 
         jobcard_part = JobCardPart(
@@ -40,6 +41,7 @@ class JobCardPartService:
                 payload.quantity
                 * payload.unit_price
             ),
+            modified_by=user_id,
         )
 
         return (
@@ -91,6 +93,7 @@ class JobCardPartService:
         self,
         jobcard_part_id: int,
         payload,
+        user_id: int| None = None,
     ):
 
         jobcard_part = (
@@ -104,7 +107,7 @@ class JobCardPartService:
                 exclude_unset=True
             )
         )
-
+        update_data["modified_by"] = user_id
         return (
             self.jobcard_part_repo
             .update_jobcard_part(

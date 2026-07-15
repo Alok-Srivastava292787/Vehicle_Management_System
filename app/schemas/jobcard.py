@@ -1,4 +1,6 @@
+from __future__ import annotations
 from datetime import date
+from datetime import datetime
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
@@ -37,3 +39,8 @@ class JobCardResponse(BaseModel):
     labour_charges: float | None = None
     description: str | None = None
     completion_date: date | None = None
+
+    created_by: int | None = None
+    created_at: datetime | None = None
+    modified_by: int | None = None
+    modified_at: datetime | None = None

@@ -28,7 +28,8 @@ class DriverService:
 
     def create_driver(
         self,
-        payload: DriverCreate
+        payload: DriverCreate,
+        user_id: int| None = None,
     ) -> DriverMaster:
 
         if payload.dl_number:
@@ -53,6 +54,7 @@ class DriverService:
             mobile_number=payload.mobile_number,
             dl_number=payload.dl_number,
             dl_expiry_date=payload.dl_expiry_date,
+            modified_by = user_id
         )
 
         return (
@@ -90,7 +92,8 @@ class DriverService:
     def update_driver(
         self,
         driver_id: int,
-        payload: DriverUpdate
+        payload: DriverUpdate,
+        user_id: int| None = None,
     ):
 
         driver = (
@@ -104,7 +107,8 @@ class DriverService:
                 exclude_unset=True
             )
         )
-
+        update_data["modified_by"] = user_id
+        
         return (
             self.driver_repo
             .update_driver(

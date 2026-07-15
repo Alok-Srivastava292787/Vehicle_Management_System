@@ -1,3 +1,7 @@
+from __future__ import annotations
+from datetime import date
+from datetime import datetime
+
 from pydantic import BaseModel
 from pydantic import ConfigDict
 
@@ -22,3 +26,7 @@ class EmployeeResponse(BaseModel):
     employee_type: str
     full_name: str
     phone_number: str
+    created_by: int | None = None
+    created_at: datetime | None = None
+    modified_by: int | None = None
+    modified_at: datetime | None = None

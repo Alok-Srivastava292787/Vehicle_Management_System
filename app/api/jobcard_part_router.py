@@ -18,6 +18,7 @@ from app.schemas.jobcard_part import (
 from app.services.jobcard_part_service import (
     JobCardPartService
 )
+from app.api.dependencies import get_current_user_id
 
 
 router = APIRouter(
@@ -35,6 +36,7 @@ router = APIRouter(
 def create_JobCardPart(
     payload: JobCardPartCreate,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
 
     service = JobCardPartService(

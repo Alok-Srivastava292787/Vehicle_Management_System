@@ -17,6 +17,8 @@ from app.schemas.driver import (
 from app.services.driver_service import (
     DriverService,
 )
+from app.api.dependencies import get_current_user_id
+
 
 router = APIRouter(
     prefix="/api/v1/drivers",
@@ -33,6 +35,7 @@ router = APIRouter(
 def create_driver(
     payload: DriverCreate,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
 
     service = DriverService(

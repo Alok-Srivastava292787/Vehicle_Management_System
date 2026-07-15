@@ -1038,6 +1038,182 @@ ALTER COLUMN part_id SET NOT NULL;
 ALTER TABLE maintenance.preventive_maintenance_checklist
 ALTER COLUMN vehicle_id SET NOT NULL;
 
+-- adding column for auditing
+-- for employee Master
+ALTER TABLE master.employee_master
+ADD COLUMN IF NOT EXISTS created_by BIGINT,
+ADD COLUMN IF NOT EXISTS modified_by BIGINT,
+ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+-- Vehicle Master
+ALTER TABLE master.vehicle_master
+ADD COLUMN IF NOT EXISTS created_by BIGINT,
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN IF NOT EXISTS modified_by BIGINT,
+ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+-- Driver_master
+ALTER TABLE master.driver_master
+ADD COLUMN IF NOT EXISTS created_by BIGINT,
+ADD COLUMN IF NOT EXISTS modified_by BIGINT,
+ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- COmplaints
+ALTER TABLE maintenance.vehicle_complaint
+ADD COLUMN IF NOT EXISTS created_by BIGINT,
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN IF NOT EXISTS modified_by BIGINT,
+ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+-- for preventive_maintenance_checklist
+ALTER TABLE maintenance.preventive_maintenance_checklist
+ADD COLUMN IF NOT EXISTS created_by BIGINT,
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN IF NOT EXISTS modified_by BIGINT,
+ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- for part_master
+ALTER TABLE inventory.part_master
+ADD COLUMN IF NOT EXISTS created_by BIGINT,
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN IF NOT EXISTS modified_by BIGINT,
+ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- create audit table
+CREATE TABLE IF NOT EXISTS audit.audit_log (
+    audit_id BIGSERIAL PRIMARY KEY,
+
+    schema_name VARCHAR(100),
+    table_name VARCHAR(100),
+    record_id TEXT,
+
+    operation VARCHAR(20),
+
+    old_data JSONB,
+    new_data JSONB,
+
+    changed_by BIGINT,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+--Trigger to capture the changes
+CREATE OR REPLACE FUNCTION audit.set_modified_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.modified_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- trigger for vehicles
+DROP TRIGGER IF EXISTS trg_vehicle_master_modified_at
+ON master.vehicle_master;
+
+CREATE TRIGGER trg_vehicle_master_modified_at
+BEFORE UPDATE ON master.vehicle_master
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
+-- trigger for driver_master
+DROP TRIGGER IF EXISTS trg_driver_master_modified_at
+ON master.driver_master;
+
+CREATE TRIGGER trg_driver_master_modified_at
+BEFORE UPDATE ON master.driver_master
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+-- trigger for employee_master
+DROP TRIGGER IF EXISTS trg_employee_master_modified_at
+ON master.employee_master;
+
+CREATE TRIGGER trg_employee_master_modified_at
+BEFORE UPDATE ON master.employee_master
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+-- trigger for vehicle_complaint
+DROP TRIGGER IF EXISTS trg_vehicle_complaint_modified_at
+ON maintenance.vehicle_complaint;
+
+CREATE TRIGGER trg_vehicle_complaint_modified_at
+BEFORE UPDATE ON maintenance.vehicle_complaint
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+-- trigger for technician_inspection
+DROP TRIGGER IF EXISTS trg_technician_inspection_modified_at
+ON maintenance.technician_inspection;
+
+CREATE TRIGGER trg_technician_inspection_modified_at
+BEFORE UPDATE ON maintenance.technician_inspection
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+-- trigger for maintenance_job_card
+DROP TRIGGER IF EXISTS trg_maintenance_job_card_modified_at
+ON transact.maintenance_job_card;
+
+CREATE TRIGGER trg_maintenance_job_card_modified_at
+BEFORE UPDATE ON transact.maintenance_job_card
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+-- trigger for job_card_part
+DROP TRIGGER IF EXISTS trg_job_card_part_modified_at
+ON maintenance.job_card_part;
+
+CREATE TRIGGER trg_job_card_part_modified_at
+BEFORE UPDATE ON maintenance.job_card_part
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
+-- trigger for preventive_maintenance_checklist
+DROP TRIGGER IF EXISTS trg_preventive_maintenance_checklist_modified_at
+ON maintenance.preventive_maintenance_checklist;
+
+CREATE TRIGGER trg_preventive_maintenance_checklist_modified_at
+BEFORE UPDATE ON maintenance.preventive_maintenance_checklist
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
+-- trigger for part_master
+DROP TRIGGER IF EXISTS trg_part_master_modified_at
+ON inventory.part_master;
+
+CREATE TRIGGER trg_part_master_modified_at
+BEFORE UPDATE ON inventory.part_master
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
+-- trigger for part_request
+DROP TRIGGER IF EXISTS trg_part_request_modified_at
+ON inventory.part_request;
+
+CREATE TRIGGER trg_part_request_modified_at
+BEFORE UPDATE ON inventory.part_request
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
+-- trigger for stock_transaction
+DROP TRIGGER IF EXISTS trg_stock_transaction_modified_at
+ON inventory.stock_transaction;
+
+CREATE TRIGGER trg_stock_transaction_modified_at
+BEFORE UPDATE ON inventory.stock_transaction
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
+-- trigger for approval_request
+DROP TRIGGER IF EXISTS trg_approval_request_modified_at
+ON inventory.approval_request;
+
+CREATE TRIGGER trg_approval_request_modified_at
+BEFORE UPDATE ON inventory.approval_request
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
+-- trigger for whatsapp_message_log
+DROP TRIGGER IF EXISTS trg_whatsapp_message_log_modified_at
+ON integration.whatsapp_message_log;
+
+CREATE TRIGGER trg_whatsapp_message_log_modified_at
+BEFORE UPDATE ON integration.whatsapp_message_log
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
 --  CREATE TABLE IF NOT EXISTS master.fuel_station
 
 -- Missing analytics tables

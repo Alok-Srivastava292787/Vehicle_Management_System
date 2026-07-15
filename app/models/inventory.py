@@ -5,9 +5,12 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 from app.db.base import Base
+from app.db.mixins import AuditMixin,TimestampMixin
 
-
-class PartMaster(Base):
+class PartMaster(Base,
+    AuditMixin,
+    TimestampMixin,
+                 ):
 
     __tablename__ = "part_master"
     __table_args__ = {"schema": "inventory"}
@@ -23,7 +26,10 @@ class PartMaster(Base):
     )
 
 
-class PartRequest(Base):
+class PartRequest(Base,
+    AuditMixin,
+    TimestampMixin,
+                  ):
 
     __tablename__ = "part_request"
     __table_args__ = {"schema": "inventory"}
@@ -44,7 +50,10 @@ class PartRequest(Base):
     )
 
 
-class StockTransaction(Base):
+class StockTransaction(Base,
+    AuditMixin,
+    TimestampMixin,
+                       ):
 
     __tablename__ = "stock_transaction"
     __table_args__ = {"schema": "inventory"}

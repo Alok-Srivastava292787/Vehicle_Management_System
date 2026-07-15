@@ -4,6 +4,7 @@ from sqlalchemy import Text, String, Numeric
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
+from app.db.mixins import AuditMixin,TimestampMixin
 
 from app.db.base import Base
 from app.db.mixins import AuditMixin
@@ -220,7 +221,9 @@ class JobCardPart(
     )
     
 class PreventiveMaintenanceChecklist(
-    Base
+    Base,
+    AuditMixin,
+    TimestampMixin,
 ):
 
     __tablename__ = (

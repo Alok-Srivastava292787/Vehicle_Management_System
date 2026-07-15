@@ -1,3 +1,7 @@
+from __future__ import annotations
+from datetime import date
+from datetime import datetime
+
 from pydantic import BaseModel
 from pydantic import ConfigDict
 
@@ -24,3 +28,7 @@ class PMChecklistResponse(BaseModel):
     checklist_id: int
     vehicle_id: int
     technician_id: int
+    created_by: int | None = None
+    created_at: datetime | None = None
+    modified_by: int | None = None
+    modified_at: datetime | None = None

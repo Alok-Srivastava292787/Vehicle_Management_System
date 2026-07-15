@@ -18,6 +18,7 @@ from app.schemas.employee import (
 from app.services.employee_service import (
     EmployeeService,
 )
+from app.api.dependencies import get_current_user_id
 
 router = APIRouter(
     prefix="/api/v1/employees",
@@ -32,6 +33,7 @@ router = APIRouter(
 def create_employee(
     payload: EmployeeCreate,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
 
     service = EmployeeService(

@@ -1,4 +1,7 @@
+from __future__ import annotations
 from datetime import date
+from datetime import datetime
+
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
@@ -34,3 +37,7 @@ class DriverResponse(BaseModel):
     driver_name: str
     mobile_number: str
     dl_number: str | None = None
+    created_by: int | None = None
+    created_at: datetime | None = None
+    modified_by: int | None = None
+    modified_at: datetime | None = None

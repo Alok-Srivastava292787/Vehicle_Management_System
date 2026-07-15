@@ -24,7 +24,8 @@ class VehicleService:
 
     def create_vehicle(
         self,
-        payload: VehicleCreate
+        payload: VehicleCreate,
+        user_id: int| None = None,
     ) -> VehicleMaster:
 
         existing_vehicle = (
@@ -55,6 +56,7 @@ class VehicleService:
             gps_id=payload.gps_id,
 
             fuel_capacity=payload.fuel_capacity,
+            modified_by=user_id,
         )
 
         return self.vehicle_repo.create(
@@ -91,7 +93,8 @@ class VehicleService:
     def update_vehicle(
         self,
         vehicle_id: int,
-        payload: VehicleUpdate
+        payload: VehicleUpdate,
+        user_id: int| None = None,
     ):
 
         vehicle = (
@@ -105,7 +108,8 @@ class VehicleService:
                 exclude_unset=True
             )
         )
-
+        update_data["modified_by"] = user_id
+        
         return (
             self.vehicle_repo
             .update_vehicle(

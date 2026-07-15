@@ -4,6 +4,7 @@ from fastapi.testclient import (
 )
 
 from app.main import app
+
 client = TestClient(app)
 
 import random

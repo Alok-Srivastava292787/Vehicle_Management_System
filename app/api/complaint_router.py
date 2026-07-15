@@ -23,8 +23,8 @@ from app.schemas.complaint import (
 from app.services.complaint_service import (
     ComplaintService,
     VehicleComplaint,
-
 )
+from app.api.dependencies import get_current_user_id
 
 router = APIRouter(
     prefix="/api/v1/complaints",
@@ -41,6 +41,7 @@ router = APIRouter(
 def create_complaint(
     payload: ComplaintCreate,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
 
     service = ComplaintService(

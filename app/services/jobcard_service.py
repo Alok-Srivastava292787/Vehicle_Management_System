@@ -21,7 +21,8 @@ class JobCardService:
 
     def create_jobcard(
         self,
-        payload
+        payload,
+        user_id: int| None = None,
     ) -> JobCardCreate:
 
         if not self.vehicle_repo.exists(  payload.vehicle_id
@@ -50,6 +51,8 @@ class JobCardService:
                 payload.labour_charges,
                 description=
                 payload.description,
+                modified_by=
+                user_id,
             )
         )
 
@@ -104,6 +107,7 @@ class JobCardService:
         self,
         jobcard_id: int,
         payload: JobCardUpdate,
+        user_id: int| None = None,
     ):
 
         update = (
@@ -117,7 +121,8 @@ class JobCardService:
                 exclude_unset=True
             )
         )
-
+        update_data["modified_by"] = user_id
+        
         return (
             self.jobcard_repo
             .update_jobcard(

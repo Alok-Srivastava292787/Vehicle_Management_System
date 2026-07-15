@@ -18,6 +18,8 @@ from app.services.inspection_service import (
     InspectionService,
 )
 
+from app.api.dependencies import get_current_user_id
+
 router = APIRouter(
     prefix="/api/v1/inspections",
     tags=["Inspection"]
@@ -33,6 +35,7 @@ router = APIRouter(
 def create_Inspection(
     payload: InspectionCreate,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
 
     service = InspectionService(
