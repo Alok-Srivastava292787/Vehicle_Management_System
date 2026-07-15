@@ -40,14 +40,20 @@ class VehicleService:
                 f"with RC "
                 f"{payload.rc_number}"
             )
-
         vehicle = VehicleMaster(
             vehicle_type_id=payload.vehicle_type_id,
             fuel_type_id=payload.fuel_type_id,
+            vehicle_status_id=payload.vehicle_status_id,
+
             rc_number=payload.rc_number,
+
+            purchase_date=payload.purchase_date,
+            rc_expiry_date=payload.rc_expiry_date,
+
             engine_no=payload.engine_no,
             chassis_no=payload.chassis_no,
-            purchase_date=payload.purchase_date,
+            gps_id=payload.gps_id,
+
             fuel_capacity=payload.fuel_capacity,
         )
 

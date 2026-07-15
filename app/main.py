@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.health_router import ( router as health_router )
 from app.api.vehicle_router import ( router as vehicle_router,)
@@ -22,6 +23,25 @@ app = FastAPI(
     title="Fleet Management System",
     version="1.0.0",
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+@app.get("/")
+def root():
+    return {
+        "application": "Fleet Management System",
+        "status": "running",
+        "docs": "/docs",
+        "health": "/health"
+    }
 
 register_exception_handlers(    app)
 

@@ -27,7 +27,7 @@ class VehicleRepository(
             .first()
         )
 
-    def get_active_vehicles(self):
+    def get_active_vehicles(self,rc_number: str) -> VehicleMaster | None:
 
         return (
             self.db.query(VehicleMaster)
@@ -41,7 +41,7 @@ class VehicleRepository(
         self,
         vehicle: VehicleMaster,
         data: dict
-    ):
+    ) -> VehicleMaster | None:
 
         for key, value in data.items():
 
@@ -75,3 +75,13 @@ class VehicleRepository(
             self.get_by_id(vehicle_id)
             is not None
         )
+    def delete_vehicle(
+        self,
+        vehicle: VehicleMaster,
+    ) -> None:
+
+        self.db.delete(
+            vehicle
+        )
+
+        self.db.commit()

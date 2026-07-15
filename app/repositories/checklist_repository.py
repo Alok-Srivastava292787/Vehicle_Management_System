@@ -24,14 +24,9 @@ class ChecklistRepository(
             db,
         )
 
-    def get_by_id(
-        self,
-        checklist_id: int,
-    ) -> PreventiveMaintenanceChecklist | None:
-
-        return (
-            self.db.query(
-                PreventiveMaintenanceChecklist
+    def get_by_id( self, checklist_id: int,) -> PreventiveMaintenanceChecklist | None:
+        return (self.db.query(
+            PreventiveMaintenanceChecklist
             )
             .filter(
                 PreventiveMaintenanceChecklist.checklist_id
@@ -40,12 +35,8 @@ class ChecklistRepository(
             .first()
         )
 
-    def get_by_vehicle(
-        self,
-        vehicle_id: int,
-    ) -> listreturn:
-        (
-            self.db.query(
+    def get_by_vehicle(self, vehicle_id: int,) -> PreventiveMaintenanceChecklist|None:
+        return(self.db.query(
                 PreventiveMaintenanceChecklist
             )
             .filter(
@@ -55,12 +46,8 @@ class ChecklistRepository(
             .all()
         )
 
-    def get_by_technician(
-        self,
-        technician_id: int,
-    ) -> listreturn:
-        (
-            self.db.query(
+    def get_by_technician(self,technician_id: int,) -> PreventiveMaintenanceChecklist | None:
+        return(self.db.query(
                 PreventiveMaintenanceChecklist
             )
             .filter(
