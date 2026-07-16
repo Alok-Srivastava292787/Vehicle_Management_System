@@ -29,7 +29,8 @@ export const updateVehicle = async (vehicleId, payload) => {
 };
 
 export const deleteVehicle = async (vehicleId) => {
-  const response = await apiClient.delete(`/vehicles/${vehicleId}`);
+  const response = await apiClient.put(`/vehicles/${vehicleId}`, {"active_flag": false});
 
   return response.data;
 };
+

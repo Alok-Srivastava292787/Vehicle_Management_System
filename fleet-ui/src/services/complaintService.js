@@ -15,7 +15,7 @@ export const updateComplaint = async (complaintId, payload) => {
   return response.data;
 };
 
-export const deleteComplaint = async (complaintId) => {
-  const response = await apiClient.delete(`/complaints/${complaintId}`);
+export const deactivateComplaint = async (complaintId) => {
+  const response = await apiClient.put(`/complaints/${complaintId}`, { active_flag: false });
   return response.data;
 };

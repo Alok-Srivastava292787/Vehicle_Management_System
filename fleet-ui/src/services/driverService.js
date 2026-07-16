@@ -15,7 +15,7 @@ export const updateDriver = async (driverId, payload) => {
   return response.data;
 };
 
-export const deleteDriver = async (driverId) => {
-  const response = await apiClient.delete(`/drivers/${driverId}`);
+export const deactivateDriver = async (driverId) => {
+  const response = await apiClient.put(`/drivers/${driverId}`, {"active_flag": false});
   return response.data;
 };

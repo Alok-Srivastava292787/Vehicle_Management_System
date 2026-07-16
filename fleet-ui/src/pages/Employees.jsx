@@ -315,7 +315,7 @@ const Employees = () => {
               danger
               icon={<DeleteOutlined />}
             >
-              Delete
+              Deactivate
             </Button>
           </Popconfirm>
         </Space>
@@ -362,16 +362,6 @@ const Employees = () => {
           marginBottom: 16,
         }}
       />
-      <div
-        style={{
-          marginBottom: 12,
-          fontWeight: "bold",
-        }}
-      >
-        Total Employees:
-        {" "}
-        {filteredEmployees.length}
-      </div>
       <Select
         value={statusFilter}
         onChange={setStatusFilter}
@@ -394,14 +384,34 @@ const Employees = () => {
           },
         ]}
       />
+      <div
+        style={{
+          marginBottom: 12,
+          fontWeight: "bold",
+        }}
+      >
+        Total Employees:
+        {" "}
+        {filteredEmployees.length}
+      </div>
       <Card>
         <Table
           rowKey="employee_id"
           loading={loading}
           columns={columns}
           dataSource={filteredEmployees}
+          scroll={{ x: 1500 }}
           pagination={{
-            pageSize: 10,
+            defaultPageSize: 10,
+            showSizeChanger: true,
+            pageSizeOptions: [
+              "10",
+              "20",
+              "50",
+              "100",
+            ],
+            showTotal: (total) =>
+              `Total ${total} records`,
           }}
         />
       </Card>

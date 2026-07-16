@@ -362,16 +362,6 @@ const Vehicles = () => {
           marginBottom: 16,
         }}
       />
-      <div
-        style={{
-          marginBottom: 12,
-          fontWeight: "bold",
-        }}
-      >
-        Total Vehicles:
-        {" "}
-        {filteredVehicles.length}
-      </div>
       <Select
         value={statusFilter}
         onChange={setStatusFilter}
@@ -394,6 +384,16 @@ const Vehicles = () => {
           },
         ]}
       />
+      <div
+        style={{
+          marginBottom: 12,
+          fontWeight: "bold",
+        }}
+      >
+        Total Vehicles:
+        {" "}
+        {filteredVehicles.length}
+      </div>
 
       <Card>
         <Table
@@ -401,8 +401,20 @@ const Vehicles = () => {
           loading={loading}
           columns={columns}
           dataSource={filteredVehicles}
+          scroll={{ x: 1500 }}
+          size="middle"
+          bordered
           pagination={{
-            pageSize: 10,
+            defaultPageSize: 10,
+            showSizeChanger: true,
+            pageSizeOptions: [
+              "10",
+              "20",
+              "50",
+              "100",
+            ],
+            showTotal: (total) =>
+              `Total ${total} records`,
           }}
         />
       </Card>
