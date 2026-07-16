@@ -32,6 +32,9 @@ import {
   updateDriver,
 } from "../services/driverService";
 
+import SearchToolbar from "../components/SearchToolbar";
+
+import tablePagination from "../utils/tablePagination";
 const { Title } = Typography;
 
 const Drivers = () => {
@@ -254,13 +257,10 @@ const Drivers = () => {
     async (
       driverId
     ) => {
-
       try {
-
         await deactivateDriver(
           driverId
         );
-
         message.success(
           "Driver deactivated"
         );
@@ -278,7 +278,6 @@ const Drivers = () => {
         );
       }
     };
-
 
   const columns = [
 
@@ -323,11 +322,8 @@ const Drivers = () => {
     },
 
     {
-      title:
-        "Status",
-
-      dataIndex:
-        "active_flag",
+      title: "Status",
+      dataIndex: "active_flag",
 
       render:
         (value) =>
@@ -395,99 +391,25 @@ const Drivers = () => {
 
   return (
     <>
-      <div
-        className=
-          "action-bar"
-      >
-
-        <Title level={3}>
-          Drivers
-        </Title>
-
-        <Space>
-
-          <Button
-            icon={
-              <ReloadOutlined />
-            }
-            onClick={
-              loadDrivers
-            }
-          >
-            Refresh
-          </Button>
-
-          <Button
-            type="primary"
-            icon={
-              <PlusOutlined />
-            }
-            onClick={
-              openCreateModal
-            }
-          >
-            Add Driver
-          </Button>
-
-        </Space>
-
+      <div className="action-bar">
+        <Title level={3}>Drivers</Title>
       </div>
-
-      <Space
-        style={{
-          marginBottom: 16,
-        }}
-      >
-
-        <Input
-          allowClear
-          placeholder=  "Search Driver"
-          prefix={<SearchOutlined />}
-          value={searchText}
-          onChange={(e) =>
-            setSearchText(
-              e.target.value
-            )
-          }
-          style={{
-            width: 300,
-          }}
-        />
-
-        <Select
-          value={
-            statusFilter
-          }
-          onChange={
-            setStatusFilter
-          }
-          style={{
-            width: 150,
-          }}
-          options={[
-            {
-              label: "All",
-              value: "ALL",
-            },
-            {
-              label: "Active",
-              value: "ACTIVE",
-            },
-            {
-              label: "Inactive",
-              value: "INACTIVE",
-            },
-          ]}
-        />
-
-      </Space>
-
       <div
         style={{
-          marginBottom: 12,
+          marginBottom: 2,
           fontWeight: "bold",
         }}
       >
+        <SearchToolbar
+          searchText={searchText}
+          setSearchText={setSearchText}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          onRefresh={loadDrivers}
+          onAdd={openCreateModal}
+          searchPlaceholder="Search Driver"
+          addLabel="Add Driver"
+        />
         Total Drivers:
         {""}
         {
@@ -503,18 +425,7 @@ const Drivers = () => {
           loading={loading}
           dataSource={ filteredDrivers }
           scroll={{ x: 1500 }}
-          pagination={{
-            defaultPageSize: 10,
-            showSizeChanger: true,
-            pageSizeOptions: [
-              "10",
-              "20",
-              "50",
-              "100",
-            ],
-            showTotal: (total) =>
-              `Total ${total} records`,
-          }}
+          pagination={tablePagination}
         />
 
       </Card>

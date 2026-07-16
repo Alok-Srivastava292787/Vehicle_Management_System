@@ -8,6 +8,8 @@ import Drivers from "./pages/Drivers";
 import Employees from "./pages/Employees";
 import Complaints from "./pages/Complaints";
 import Maintenance from "./pages/Maintenance";
+import Inspections from "./pages/Inspections";
+import JobCards from "./pages/JobCards";
 
 const App = () => {
   return (
@@ -19,6 +21,8 @@ const App = () => {
         <Route path="employees" element={<Employees />} />
         <Route path="complaints" element={<Complaints />} />
         <Route path="maintenance" element={<Maintenance />} />
+        <Route path="inspections" element={<Inspections />}/>
+        <Route path="jobcards" element={<JobCards />}/>
       </Route>
     </Routes>
   );

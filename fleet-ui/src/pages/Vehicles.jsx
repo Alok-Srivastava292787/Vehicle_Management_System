@@ -33,6 +33,9 @@ import {
   deleteVehicle,
 } from "../services/vehicleService";
 
+import SearchToolbar from "../components/SearchToolbar";
+
+import tablePagination from "../utils/tablePagination";
 const { Title } = Typography;
 
 const Vehicles = () => {
@@ -328,68 +331,23 @@ const Vehicles = () => {
     <>
       <div className="action-bar">
         <Title level={3}>Vehicles</Title>
-
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={loadVehicles}
-          >
-            Refresh
-          </Button>
-
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={openCreateModal}
-          >
-            Add Vehicle
-          </Button>
-        </Space>
       </div>
-
-      <Input
-        allowClear
-        placeholder="Search Vehicle"
-        prefix={<SearchOutlined />}
-        value={searchText}
-        onChange={(e) =>
-          setSearchText(
-            e.target.value
-          )
-        }
-        style={{
-          width: 300,
-          marginBottom: 16,
-        }}
-      />
-      <Select
-        value={statusFilter}
-        onChange={setStatusFilter}
-        style={{
-          width: 140,
-          marginLeft: 10,
-        }}
-        options={[
-          {
-            label: "All",
-            value: "ALL",
-          },
-          {
-            label: "Active",
-            value: "ACTIVE",
-          },
-          {
-            label: "Inactive",
-            value: "INACTIVE",
-          },
-        ]}
-      />
       <div
         style={{
-          marginBottom: 12,
+          marginBottom: 2,
           fontWeight: "bold",
         }}
       >
+          <SearchToolbar
+            searchText={searchText}
+            setSearchText={setSearchText}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            onRefresh={loadVehicles}
+            onAdd={openCreateModal}
+            searchPlaceholder="Search Vehicle"
+            addLabel="Add Vehicle"
+          />
         Total Vehicles:
         {" "}
         {filteredVehicles.length}
@@ -404,18 +362,7 @@ const Vehicles = () => {
           scroll={{ x: 1500 }}
           size="middle"
           bordered
-          pagination={{
-            defaultPageSize: 10,
-            showSizeChanger: true,
-            pageSizeOptions: [
-              "10",
-              "20",
-              "50",
-              "100",
-            ],
-            showTotal: (total) =>
-              `Total ${total} records`,
-          }}
+          pagination={tablePagination}
         />
       </Card>
 

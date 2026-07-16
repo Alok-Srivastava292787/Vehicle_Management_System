@@ -8,67 +8,70 @@ import {
   Card,
   Form,
   Input,
+  InputNumber,
   Modal,
   Popconfirm,
-  Select,
   Space,
   Switch,
   Table,
   Tag,
   Typography,
   message,
+  Select,
 } from "antd";
 
 import {
   DeleteOutlined,
   EditOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  SearchOutlined,
 } from "@ant-design/icons";
-
-import {
-  getComplaints,
-  createComplaint,
-  updateComplaint,
-  deactivateComplaint,
-} from "../services/complaintService";
-
-import {  getVehicles,} from "../services/vehicleService";
-
-import {  getDrivers,} from "../services/driverService";
 
 import SearchToolbar from "../components/SearchToolbar";
 
 import tablePagination from "../utils/tablePagination";
 
-const { Title } =
-  Typography;
+import {
+  getJobCards,
+  createJobCard,
+  updateJobCard,
+  deactivateJobCard,
+} from "../services/jobCardService";
 
-const Complaints = () => {
+import {
+  getVehicles,
+} from "../services/vehicleService";
 
-  const [complaints,
-    setComplaints] =
+import {
+  getComplaints,
+} from "../services/complaintService";
+
+import {
+  getInspections,
+} from "../services/inspectionService";
+
+const { Title } = Typography;
+
+const JobCards = () => {
+
+  const [jobCards, setJobCards] =
     useState([]);
 
-  const [vehicles,
-    setVehicles] =
+  const [vehicles, setVehicles] =
     useState([]);
 
-  const [drivers,
-    setDrivers] =
+  const [complaints, setComplaints] =
     useState([]);
 
-  const [loading,
-    setLoading] =
+  const [inspections, setInspections] =
+    useState([]);
+
+  const [loading, setLoading] =
     useState(false);
 
-  const [modalOpen,
-    setModalOpen] =
+  const [modalOpen, setModalOpen] =
     useState(false);
 
-  const [editingComplaint,
-    setEditingComplaint] =
+  const [editingJobCard,
+    setEditingJobCard] =
     useState(null);
 
   const [searchText,
@@ -90,35 +93,39 @@ const Complaints = () => {
         setLoading(true);
 
         const [
-          complaintsData,
+          jobCardsData,
           vehiclesData,
-          driversData,
+          complaintsData,
+          inspectionsData,
         ] = await Promise.all([
-          getComplaints(),
+          getJobCards(),
           getVehicles(),
-          getDrivers(),
+          getComplaints(),
+          getInspections(),
         ]);
 
-        setComplaints(
-          complaintsData
+        setJobCards(
+          jobCardsData
         );
 
         setVehicles(
           vehiclesData
         );
 
-        setDrivers(
-          driversData
+        setComplaints(
+          complaintsData
+        );
+
+        setInspections(
+          inspectionsData
         );
 
       } catch (error) {
 
-        console.error(
-          error
-        );
+        console.error(error);
 
         message.error(
-          "Failed to load complaints"
+          "Failed to load job cards"
         );
 
       } finally {
@@ -131,30 +138,10 @@ const Complaints = () => {
     loadData();
   }, []);
 
-  const vehicleMap =
-    Object.fromEntries(
-      vehicles.map(
-        (vehicle) => [
-          vehicle.vehicle_id,
-          vehicle.rc_number,
-        ]
-      )
-    );
-
-  const driverMap =
-    Object.fromEntries(
-      drivers.map(
-        (driver) => [
-          driver.driver_id,
-          driver.driver_name,
-        ]
-      )
-    );
-
   const openCreateModal =
     () => {
 
-      setEditingComplaint(
+      setEditingJobCard(
         null
       );
 
@@ -164,39 +151,37 @@ const Complaints = () => {
         active_flag: true,
       });
 
-      setModalOpen(
-        true
-      );
+      setModalOpen(true);
     };
 
   const openEditModal =
     (record) => {
 
-      setEditingComplaint(
+      setEditingJobCard(
         record
       );
 
       form.setFieldsValue({
-
         vehicle_id:
           record.vehicle_id,
 
-        driver_id:
-          record.driver_id,
+        complaint_id:
+          record.complaint_id,
 
-        issue_description:
-          record.issue_description,
+        inspection_id:
+          record.inspection_id,
 
-        driver_reason:
-          record.driver_reason,
+        description:
+          record.description,
+
+        labour_charges:
+          record.labour_charges,
 
         active_flag:
           record.active_flag,
       });
 
-      setModalOpen(
-        true
-      );
+      setModalOpen(true);
     };
 
   const handleSubmit =
@@ -208,40 +193,38 @@ const Complaints = () => {
           await form.validateFields();
 
         if (
-          editingComplaint
+          editingJobCard
         ) {
 
-          await updateComplaint(
-            editingComplaint.complaint_id,
+          await updateJobCard(
+            editingJobCard.job_card_id,
             values
           );
 
           message.success(
-            "Complaint updated successfully"
+            "Job card updated successfully"
           );
 
         } else {
 
-          await createComplaint(
+          await createJobCard(
             values
           );
 
           message.success(
-            "Complaint created successfully"
+            "Job card created successfully"
           );
         }
 
-        setModalOpen(
-          false
-        );
+        setModalOpen(false);
+
+        form.resetFields();
 
         await loadData();
 
       } catch (error) {
 
-        console.error(
-          error
-        );
+        console.error(error);
 
         message.error(
           "Operation failed"
@@ -251,22 +234,24 @@ const Complaints = () => {
 
   const handleDeactivate =
     async (
-      complaintId
+      jobCardId
     ) => {
 
       try {
 
-        await deactivateComplaint(
-          complaintId
+        await deactivateJobCard(
+          jobCardId
         );
 
         message.success(
-          "Complaint deactivated"
+          "Job card deactivated"
         );
 
         await loadData();
 
       } catch (error) {
+
+        console.error(error);
 
         message.error(
           "Deactivate failed"
@@ -274,13 +259,14 @@ const Complaints = () => {
       }
     };
 
-  const filteredComplaints =
-    complaints.filter(
-      (complaint) => {
+  const filteredJobCards =
+    jobCards.filter(
+      (jobCard) => {
 
         const matchesSearch =
+
           (
-            complaint.issue_description
+            jobCard.description
               ?.toLowerCase()
               .includes(
                 searchText
@@ -289,15 +275,15 @@ const Complaints = () => {
 
             ||
 
-            complaint.driver_reason
-              ?.toLowerCase()
-              .includes(
-                searchText
-                  .toLowerCase()
-              )
+            String(
+              jobCard.job_card_id
+            ).includes(
+              searchText
+            )
           );
 
         const matchesStatus =
+
           statusFilter ===
           "ALL"
 
@@ -309,7 +295,7 @@ const Complaints = () => {
 
             &&
 
-            complaint.active_flag
+            jobCard.active_flag
             === true
           )
 
@@ -321,7 +307,7 @@ const Complaints = () => {
 
             &&
 
-            complaint.active_flag
+            jobCard.active_flag
             === false
           );
 
@@ -333,14 +319,24 @@ const Complaints = () => {
       }
     );
 
+  const vehicleMap =
+    Object.fromEntries(
+      vehicles.map(
+        (vehicle) => [
+          vehicle.vehicle_id,
+          vehicle.rc_number,
+        ]
+      )
+    );
+
   const columns = [
 
     {
       title:
-        "Complaint ID",
+        "Job Card ID",
 
       dataIndex:
-        "complaint_id",
+        "job_card_id",
     },
 
     {
@@ -357,30 +353,34 @@ const Complaints = () => {
 
     {
       title:
-        "Driver",
+        "Complaint",
 
-      render:
-        (_, record) =>
-
-          driverMap[
-            record.driver_id
-          ] ?? "-",
+      dataIndex:
+        "complaint_id",
     },
 
     {
       title:
-        "Issue",
+        "Inspection",
 
       dataIndex:
-        "issue_description",
+        "inspection_id",
     },
 
     {
       title:
-        "Driver Reason",
+        "Description",
 
       dataIndex:
-        "driver_reason",
+        "description",
+    },
+
+    {
+      title:
+        "Labour Charges",
+
+      dataIndex:
+        "labour_charges",
     },
 
     {
@@ -391,17 +391,14 @@ const Complaints = () => {
         (_, record) =>
 
           record.active_flag
-            ?
 
-            (
+            ? (
               <Tag color="green">
                 Active
               </Tag>
             )
 
-            :
-
-            (
+            : (
               <Tag color="red">
                 Inactive
               </Tag>
@@ -431,11 +428,10 @@ const Complaints = () => {
             </Button>
 
             <Popconfirm
-              title=
-                "Deactivate Complaint?"
+              title="Deactivate Job Card?"
               onConfirm={() =>
                 handleDeactivate(
-                  record.complaint_id
+                  record.job_card_id
                 )
               }
             >
@@ -447,7 +443,6 @@ const Complaints = () => {
               >
                 Deactivate
               </Button>
-
             </Popconfirm>
 
           </Space>
@@ -457,60 +452,67 @@ const Complaints = () => {
 
   return (
     <>
-      <div className="action-bar">
-        <Title level={3}>Complaints</Title>
-      </div>
+
+      <Title level={3}>
+        Job Cards
+      </Title>
+
+      <SearchToolbar
+        searchText={searchText}
+        setSearchText={setSearchText}
+        statusFilter={statusFilter}
+        setStatusFilter={
+          setStatusFilter
+        }
+        onRefresh={loadData}
+        onAdd={openCreateModal}
+        searchPlaceholder="Search Job Card"
+        addLabel="Add Job Card"
+      />
+
       <div
         style={{
           marginBottom: 2,
           fontWeight: "bold",
         }}
       >
-        <SearchToolbar
-          searchText={searchText}
-          setSearchText={setSearchText}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          onRefresh={loadData}
-          onAdd={openCreateModal}
-          searchPlaceholder="Search Complaint"
-          addLabel="Add Complaint"
-        />
-        Total Complaints:
-        {""}
+        Total Job Cards:{" "}
         {
-          filteredComplaints.length
+          filteredJobCards.length
         }
       </div>
 
       <Card>
 
         <Table
-          rowKey="complaint_id"
-          columns={columns}
-          dataSource={filteredComplaints}
+          rowKey="job_card_id"
           loading={loading}
+          columns={columns}
+          dataSource={
+            filteredJobCards
+          }
+          pagination={
+            tablePagination
+          }
           scroll={{
             x: 1500,
           }}
-          pagination={tablePagination}
         />
 
       </Card>
 
       <Modal
         title={
-          editingComplaint
-            ?
-            "Edit Complaint"
-            :
-            "Add Complaint"
+          editingJobCard
+            ? "Edit Job Card"
+            : "Add Job Card"
         }
         open={modalOpen}
         onOk={handleSubmit}
-        onCancel={() =>
-          setModalOpen(false)
-        }
+        onCancel={() => {
+          setModalOpen(false);
+          form.resetFields();
+        }}
       >
 
         <Form
@@ -542,8 +544,8 @@ const Complaints = () => {
           </Form.Item>
 
           <Form.Item
-            label="Driver"
-            name="driver_id"
+            label="Complaint"
+            name="complaint_id"
             rules={[
               {
                 required: true,
@@ -552,12 +554,12 @@ const Complaints = () => {
           >
             <Select
               options={
-                drivers.map(
-                  (driver) => ({
+                complaints.map(
+                  (complaint) => ({
                     label:
-                      driver.driver_name,
+                      `Complaint ${complaint.complaint_id}`,
                     value:
-                      driver.driver_id,
+                      complaint.complaint_id,
                   })
                 )
               }
@@ -565,22 +567,47 @@ const Complaints = () => {
           </Form.Item>
 
           <Form.Item
-            label="Issue Description"
-            name="issue_description"
+            label="Inspection"
+            name="inspection_id"
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Input.TextArea rows={4} />
+            <Select
+              options={
+                inspections.map(
+                  (inspection) => ({
+                    label:
+                      `Inspection ${inspection.inspection_id}`,
+                    value:
+                      inspection.inspection_id,
+                  })
+                )
+              }
+            />
           </Form.Item>
 
           <Form.Item
-            label="Driver Reason"
-            name="driver_reason"
+            label="Description"
+            name="description"
           >
-            <Input.TextArea rows={3} />
+            <Input.TextArea
+              rows={4}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Labour Charges"
+            name="labour_charges"
+          >
+            <InputNumber
+              min={0}
+              style={{
+                width: "100%",
+              }}
+            />
           </Form.Item>
 
           <Form.Item
@@ -599,4 +626,4 @@ const Complaints = () => {
   );
 };
 
-export default Complaints;
+export default JobCards;

@@ -46,6 +46,24 @@ const MainLayout = () => {
       icon: <ToolOutlined />,
       label: <Link to="/maintenance">Maintenance</Link>,
     },
+    {
+      key: "/inspections",
+      icon: <ToolOutlined />,
+      label: (
+        <Link to="/inspections">
+          Inspections
+        </Link>
+      ),
+    },
+    {
+      key: "/jobcards",
+      icon: <ToolOutlined />,
+      label: (
+        <Link to="/jobcards">
+          Job Cards
+        </Link>
+      ),
+    },
   ];
 
   return (

@@ -31,6 +31,12 @@ import {
   deleteEmployee,
 } from "../services/employeeService";
 
+import SearchToolbar
+from "../components/SearchToolbar";
+
+import tablePagination
+from "../utils/tablePagination";
+
 const { Title } = Typography;
 
 const employeeTypeOptions = [
@@ -326,70 +332,24 @@ const Employees = () => {
   return (
     <>
       <div className="action-bar">
-        <Title level={3}>
-          <TeamOutlined /> Employees
-        </Title>
-
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={loadEmployees}
-          >
-            Refresh
-          </Button>
-
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={openCreateModal}
-          >
-            Add Employee
-          </Button>
-        </Space>
+        <Title level={3}> <TeamOutlined /> Employees</Title>
       </div>
-      <Input
-        allowClear
-        placeholder="Search Employee"
-        prefix={<SearchOutlined />}
-        value={searchText}
-        onChange={(e) =>
-          setSearchText(
-            e.target.value
-          )
-        }
-        style={{
-          width: 350,
-          marginBottom: 16,
-        }}
-      />
-      <Select
-        value={statusFilter}
-        onChange={setStatusFilter}
-        style={{
-          width: 140,
-          marginLeft: 10,
-        }}
-        options={[
-          {
-            label: "All",
-            value: "ALL",
-          },
-          {
-            label: "Active",
-            value: "ACTIVE",
-          },
-          {
-            label: "Inactive",
-            value: "INACTIVE",
-          },
-        ]}
-      />
       <div
         style={{
-          marginBottom: 12,
+          marginBottom: 2,
           fontWeight: "bold",
         }}
       >
+        <SearchToolbar
+          searchText={searchText}
+          setSearchText={setSearchText}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          onRefresh={loadEmployees}
+          onAdd={openCreateModal}
+          searchPlaceholder="Search Employee"
+          addLabel="Add Employee"
+        />
         Total Employees:
         {" "}
         {filteredEmployees.length}
@@ -401,18 +361,7 @@ const Employees = () => {
           columns={columns}
           dataSource={filteredEmployees}
           scroll={{ x: 1500 }}
-          pagination={{
-            defaultPageSize: 10,
-            showSizeChanger: true,
-            pageSizeOptions: [
-              "10",
-              "20",
-              "50",
-              "100",
-            ],
-            showTotal: (total) =>
-              `Total ${total} records`,
-          }}
+          pagination={tablePagination}
         />
       </Card>
 
