@@ -18,6 +18,8 @@ class DriverCreate(BaseModel):
     dl_expiry_date: date | None = None
     permanent_address: str | None = None
     current_address: str | None = None
+    active_flag: bool | None = True
+
 
 
 class DriverUpdate(BaseModel):
@@ -27,6 +29,7 @@ class DriverUpdate(BaseModel):
     dl_expiry_date: date | None = None
     permanent_address: str | None = None
     current_address: str | None = None
+    active_flag: bool | None = True
 
 
 class DriverResponse(BaseModel):
@@ -37,6 +40,7 @@ class DriverResponse(BaseModel):
     driver_name: str
     mobile_number: str
     dl_number: str | None = None
+    active_flag: bool | None = True
     created_by: int | None = None
     created_at: datetime | None = None
     modified_by: int | None = None

@@ -11,6 +11,8 @@ class JobCardPartCreate(BaseModel):
     part_id: int
     quantity: float
     unit_price: float
+    active_flag: bool | None = True
+
 
 
 class JobCardPartResponse(BaseModel):
@@ -20,6 +22,7 @@ class JobCardPartResponse(BaseModel):
     id: int
     job_card_id: int
     part_id: int
+    active_flag: bool | None = True
 
 
 class JobCardPartUpdate(BaseModel):
@@ -27,3 +30,4 @@ class JobCardPartUpdate(BaseModel):
     part_id: int
     quantity: float
     unit_price: float
+    active_flag: bool | None = True

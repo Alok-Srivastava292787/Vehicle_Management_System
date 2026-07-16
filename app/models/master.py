@@ -26,6 +26,11 @@ class EmployeeMaster(Base,AuditMixin,TimestampMixin,):
 
     phone_number: Mapped[str] = mapped_column(String(15))
     
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
+    )
     inspections = relationship(
         "TechnicianInspection",
         back_populates="technician"
@@ -49,6 +54,17 @@ class DriverMaster(Base,AuditMixin,TimestampMixin):
     )
 
     dl_expiry_date: Mapped[date | None] = mapped_column(Date)
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
+    )
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
+    )
+
 
 
 class VehicleMaster(Base,AuditMixin,TimestampMixin):

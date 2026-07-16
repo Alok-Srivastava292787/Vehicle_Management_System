@@ -29,7 +29,7 @@ export const updateEmployee = async (employeeId, payload) => {
 };
 
 export const deleteEmployee = async (employeeId) => {
-  const response = await apiClient.delete(`/employees/${employeeId}`);
+  const response = await apiClient.put(`/employees/${employeeId}`, {"active_flag": false});
 
   return response.data;
 };

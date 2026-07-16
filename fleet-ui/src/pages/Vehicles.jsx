@@ -7,18 +7,23 @@ import {
   InputNumber,
   Modal,
   Popconfirm,
+  Select,
   Space,
   Switch,
   Table,
   Typography,
   message,
+  Tag,
 } from "antd";
+
 
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   ReloadOutlined,
+  TeamOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -36,6 +41,9 @@ const Vehicles = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
+  const [searchText, setSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
 
   const [form] = Form.useForm();
 
@@ -56,9 +64,50 @@ const Vehicles = () => {
     }
   };
 
+  const filteredVehicles = vehicles.filter(
+    (vehicle) =>
+      (vehicle.rc_number
+        ?.toLowerCase()
+        .includes(
+          searchText.toLowerCase()
+        ) ||
+      
+      vehicle.engine_no
+        ?.toLowerCase()
+        .includes(
+          searchText.toLowerCase()
+        ) ||
+      
+      vehicle.chassis_no
+        ?.toLowerCase()
+        .includes(
+          searchText.toLowerCase()
+        ) ||
+      
+      String(
+        vehicle.vehicle_id
+      ).includes(searchText))
+        &&
+      (
+        statusFilter === "ALL"
+        ||
+        (
+          statusFilter === "ACTIVE"
+          && vehicle.active_flag
+        )
+        ||
+        (
+          statusFilter === "INACTIVE"
+          && !vehicle.active_flag
+        )
+      )
+
+  );
+
   useEffect(() => {
     loadVehicles();
   }, []);
+
 
   const openCreateModal = () => {
     setEditingVehicle(null);
@@ -86,6 +135,9 @@ const Vehicles = () => {
       gps_id: record.gps_id,
         
       fuel_capacity: record.fuel_capacity ?? true,
+    
+      active_flag:
+        record.active_flag ?? true,
     });
     
     setModalOpen(true);
@@ -145,12 +197,12 @@ const Vehicles = () => {
     try {
       await deleteVehicle(vehicleId);
 
-      message.success("Vehicle deleted successfully");
+      message.success("Vehicle deactivated successfully");
 
       await loadVehicles();
     } catch (error) {
       console.error(error);
-      message.error("Delete failed");
+      message.error("Deactivation failed");
     }
   };
 
@@ -231,10 +283,14 @@ const Vehicles = () => {
       render: (value) => value ?? "-",
     },
     {
-      title: "Active",
+      title: "Status",
       dataIndex: "active_flag",
       key: "active_flag",
-      render: (value) => (value ? "Yes" : "No"),
+      render: (value) => {
+        return value
+          ? <Tag color="green">Active</Tag>
+          : <Tag color="red">Inactive</Tag>;
+      },
     },
     {
       title: "Actions",
@@ -250,8 +306,8 @@ const Vehicles = () => {
           </Button>
 
           <Popconfirm
-            title="Delete vehicle?"
-            description="Are you sure you want to delete this vehicle?"
+            title="Deactivate vehicle?"
+            description="Are you sure you want to deactivate this vehicle?"
             okText="Yes"
             cancelText="No"
             onConfirm={() => handleDelete(record.vehicle_id)}
@@ -260,7 +316,7 @@ const Vehicles = () => {
               danger
               icon={<DeleteOutlined />}
             >
-              Delete
+              Deactivate
             </Button>
           </Popconfirm>
         </Space>
@@ -291,12 +347,60 @@ const Vehicles = () => {
         </Space>
       </div>
 
+      <Input
+        allowClear
+        placeholder="Search Vehicle"
+        prefix={<SearchOutlined />}
+        value={searchText}
+        onChange={(e) =>
+          setSearchText(
+            e.target.value
+          )
+        }
+        style={{
+          width: 300,
+          marginBottom: 16,
+        }}
+      />
+      <div
+        style={{
+          marginBottom: 12,
+          fontWeight: "bold",
+        }}
+      >
+        Total Vehicles:
+        {" "}
+        {filteredVehicles.length}
+      </div>
+      <Select
+        value={statusFilter}
+        onChange={setStatusFilter}
+        style={{
+          width: 140,
+          marginLeft: 10,
+        }}
+        options={[
+          {
+            label: "All",
+            value: "ALL",
+          },
+          {
+            label: "Active",
+            value: "ACTIVE",
+          },
+          {
+            label: "Inactive",
+            value: "INACTIVE",
+          },
+        ]}
+      />
+
       <Card>
         <Table
           rowKey="vehicle_id"
           loading={loading}
           columns={columns}
-          dataSource={vehicles}
+          dataSource={filteredVehicles}
           pagination={{
             pageSize: 10,
           }}
@@ -340,6 +444,61 @@ const Vehicles = () => {
           </Form.Item>
 
           <Form.Item
+            label="Vehicle Type ID"
+            name="vehicle_type_id"
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              placeholder="Vehicle Type ID"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Fuel Type ID"
+            name="fuel_type_id"
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              placeholder="Fuel Type ID"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Fuel Capacity"
+            name="fuel_capacity"
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              placeholder="Fuel capacity"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Vehicle Status ID"
+            name="vehicle_status_id"
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              placeholder="Vehicle Status ID"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Purchase Date"
+            name="purchase_date"
+          >
+            <Input type="date" />
+          </Form.Item>
+
+          <Form.Item
+            label="RC Expiry Date"
+            name="rc_expiry_date"
+          >
+            <Input type="date" />
+          </Form.Item>
+
+          <Form.Item
             label="Engine Number"
             name="engine_no"
           >
@@ -354,64 +513,12 @@ const Vehicles = () => {
           </Form.Item>
 
           <Form.Item
-            label="Fuel Capacity"
-            name="fuel_capacity"
-          >
-            <InputNumber
-              style={{ width: "100%" }}
-              min={0}
-              placeholder="Fuel capacity"
-            />
-          </Form.Item>
-          <Form.Item
-            label="Vehicle Type ID"
-            name="vehicle_type_id"
-          >
-            <InputNumber
-              style={{ width: "100%" }}
-              placeholder="Vehicle Type ID"
-            />
-          </Form.Item>
-                    
-          <Form.Item
-            label="Fuel Type ID"
-            name="fuel_type_id"
-          >
-            <InputNumber
-              style={{ width: "100%" }}
-              placeholder="Fuel Type ID"
-            />
-          </Form.Item>
-                    
-          <Form.Item
-            label="Vehicle Status ID"
-            name="vehicle_status_id"
-          >
-            <InputNumber
-              style={{ width: "100%" }}
-              placeholder="Vehicle Status ID"
-            />
-          </Form.Item>
-                    
-          <Form.Item
-            label="Purchase Date"
-            name="purchase_date"
-          >
-            <Input type="date" />
-          </Form.Item>
-                    
-          <Form.Item
-            label="RC Expiry Date"
-            name="rc_expiry_date"
-          >
-            <Input type="date" />
-          </Form.Item>
-          <Form.Item
             label="GPS ID"
             name="gps_id"
           >
             <Input placeholder="GPS Device ID" />
           </Form.Item>
+
           <Form.Item
             label="Active"
             name="active_flag"

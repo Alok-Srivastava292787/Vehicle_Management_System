@@ -26,6 +26,7 @@ class VehicleCreate(BaseModel):
     gps_id: str | None = None
 
     fuel_capacity: float | None = None
+    active_flag: bool | None = True
 
 
 class VehicleUpdate(BaseModel):

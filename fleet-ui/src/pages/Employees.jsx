@@ -8,6 +8,7 @@ import {
   Popconfirm,
   Select,
   Space,
+  Switch,
   Table,
   Typography,
   message,
@@ -20,6 +21,7 @@ import {
   DeleteOutlined,
   ReloadOutlined,
   TeamOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -64,6 +66,10 @@ const Employees = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const activeEmployees = employees.filter( employee => employee.active_flag );
+  const [searchText, setSearchText] =  useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
 
   const [form] = Form.useForm();
 
@@ -83,7 +89,45 @@ const Employees = () => {
       setLoading(false);
     }
   };
+  const filteredEmployees =
+    employees.filter(
+      (employee) =>
+        (employee.full_name
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
+          ) ||
 
+        employee.phone_number
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
+          ) ||
+
+        employee.employee_type
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
+          ) ||
+
+        String(
+          employee.employee_id
+        ).includes(searchText))
+        &&
+        (
+          statusFilter === "ALL"
+          ||
+          (
+            statusFilter === "ACTIVE"
+            && employee.active_flag
+          )
+          ||
+          (
+            statusFilter === "INACTIVE"
+            && !employee.active_flag
+          )
+        )
+  );
   useEffect(() => {
     loadEmployees();
   }, []);
@@ -91,7 +135,9 @@ const Employees = () => {
   const openCreateModal = () => {
     setEditingEmployee(null);
     form.resetFields();
-
+    form.setFieldsValue({
+    active_flag: true,
+    });
     form.setFieldsValue({
       employee_type: "TECHNICIAN",
     });
@@ -106,8 +152,10 @@ const Employees = () => {
       employee_type: record.employee_type,
       full_name: record.full_name,
       phone_number: record.phone_number,
+    
+      active_flag:
+        record.active_flag ?? true,
     });
-
     setModalOpen(true);
   };
 
@@ -166,12 +214,12 @@ const Employees = () => {
     try {
       await deleteEmployee(employeeId);
 
-      message.success("Employee deleted successfully");
+      message.success("Employee deactivated successfully");
 
       await loadEmployees();
     } catch (error) {
       console.error(error);
-      message.error("Delete failed");
+      message.error("deactivate failed");
     }
   };
 
@@ -234,6 +282,16 @@ const Employees = () => {
       render: (value) => value ?? "-",
     },
     {
+      title: "Status",
+      dataIndex: "active_flag",
+      key: "active_flag",
+      render: (value) => {
+        return value
+          ? <Tag color="green">Active</Tag>
+          : <Tag color="red">Inactive</Tag>;
+      },
+    },
+    {
       title: "Actions",
       key: "actions",
       width: 180,
@@ -247,8 +305,8 @@ const Employees = () => {
           </Button>
 
           <Popconfirm
-            title="Delete employee?"
-            description="Are you sure you want to delete this employee?"
+            title="Dactivate employee?"
+            description="Are you sure you want to deactive this employee?"
             okText="Yes"
             cancelText="No"
             onConfirm={() => handleDelete(record.employee_id)}
@@ -289,13 +347,59 @@ const Employees = () => {
           </Button>
         </Space>
       </div>
-
+      <Input
+        allowClear
+        placeholder="Search Employee"
+        prefix={<SearchOutlined />}
+        value={searchText}
+        onChange={(e) =>
+          setSearchText(
+            e.target.value
+          )
+        }
+        style={{
+          width: 350,
+          marginBottom: 16,
+        }}
+      />
+      <div
+        style={{
+          marginBottom: 12,
+          fontWeight: "bold",
+        }}
+      >
+        Total Employees:
+        {" "}
+        {filteredEmployees.length}
+      </div>
+      <Select
+        value={statusFilter}
+        onChange={setStatusFilter}
+        style={{
+          width: 140,
+          marginLeft: 10,
+        }}
+        options={[
+          {
+            label: "All",
+            value: "ALL",
+          },
+          {
+            label: "Active",
+            value: "ACTIVE",
+          },
+          {
+            label: "Inactive",
+            value: "INACTIVE",
+          },
+        ]}
+      />
       <Card>
         <Table
           rowKey="employee_id"
           loading={loading}
           columns={columns}
-          dataSource={employees}
+          dataSource={filteredEmployees}
           pagination={{
             pageSize: 10,
           }}
@@ -377,6 +481,13 @@ const Employees = () => {
             ]}
           >
             <Input placeholder="Example: 9999999999" />
+          </Form.Item>
+          <Form.Item
+            label="Active"
+            name="active_flag"
+            valuePropName="checked"
+          >
+            <Switch />
           </Form.Item>
         </Form>
       </Modal>

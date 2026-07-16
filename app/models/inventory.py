@@ -3,6 +3,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
+from sqlalchemy import Boolean
 
 from app.db.base import Base
 from app.db.mixins import AuditMixin,TimestampMixin
@@ -24,6 +25,12 @@ class PartMaster(Base,
     part_name: Mapped[str | None] = mapped_column(
         String(300)
     )
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
+    )
+
 
 
 class PartRequest(Base,
