@@ -1,7 +1,7 @@
 from app.models.maintenance import MaintenanceJobCard
 from app.schemas.jobcard import JobCardCreate,JobCardUpdate,JobCardResponse
 from app.services.exceptions import NotFoundException
-from app.repositories.jobcard_part_repository import JobCardPartRepository
+from app.repositories.jobcard_repository import JobCardRepository
 from app.repositories.complaint_repository import ComplaintRepository
 from app.repositories.vehicle_repository import VehicleRepository
 from app.repositories.inspection_repository import InspectionRepository
@@ -9,7 +9,7 @@ from app.repositories.inspection_repository import InspectionRepository
 class JobCardService:
     def __init__(
         self,
-        jobcard_repo: JobCardPartRepository,
+        jobcard_repo: JobCardRepository,
         complaint_repo: ComplaintRepository,
         vehicle_repo: VehicleRepository,
         inspection_repo: InspectionRepository,
@@ -23,7 +23,7 @@ class JobCardService:
         self,
         payload,
         user_id: int| None = None,
-    ) -> JobCardCreate:
+    ) -> MaintenanceJobCard:
 
         if not self.vehicle_repo.exists(  payload.vehicle_id
         ):

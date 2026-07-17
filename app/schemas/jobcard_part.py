@@ -2,8 +2,8 @@ from __future__ import annotations
 from datetime import date
 from datetime import datetime
 
-from pydantic import BaseModel
-from pydantic import ConfigDict
+from pydantic import BaseModel  #type: ignore
+from pydantic import ConfigDict #type: ignore
 
 
 class JobCardPartCreate(BaseModel):
@@ -22,6 +22,7 @@ class JobCardPartResponse(BaseModel):
     id: int
     job_card_id: int
     part_id: int
+    quantity: int
     active_flag: bool | None = True
 
 

@@ -10,6 +10,8 @@ import Complaints from "./pages/Complaints";
 import Maintenance from "./pages/Maintenance";
 import Inspections from "./pages/Inspections";
 import JobCards from "./pages/JobCards";
+import JobCardParts from "./pages/JobCardParts";
+import Parts from "./pages/Parts";
 
 const App = () => {
   return (
@@ -23,6 +25,8 @@ const App = () => {
         <Route path="maintenance" element={<Maintenance />} />
         <Route path="inspections" element={<Inspections />}/>
         <Route path="jobcards" element={<JobCards />}/>
+        <Route path="jobcardparts" element={<JobCardParts />}/>
+        <Route path="parts" element={<Parts />}/>
       </Route>
     </Routes>
   );

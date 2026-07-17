@@ -108,9 +108,7 @@ def test_create_jobcard():
 
 
 def test_get_jobcard():
-
     jobcard = create_jobcard()
-
     job_card_id = (
         jobcard["job_card_id"]
     )
@@ -118,11 +116,9 @@ def test_get_jobcard():
     response = client.get(
         f"/api/v1/jobcards/{job_card_id}"
     )
-    print(response)
+#    print(response)
     assert response.status_code == 200
-
     body = response.json()
-
     assert (
         body["job_card_id"]
         == job_card_id

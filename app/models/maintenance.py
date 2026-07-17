@@ -1,5 +1,5 @@
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import Boolean, ForeignKey
 from sqlalchemy import Text, String, Numeric
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -68,7 +68,12 @@ class VehicleComplaint(
         "MaintenanceJobCard",
         back_populates="complaint"
     )
-
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
+    )
+    
 
 class TechnicianInspection(
     Base,
@@ -93,6 +98,12 @@ class TechnicianInspection(
             "master.employee_master.employee_id"
         ),nullable=False
     )
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
+    )
+
 #relationships
     technician = relationship(
         "EmployeeMaster",
@@ -153,6 +164,12 @@ class MaintenanceJobCard(
         nullable=True
     )
     
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
+    )
+
     vehicle = relationship(
         "VehicleMaster",
         back_populates="job_cards"
@@ -214,6 +231,11 @@ class JobCardPart(
 
     total_price: Mapped[float | None] = mapped_column(
         Numeric(12, 2)
+    )
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
     )
     job_card = relationship(
     "MaintenanceJobCard",

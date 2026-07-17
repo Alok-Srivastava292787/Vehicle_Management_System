@@ -49,20 +49,22 @@ const MainLayout = () => {
     {
       key: "/inspections",
       icon: <ToolOutlined />,
-      label: (
-        <Link to="/inspections">
-          Inspections
-        </Link>
-      ),
+      label: (<Link to="/inspections">Inspections</Link>),
+    },
+    {
+      key: "/parts",
+      icon: <ToolOutlined />,
+      label: (<Link to="/parts">Parts</Link>),
     },
     {
       key: "/jobcards",
       icon: <ToolOutlined />,
-      label: (
-        <Link to="/jobcards">
-          Job Cards
-        </Link>
-      ),
+      label: (<Link to="/jobcards">Job Cards</Link>),
+    },
+    {
+      key: "/jobcard-parts",
+      icon: <ToolOutlined />,
+      label: (<Link to="/jobcardparts">Job Card Parts</Link>),
     },
   ];
 

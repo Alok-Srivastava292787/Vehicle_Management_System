@@ -1039,9 +1039,16 @@ ALTER TABLE maintenance.preventive_maintenance_checklist
 ALTER COLUMN vehicle_id SET NOT NULL;
 
 -- adding column for auditing
+ALTER TABLE maintenance.technician_inspection
+ADD COLUMN IF NOT EXISTS active_flag BOOL;
+ALTER TABLE maintenance.job_card_part 
+ADD COLUMN IF NOT EXISTS active_flag BOOL; SET DEFAULT TRUE;
+ALTER TABLE transact.maintenance_job_card 
+ADD COLUMN IF NOT EXISTS active_flag BOOL; SET DEFAULT TRUE;
+
 -- for employee Master
 ALTER TABLE master.employee_master
-ADD COLUMN IF NOT EXISTS active_flag BOOL,
+ADD COLUMN IF NOT EXISTS active_flag BOOL DEFAULT TRUE,
 ADD COLUMN IF NOT EXISTS created_by BIGINT,
 ADD COLUMN IF NOT EXISTS modified_by BIGINT,
 ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
@@ -1053,21 +1060,21 @@ ADD COLUMN IF NOT EXISTS modified_by BIGINT,
 ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 -- Driver_master
 ALTER TABLE master.driver_master
-ADD COLUMN IF NOT EXISTS active_flag BOOL,
+ADD COLUMN IF NOT EXISTS active_flag BOOL DEFAULT TRUE,
 ADD COLUMN IF NOT EXISTS created_by BIGINT,
 ADD COLUMN IF NOT EXISTS modified_by BIGINT,
 ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 -- COmplaints
 ALTER TABLE maintenance.vehicle_complaint
-ADD COLUMN IF NOT EXISTS active_flag BOOL,
+ADD COLUMN IF NOT EXISTS active_flag BOOL DEFAULT TRUE,
 ADD COLUMN IF NOT EXISTS created_by BIGINT,
 ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN IF NOT EXISTS modified_by BIGINT,
 ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 -- for preventive_maintenance_checklist
 ALTER TABLE maintenance.preventive_maintenance_checklist
-ADD COLUMN IF NOT EXISTS active_flag BOOL,
+ADD COLUMN IF NOT EXISTS active_flag BOOL DEFAULT TRUE,
 ADD COLUMN IF NOT EXISTS created_by BIGINT,
 ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN IF NOT EXISTS modified_by BIGINT,
@@ -1075,11 +1082,45 @@ ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 -- for part_master
 ALTER TABLE inventory.part_master
-ADD COLUMN IF NOT EXISTS active_flag BOOL,
+ADD COLUMN IF NOT EXISTS active_flag BOOL DEFAULT TRUE,
 ADD COLUMN IF NOT EXISTS created_by BIGINT,
 ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN IF NOT EXISTS modified_by BIGINT,
 ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+-- set active flag null and initilize with true for existing records
+ALTER TABLE master.vendor ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE master.workshop ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE master.warehouse ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE master.vehicle_rc_document ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE maintenance.technician_inspection ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE master.driver_document ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE maintenance.vehicle_complaint ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE maintenance.checklist_master ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE master.vehicle_master ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE master.employee_master ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE master.driver_master ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE maintenance.preventive_maintenance_checklist ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE inventory.part_master ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE master.vendor ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE master.workshop ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE master.warehouse ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE master.vehicle_rc_document ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE maintenance.technician_inspection ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE master.driver_document ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE maintenance.vehicle_complaint ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE maintenance.checklist_master ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE master.vehicle_master ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE master.employee_master ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE master.driver_master ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE maintenance.preventive_maintenance_checklist ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE inventory.part_master ALTER COLUMN active_flag SET NOT NULL;
+update transact.maintenance_job_card set active_flag=true where active_flag is null;
+ALTER TABLE transact.maintenance_job_card ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE transact.maintenance_job_card ALTER COLUMN active_flag SET NOT NULL;
+update maintenance.job_card_part set active_flag=true;
+ALTER TABLE maintenance.job_card_part ALTER COLUMN active_flag SET DEFAULT TRUE;
+ALTER TABLE maintenance.job_card_part ALTER COLUMN active_flag SET NOT NULL;
+
 
 -- create audit table
 CREATE TABLE IF NOT EXISTS audit.audit_log (
