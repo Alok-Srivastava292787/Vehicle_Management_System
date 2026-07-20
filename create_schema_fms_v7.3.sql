@@ -1000,6 +1000,40 @@ JOIN master.driver_master d
 JOIN master.vehicle_master v
     ON a.vehicle_id = v.vehicle_id;
 
+CREATE OR REPLACE FUNCTION audit.log_changes()
+RETURNS TRIGGER
+AS $$
+BEGIN
+    INSERT INTO audit.audit_log
+    (
+        schema_name,
+        table_name,
+        operation,
+        old_data,
+        new_data,
+        changed_at
+    )
+    VALUES
+    (
+        TG_TABLE_SCHEMA,
+        TG_TABLE_NAME,
+        TG_OP,
+        CASE
+            WHEN TG_OP = 'INSERT'
+            THEN NULL
+            ELSE to_jsonb(OLD)
+        END,
+        CASE
+            WHEN TG_OP = 'DELETE'
+            THEN NULL
+            ELSE to_jsonb(NEW)
+        END,
+        CURRENT_TIMESTAMP
+    );
+    RETURN COALESCE(NEW, OLD);
+END;
+$$
+LANGUAGE plpgsql;
 
 -- adding constriants for fk integrity
 ALTER TABLE transact.maintenance_job_card

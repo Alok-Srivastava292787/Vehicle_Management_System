@@ -247,49 +247,23 @@ class PreventiveMaintenanceChecklist(
     AuditMixin,
     TimestampMixin,
 ):
-
-    __tablename__ = (
-        "preventive_maintenance_checklist"
-    )
-
-    __table_args__ = {
-        "schema": "maintenance"
-    }
-
-    checklist_id: Mapped[int] = mapped_column(
-        primary_key=True
-    )
-
+    __tablename__ = ("preventive_maintenance_checklist")
+    __table_args__ = {"schema": "maintenance"}
+    checklist_id: Mapped[int] = mapped_column(primary_key=True)
     vehicle_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            "master.vehicle_master.vehicle_id"
-        ),nullable=False
-    )
-
+        ForeignKey("master.vehicle_master.vehicle_id"),nullable=False)
     technician_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            "master.employee_master.employee_id"
-        ),nullable=False
-    )
-
-    observation: Mapped[str | None] = mapped_column(
-        Text
-    )
-    vehicle = relationship(
-    "VehicleMaster",
-    back_populates="pm_checklists"
-    )
+        ForeignKey("master.employee_master.employee_id"),nullable=False)
+    observation: Mapped[str | None] = mapped_column(Text)
+    vehicle = relationship("VehicleMaster",back_populates="pm_checklists")
     issue_found: Mapped[bool | None]
-
-    issue_description: Mapped[str | None] = (
-        mapped_column(Text)
+    issue_description: Mapped[str | None] = (mapped_column(Text))
+    maintenance_action: Mapped[str | None] = mapped_column(Text)
+    active_flag: Mapped[bool | None] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=True,
     )
 
-    maintenance_action: Mapped[
-        str | None
-    ] = mapped_column(Text)
-
-    final_status: Mapped[
-        str | None
-    ] = mapped_column(String(30))
+    final_status: Mapped[    str | None] = mapped_column(String(30))
 

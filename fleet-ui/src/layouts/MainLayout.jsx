@@ -66,6 +66,15 @@ const MainLayout = () => {
       icon: <ToolOutlined />,
       label: (<Link to="/jobcardparts">Job Card Parts</Link>),
     },
+    {
+      key: "/checklists",
+      icon: <ToolOutlined />,
+      label: (
+        <Link to="/checklists">
+          Checklists
+        </Link>
+      ),
+    },
   ];
 
   return (
