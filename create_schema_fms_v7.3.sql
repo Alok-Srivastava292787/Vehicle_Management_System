@@ -1070,73 +1070,85 @@ $function$;
 
 -- adding constriants for fk integrity
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN inspection_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS inspection_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN complaint_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS complaint_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN vehicle_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS vehicle_id SET NOT NULL;
 
 ALTER TABLE maintenance.vehicle_complaint
-ALTER COLUMN vehicle_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS vehicle_id SET NOT NULL;
 
 ALTER TABLE maintenance.vehicle_complaint
-ALTER COLUMN driver_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS driver_id SET NOT NULL;
 
 ALTER TABLE maintenance.technician_inspection
-ALTER COLUMN complaint_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS complaint_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN complaint_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS complaint_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN inspection_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS inspection_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN vehicle_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS vehicle_id SET NOT NULL;
 
 ALTER TABLE maintenance.job_card_part
-ALTER COLUMN job_card_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS job_card_id SET NOT NULL;
 
 ALTER TABLE maintenance.job_card_part
-ALTER COLUMN part_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS part_id SET NOT NULL;
 
 ALTER TABLE maintenance.preventive_maintenance_checklist
-ALTER COLUMN vehicle_id SET NOT NULL;
+ALTER COLUMN IF NOT EXISTS vehicle_id SET NOT NULL;
 -- adding column for enhaning job card 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN driver_id INTEGER;
+ADD COLUMN IF NOT EXISTS driver_id INTEGER;
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN technician1_id INTEGER;
+ADD COLUMN IF NOT EXISTS technician1_id INTEGER;
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN technician2_id INTEGER;
+ADD COLUMN IF NOT EXISTS technician2_id INTEGER;
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN date_time_in TIMESTAMP;
+ADD COLUMN IF NOT EXISTS date_time_in TIMESTAMP;
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN date_time_out TIMESTAMP;
+ADD COLUMN IF NOT EXISTS date_time_out TIMESTAMP;
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN zone_area VARCHAR(200);
+ADD COLUMN IF NOT EXISTS zone_area VARCHAR(200);
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN mileage_hours VARCHAR(100);
+ADD COLUMN IF NOT EXISTS mileage_hours VARCHAR(100);
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN maintenance_type VARCHAR(50);
+ADD COLUMN IF NOT EXISTS maintenance_type VARCHAR(50);
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN issue_reported TEXT;
+ADD COLUMN IF NOT EXISTS issue_reported TEXT;
 
 ALTER TABLE transact.maintenance_job_card
-ADD COLUMN problem_found_action_taken TEXT;
+ADD COLUMN IF NOT EXISTS problem_found_action_taken TEXT;
 
 ALTER TABLE transact.maintenance_job_card
 ADD COLUMN requisition_slip_number VARCHAR(100);
+ALTER TABLE transact.maintenance_job_card
+ADD IF NOT EXISTS COLUMN requested_by_employee_id INTEGER;
+
+ALTER TABLE transact.maintenance_job_card
+ADD COLUMN IF NOT EXISTS verified_by_employee_id INTEGER;
+
+ALTER TABLE transact.maintenance_job_card
+ADD COLUMN  IF NOT EXISTS approved_by_employee_id INTEGER;
+
+ALTER TABLE transact.maintenance_job_card
+ADD COLUMN IF NOT EXISTS job_status VARCHAR(50)
+DEFAULT 'OPEN';
 -- adding fk for job card new columns
 ALTER TABLE transact.maintenance_job_card
 ADD CONSTRAINT fk_jobcard_driver
@@ -1152,6 +1164,32 @@ ALTER TABLE transact.maintenance_job_card
 ADD CONSTRAINT fk_jobcard_technician2
 FOREIGN KEY (technician2_id)
 REFERENCES master.employee_master(employee_id);
+ALTER TABLE transact.maintenance_job_card
+ADD CONSTRAINT fk_jobcard_requested_by
+FOREIGN KEY (
+    requested_by_employee_id
+)
+REFERENCES master.employee_master(
+    employee_id
+);
+
+ALTER TABLE transact.maintenance_job_card
+ADD CONSTRAINT fk_jobcard_verified_by
+FOREIGN KEY (
+    verified_by_employee_id
+)
+REFERENCES master.employee_master(
+    employee_id
+);
+
+ALTER TABLE transact.maintenance_job_card
+ADD CONSTRAINT fk_jobcard_approved_by
+FOREIGN KEY (
+    approved_by_employee_id
+)
+REFERENCES master.employee_master(
+    employee_id
+);
 
 -- adding column for auditing
 ALTER TABLE maintenance.technician_inspection
