@@ -6,6 +6,7 @@ import {
   TeamOutlined,
   ToolOutlined,
   FileTextOutlined,
+  AuditOutlined,
 } from "@ant-design/icons";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
@@ -69,11 +70,12 @@ const MainLayout = () => {
     {
       key: "/checklists",
       icon: <ToolOutlined />,
-      label: (
-        <Link to="/checklists">
-          Checklists
-        </Link>
-      ),
+      label: (<Link to="/checklists">Checklists</Link>),
+    },
+    {
+      key: "/audit-logs",
+      icon: <AuditOutlined />,
+      label: (<Link to="/audit-logs">Audit Logs</Link>),
     },
   ];
 

@@ -13,6 +13,7 @@ import JobCards from "./pages/JobCards";
 import JobCardParts from "./pages/JobCardParts";
 import Parts from "./pages/Parts";
 import Checklists from "./pages/Checklists";
+import AuditLogs  from "./pages/AuditLogs";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="jobcardparts" element={<JobCardParts />}/>
         <Route path="parts" element={<Parts />}/>
         <Route path="checklists" element={<Checklists />}/>
+        <Route path="audit-logs" element={<AuditLogs />}/>
       </Route>
     </Routes>
   );
