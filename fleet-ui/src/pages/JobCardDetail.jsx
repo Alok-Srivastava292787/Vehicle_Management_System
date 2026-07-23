@@ -17,12 +17,14 @@ import {
 import {  useNavigate,} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {  getParts,} from "../services/partService";
 import { getJobCards } from "../services/jobCardService";
 import { getVehicles } from "../services/vehicleService";
 import { getDrivers } from "../services/driverService";
 import { getEmployees } from "../services/employeeService";
 import { getJobCardParts } from "../services/jobCardPartService";
+import { getParts }  from "../services/partService";
+import {  API_BASE_URL,} from "../utils/config";
+
 
 const { Title } = Typography;
 
@@ -57,35 +59,31 @@ const JobCardDetail = () => {
   const [partMaster,
     setPartMaster] =
     useState([]);  
-    const navigate =
-  useNavigate();
-const getStatusColor = (
-  status
-) => {
-  const colors = {
-    OPEN: "blue",
-    IN_PROGRESS:
-      "orange",
-    WAITING_PARTS:
-      "gold",
-    COMPLETED:
-      "green",
-    CANCELLED:
-      "red",
-  };
-  return (
-    colors[status]
-    || "default"
-  );
-};
+  const navigate =
+    useNavigate();
 
+  const getStatusColor =
+    (status) => {
+
+      switch (status) {      
+        case "OPEN":
+          return "blue";
+        case "IN_PROGRESS":
+          return "orange";
+        case "WAITING_PARTS":
+          return "gold";
+        case "COMPLETED":
+          return "green";
+        case "CANCELLED":
+          return "red";
+        default:
+          return "default";
+      }
+    };
   const loadData =
     async () => {
-
       try {
-
         setLoading(true);
-
         const [
           jobCards,
           vehiclesData,
@@ -101,7 +99,6 @@ const getStatusColor = (
           getJobCardParts(),
           getParts(),
         ]);
-
         const currentJobCard =
           jobCards.find(
             item =>
@@ -112,24 +109,20 @@ const getStatusColor = (
                 jobCardId
               )
           );
-
         setJobCard(
           currentJobCard
         );
-
         setVehicles(
           vehiclesData
         );
-
         setDrivers(
           driversData
         );
-
         setEmployees(
           employeesData
         );
         setPartMaster(
-            partMasterData
+          partMasterData
         );
         setParts(
           partsData.filter(
@@ -142,16 +135,6 @@ const getStatusColor = (
               )
           )
         );
-
-    const partMap =
-      Object.fromEntries(
-        partMaster.map(
-          (part) => [
-            part.part_id,
-            part.part_name,
-          ]
-        )
-      );
       } catch (error) {
 
         console.error(error);
@@ -221,6 +204,15 @@ const getStatusColor = (
         jobCard.technician2_id
     );
 
+  const partMap =
+    Object.fromEntries(
+      partMaster.map(
+        (part) => [
+          part.part_id,
+          part.part_name,
+        ]
+      )
+    );
   const requestedBy =
     employees.find(
       e =>
@@ -284,7 +276,24 @@ const getStatusColor = (
       ).toFixed(2),
 },
   ];
+const getApprovalTag =
+  (employee) => {
 
+    if (employee) {
+
+      return (
+        <Tag color="green">
+          Approved
+        </Tag>
+      );
+    }
+
+    return (
+      <Tag color="orange">
+        Pending
+      </Tag>
+    );
+  };
   return (
     <Space
       direction="vertical"
@@ -295,16 +304,36 @@ const getStatusColor = (
     >
 
       <Card>
+<Row
+  justify="space-between"
+  style={{
+    marginBottom: 1,
+  }}
+>
+            <Button
+              onClick={() =>
+                navigate(
+                  "/jobcards"
+                )
+              }
+            >
+              Back To Job Cards
+            </Button>
+
 <Button
+  type="primary"
   onClick={() =>
-    navigate(
-      "/jobcards"
+    window.open(
+      `${API_BASE_URL}/jobcards_print/${
+        jobCard.job_card_id
+      }/pdf`,
+      "_blank"
     )
   }
 >
-  Back To Job Cards
+  Download PDF
 </Button>
-
+</Row>
             <Title
               level={2}
               style={{
@@ -511,7 +540,6 @@ const getStatusColor = (
         <Title level={4}>
           Parts Used
         </Title>
-
         <Table
           rowKey="id"
           columns={
@@ -524,7 +552,40 @@ const getStatusColor = (
         />
 
       </Card>
+<Card>
 
+  <Title level={4}>
+    Cost Summary
+  </Title>
+
+  <Descriptions bordered>
+
+    <Descriptions.Item
+      label="Total Parts Cost"
+    >
+      ₹
+      {
+        parts
+          .reduce(
+            (
+              total,
+              item
+            ) =>
+              total +
+              (
+                (item.quantity || 0)
+                *
+                (item.unit_price || 0)
+              ),
+            0
+          )
+          .toFixed(2)
+      }
+    </Descriptions.Item>
+
+  </Descriptions>
+
+</Card>
 <Card
   style={{
     borderTop:
@@ -544,28 +605,51 @@ const getStatusColor = (
     <Descriptions.Item
       label="Requested By"
     >
-      {
-        requestedBy
-          ?.full_name
-      }
+      <Space>
+        {
+          requestedBy?.full_name
+          || "-"
+        }
+    
+        {
+          getApprovalTag(
+            requestedBy
+          )
+        }
+      </Space>
     </Descriptions.Item>
-
+      
     <Descriptions.Item
       label="Verified By"
     >
-      {
-        verifiedBy
-          ?.full_name
-      }
+      <Space>
+        {
+          verifiedBy?.full_name
+          || "-"
+        }
+    
+        {
+          getApprovalTag(
+            verifiedBy
+          )
+        }
+      </Space>
     </Descriptions.Item>
-
     <Descriptions.Item
       label="Approved By"
     >
-      {
-        approvedBy
-          ?.full_name
-      }
+      <Space>
+        {
+          approvedBy?.full_name
+          || "-"
+        }
+
+        {
+          getApprovalTag(
+            approvedBy
+          )
+        }
+      </Space>
     </Descriptions.Item>
 
   </Descriptions>

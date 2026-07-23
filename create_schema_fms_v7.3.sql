@@ -860,6 +860,84 @@ CREATE TABLE  IF NOT EXISTS  maintenance.checklist_result (
 -- );
 
 -- Fuel Rate Reference
+-- part_requisition
+CREATE TABLE transact.part_requisition
+(
+    requisition_id            BIGSERIAL PRIMARY KEY,
+
+    requisition_number        VARCHAR(50) UNIQUE,
+
+    requisition_date          TIMESTAMP NOT NULL,
+
+    vehicle_id               INTEGER NOT NULL,
+
+    job_card_id              INTEGER NOT NULL,
+
+    technician_id            INTEGER,
+
+    remarks                  TEXT,
+
+    status                   VARCHAR(30)
+                             DEFAULT 'OPEN',
+
+    active_flag              BOOLEAN
+                             DEFAULT TRUE,
+
+    created_at               TIMESTAMP
+                             DEFAULT CURRENT_TIMESTAMP,
+
+    modified_at              TIMESTAMP
+                             DEFAULT CURRENT_TIMESTAMP
+);
+--transact.part_requisition_detail
+CREATE TABLE transact.part_requisition_detail
+(
+    requisition_detail_id     BIGSERIAL PRIMARY KEY,
+
+    requisition_id           BIGINT NOT NULL,
+
+    part_id                  INTEGER NOT NULL,
+
+    quantity_required        NUMERIC(10,2),
+
+    quantity_returned        NUMERIC(10,2),
+
+    required_serial_number   VARCHAR(200),
+
+    returned_serial_number   VARCHAR(200),
+
+    remarks                  TEXT,
+
+    active_flag             BOOLEAN
+                            DEFAULT TRUE
+);
+
+ALTER TABLE transact.part_requisition
+ADD CONSTRAINT fk_req_vehicle
+FOREIGN KEY (vehicle_id)
+REFERENCES master.vehicle_master(vehicle_id);
+
+ALTER TABLE transact.part_requisition
+ADD CONSTRAINT fk_req_jobcard
+FOREIGN KEY (job_card_id)
+REFERENCES transact.maintenance_job_card(job_card_id);
+
+ALTER TABLE transact.part_requisition
+ADD CONSTRAINT fk_req_technician
+FOREIGN KEY (technician_id)
+REFERENCES master.employee_master(employee_id);
+
+ALTER TABLE transact.part_requisition_detail
+ADD CONSTRAINT fk_reqdetail_header
+FOREIGN KEY (requisition_id)
+REFERENCES transact.part_requisition(requisition_id);
+
+ALTER TABLE transact.part_requisition_detail
+ADD CONSTRAINT fk_reqdetail_part
+FOREIGN KEY (part_id)
+REFERENCES inventory.part_master(part_id);
+
+
 CREATE TABLE IF NOT EXISTS reference.fuel_rate_reference (
     id SERIAL PRIMARY KEY,
     fuel_type_id SMALLINT NOT NULL
@@ -1032,6 +1110,8 @@ BEGIN
                 to_jsonb(NEW)->>'checklist_id',
                 to_jsonb(NEW)->>'part_id',
                 to_jsonb(NEW)->>'id'
+                to_jsonb(NEW)->>'requisition_id'
+                to_jsonb(NEW)->>'requisition_detail_id'
             );
     END IF;
     INSERT INTO audit.audit_log
@@ -1473,6 +1553,19 @@ AFTER INSERT OR UPDATE OR DELETE
 ON inventory.part_master
 FOR EACH ROW
 EXECUTE FUNCTION audit.log_changes();
+--inventory part_detail
+CREATE TRIGGER trg_audit_part_requisition
+AFTER INSERT OR UPDATE
+ON transact.part_requisition
+FOR EACH ROW
+EXECUTE FUNCTION audit.log_changes();
+
+CREATE TRIGGER trg_audit_part_requisition_detail
+AFTER INSERT OR UPDATE
+ON transact.part_requisition_detail
+FOR EACH ROW
+EXECUTE FUNCTION audit.log_changes();
+
 
 
 --  CREATE TABLE IF NOT EXISTS master.fuel_station
