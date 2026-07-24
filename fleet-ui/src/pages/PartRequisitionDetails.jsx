@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   Descriptions,
+  Row,
   Space,
   Spin,
   Table,
@@ -15,73 +16,46 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-
-import {
-  getPartRequisitions,
-} from "../services/partRequisitionService";
-
-import {
-  getPartRequisitionDetails,
-} from "../services/partRequisitionDetailService";
-
-import {
-  getVehicles,
-} from "../services/vehicleService";
-
-import {
-  getEmployees,
-} from "../services/employeeService";
-
-import {
-  getParts,
-} from "../services/partService";
+import {  getPartRequisitions,} from "../services/partRequisitionService";
+import {  getPartRequisitionDetails,} from "../services/partRequisitionDetailService";
+import {  getVehicles,} from "../services/vehicleService";
+import {  getEmployees,} from "../services/employeeService";
+import {  getParts,} from "../services/partService";
+import {  API_BASE_URL,} from "../utils/config";
 
 const { Title } =
   Typography;
 
 const PartRequisitionDetails =
   () => {
-
     const {
       requisitionId,
     } = useParams();
-
     const navigate =
       useNavigate();
-
     const [loading,
       setLoading] =
       useState(true);
-
     const [requisition,
       setRequisition] =
       useState(null);
-
     const [details,
       setDetails] =
       useState([]);
-
     const [vehicles,
       setVehicles] =
       useState([]);
-
     const [employees,
       setEmployees] =
       useState([]);
-
     const [parts,
       setParts] =
       useState([]);
-
-    const loadData =
-      async () => {
-
+    const loadData = async () => {
         try {
-
           setLoading(
             true
           );
-
           const [
             requisitionData,
             detailData,
@@ -96,7 +70,6 @@ const PartRequisitionDetails =
               getEmployees(),
               getParts(),
             ]);
-
           const current =
             requisitionData.find(
               item =>
@@ -107,11 +80,9 @@ const PartRequisitionDetails =
                   requisitionId
                 )
             );
-
           setRequisition(
             current
           );
-
           setDetails(
             detailData.filter(
               item =>
@@ -123,47 +94,33 @@ const PartRequisitionDetails =
                 )
             )
           );
-
           setVehicles(
             vehicleData
           );
-
           setEmployees(
             employeeData
           );
-
           setParts(
             partData
           );
-
         } catch (
           error
         ) {
-
           console.error(
             error
           );
-
           message.error(
             "Failed to load requisition"
           );
-
         } finally {
-
           setLoading(
             false
           );
         }
       };
 
-    useEffect(() => {
-
-      loadData();
-
-    }, [requisitionId]);
-
+    useEffect(() => {  loadData();}, [requisitionId]);
     if (loading) {
-
       return (
         <div
           style={{
@@ -179,11 +136,9 @@ const PartRequisitionDetails =
         </div>
       );
     }
-
     if (
       !requisition
     ) {
-
       return (
         <Card>
           Requisition
@@ -191,21 +146,18 @@ const PartRequisitionDetails =
         </Card>
       );
     }
-
     const vehicle =
       vehicles.find(
         v =>
           v.vehicle_id ===
           requisition.vehicle_id
       );
-
     const technician =
       employees.find(
         e =>
           e.employee_id ===
           requisition.technician_id
       );
-
     const partMap =
       Object.fromEntries(
         parts.map(
@@ -215,13 +167,10 @@ const PartRequisitionDetails =
           ]
         )
       );
-
     const columns = [
-
       {
         title:
           "Part",
-
         render:
           (
             _,
@@ -231,7 +180,6 @@ const PartRequisitionDetails =
               record.part_id
             ] ?? "-",
       },
-
       {
         title:
           "Qty Required",
@@ -239,7 +187,6 @@ const PartRequisitionDetails =
         dataIndex:
           "quantity_required",
       },
-
       {
         title:
           "Qty Returned",
@@ -247,7 +194,6 @@ const PartRequisitionDetails =
         dataIndex:
           "quantity_returned",
       },
-
       {
         title:
           "Required Serial No",
@@ -255,7 +201,6 @@ const PartRequisitionDetails =
         dataIndex:
           "required_serial_number",
       },
-
       {
         title:
           "Returned Serial No",
@@ -263,7 +208,6 @@ const PartRequisitionDetails =
         dataIndex:
           "returned_serial_number",
       },
-
       {
         title:
           "Remarks",
@@ -271,9 +215,7 @@ const PartRequisitionDetails =
         dataIndex:
           "remarks",
       },
-
     ];
-
     return (
 
       <Space
@@ -284,16 +226,13 @@ const PartRequisitionDetails =
             "100%",
         }}
       >
-
         <Card>
-
-          <Space
+          <Row
+            justify="space-between"
             style={{
-              marginBottom:
-                16,
+              marginBottom: 1,
             }}
           >
-
             <Button
               onClick={() =>
                 navigate(
@@ -301,12 +240,20 @@ const PartRequisitionDetails =
                 )
               }
             >
-              Back To
-              Requisitions
+              Back To Requisitions
             </Button>
-
-          </Space>
-
+            <Button
+              type="primary"
+              onClick={() =>
+                window.open(
+                  `${API_BASE_URL}/requisitions_print/${requisition.requisition_id}/pdf`,
+                  "_blank"
+                )
+              }
+            >
+              Download PDF
+            </Button>
+          </Row>
           <Title
             level={2}
             style={{
@@ -316,12 +263,10 @@ const PartRequisitionDetails =
           >
             Part Requisition
           </Title>
-
           <Descriptions
             bordered
             column={2}
           >
-
             <Descriptions.Item
               label="Requisition No"
             >
@@ -329,7 +274,6 @@ const PartRequisitionDetails =
                 requisition.requisition_number
               }
             </Descriptions.Item>
-
             <Descriptions.Item
               label="Status"
             >
@@ -337,7 +281,6 @@ const PartRequisitionDetails =
                 requisition.status
               }
             </Descriptions.Item>
-
             <Descriptions.Item
               label="Vehicle"
             >
@@ -346,7 +289,6 @@ const PartRequisitionDetails =
                   ?.rc_number
               }
             </Descriptions.Item>
-
             <Descriptions.Item
               label="Job Card"
             >
@@ -354,7 +296,6 @@ const PartRequisitionDetails =
                 requisition.job_card_id
               }
             </Descriptions.Item>
-
             <Descriptions.Item
               label="Technician"
             >
@@ -363,7 +304,6 @@ const PartRequisitionDetails =
                   ?.full_name
               }
             </Descriptions.Item>
-
             <Descriptions.Item
               label="Date"
             >
@@ -371,7 +311,6 @@ const PartRequisitionDetails =
                 requisition.requisition_date
               }
             </Descriptions.Item>
-
             <Descriptions.Item
               label="Remarks"
               span={2}
@@ -380,19 +319,14 @@ const PartRequisitionDetails =
                 requisition.remarks
               }
             </Descriptions.Item>
-
           </Descriptions>
-
         </Card>
-
         <Card>
-
           <Title
             level={4}
           >
             Requested Parts
           </Title>
-
           <Table
             rowKey={
               "requisition_detail_id"
@@ -407,9 +341,7 @@ const PartRequisitionDetails =
               false
             }
           />
-
         </Card>
-
       </Space>
     );
   };

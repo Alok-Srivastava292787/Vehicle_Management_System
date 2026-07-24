@@ -13,7 +13,7 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
-
+from app.utils.pdf_footer import add_pdf_footer
 
 class PDFService:
 
@@ -387,6 +387,8 @@ class PDFService:
         elements.append(
             signature_table
         )
+        add_pdf_footer(elements)
+        
         doc.build(
             elements
         )
