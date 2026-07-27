@@ -21,7 +21,8 @@ from app.api.pdf_requisition_router import (    router as pdf_requisition_router
 from app.api.part_issue_router import (    router as part_issue_router, )
 from app.api.part_issue_detail_router import (  router as part_issue_detail_router)
 from app.api.pdf_issue_router import (  router as pdf_issue_router)
-
+from app.api.part_return_router import (    router as part_return)
+from app.api.part_return_detail_router import (     router as part_return_detail)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("FMS Started")
@@ -72,3 +73,5 @@ app.include_router(    pdf_requisition_router)
 app.include_router(    part_issue_router)
 app.include_router(    part_issue_detail_router)
 app.include_router(    pdf_issue_router)
+app.include_router(    part_return)
+app.include_router(    part_return_detail)

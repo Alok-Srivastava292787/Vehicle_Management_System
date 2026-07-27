@@ -953,6 +953,51 @@ CREATE TABLE IF NOT EXISTS  transact.part_issue_detail
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS transact.part_return
+(
+    return_id BIGSERIAL PRIMARY KEY,
+    return_number VARCHAR(30)
+        NOT NULL UNIQUE,
+    issue_id BIGINT
+        NOT NULL
+        REFERENCES transact.part_issue(issue_id),
+    return_date TIMESTAMP
+        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    returned_by_employee_id BIGINT
+        REFERENCES master.employee_master(employee_id),
+    received_by_employee_id BIGINT
+        REFERENCES master.employee_master(employee_id),
+    status VARCHAR(20)
+        NOT NULL DEFAULT 'OPEN',
+    remarks TEXT,
+    active_flag BOOLEAN
+        NOT NULL DEFAULT TRUE,
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by VARCHAR(100),
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS transact.part_return_detail
+(
+    return_detail_id BIGSERIAL PRIMARY KEY,
+    return_id BIGINT
+        NOT NULL
+        REFERENCES transact.part_return(return_id),
+    part_id BIGINT
+        NOT NULL
+        REFERENCES inventory.part_master(part_id),
+    quantity_returned NUMERIC(10,2)
+        NOT NULL DEFAULT 0,
+    serial_number VARCHAR(200),
+    remarks TEXT,
+    active_flag BOOLEAN
+        NOT NULL DEFAULT TRUE,
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by VARCHAR(100),
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 ALTER TABLE transact.part_requisition
 ADD CONSTRAINT fk_req_vehicle
 FOREIGN KEY (vehicle_id)

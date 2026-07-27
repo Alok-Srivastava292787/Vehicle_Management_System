@@ -11,7 +11,10 @@ from datetime import datetime
 
 
 
-class PartRequisition(Base):
+class PartRequisition(Base,
+    AuditMixin,
+    TimestampMixin,
+    ):
 
     __tablename__ = "part_requisition"
     __table_args__ = {
