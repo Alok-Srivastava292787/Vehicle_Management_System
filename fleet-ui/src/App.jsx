@@ -19,6 +19,8 @@ import PartRequisitions from "./pages/PartRequisitions";
 import PartRequisitionDetails from "./pages/PartRequisitionDetails";
 import PartIssues from "./pages/PartIssues"
 import PartIssueDetails from "./pages/PartIssuesDetails"
+import PartReturns from "./pages/PartReturns";
+import PartReturnDetails from "./pages/PartReturnDetails";
 
 const App = () => {
   return (
@@ -41,6 +43,9 @@ const App = () => {
         <Route path="requisitions/:requisitionId"  element={<PartRequisitionDetails />}/>
         <Route path="part-issues" element={<PartIssues />}/>
         <Route path="part-issues/:issueId" element={<PartIssueDetails />}/>
+        <Route path="part-returns" element={<PartReturns />}/>
+        <Route path="part-returns/:returnId" element={<PartReturnDetails />}/>
+        
 
       </Route>
     </Routes>

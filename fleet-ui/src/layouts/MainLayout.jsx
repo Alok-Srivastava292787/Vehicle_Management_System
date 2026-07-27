@@ -68,6 +68,11 @@ const MainLayout = () => {
         <Link to="/part-issues">Part Issues</Link>),
     },
     {
+    key: "partreturns",
+    label: (
+      <Link to="/part-returns"> Part Returns</Link>),
+    },
+    {
       key: "/jobcards",
       icon: <ToolOutlined />,
       label: (<Link to="/jobcards">Job Cards</Link>),
