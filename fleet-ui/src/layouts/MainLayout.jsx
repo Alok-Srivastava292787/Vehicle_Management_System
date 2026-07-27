@@ -63,6 +63,11 @@ const MainLayout = () => {
       label: (<Link to="/parts">Parts</Link>),
     },
     {
+      key: "partissues",
+      label: (
+        <Link to="/part-issues">Part Issues</Link>),
+    },
+    {
       key: "/jobcards",
       icon: <ToolOutlined />,
       label: (<Link to="/jobcards">Job Cards</Link>),
@@ -82,6 +87,7 @@ const MainLayout = () => {
       icon: <AuditOutlined />,
       label: (<Link to="/audit-logs">Audit Logs</Link>),
     },
+
   ];
 
   return (

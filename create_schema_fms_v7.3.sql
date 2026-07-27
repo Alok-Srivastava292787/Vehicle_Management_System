@@ -861,7 +861,7 @@ CREATE TABLE  IF NOT EXISTS  maintenance.checklist_result (
 
 -- Fuel Rate Reference
 -- part_requisition
-CREATE TABLE transact.part_requisition
+CREATE TABLE IF NOT EXISTS  transact.part_requisition
 (
     requisition_id            BIGSERIAL PRIMARY KEY,
 
@@ -890,7 +890,7 @@ CREATE TABLE transact.part_requisition
                              DEFAULT CURRENT_TIMESTAMP
 );
 --transact.part_requisition_detail
-CREATE TABLE transact.part_requisition_detail
+CREATE TABLE IF NOT EXISTS  transact.part_requisition_detail
 (
     requisition_detail_id     BIGSERIAL PRIMARY KEY,
 
@@ -910,6 +910,47 @@ CREATE TABLE transact.part_requisition_detail
 
     active_flag             BOOLEAN
                             DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS  transact.part_issue
+(
+    issue_id BIGSERIAL PRIMARY KEY,
+    issue_number VARCHAR(30) NOT NULL UNIQUE,
+    requisition_id BIGINT NOT NULL
+        REFERENCES transact.part_requisition(requisition_id),
+    issue_date TIMESTAMP NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    issued_by_employee_id BIGINT
+        REFERENCES master.employee_master(employee_id),
+    received_by_employee_id BIGINT
+        REFERENCES master.employee_master(employee_id),
+    status VARCHAR(20) NOT NULL
+        DEFAULT 'OPEN',
+    remarks TEXT,
+    active_flag BOOLEAN NOT NULL
+        DEFAULT TRUE,
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by VARCHAR(100),
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS  transact.part_issue_detail
+(
+    issue_detail_id BIGSERIAL PRIMARY KEY,
+    issue_id BIGINT NOT NULL
+        REFERENCES transact.part_issue(issue_id),
+    part_id BIGINT NOT NULL
+        REFERENCES inventory.part_master(part_id),
+    quantity_issued NUMERIC(10,2)
+        DEFAULT 0,
+    serial_number VARCHAR(200),
+    remarks TEXT,
+    active_flag BOOLEAN NOT NULL
+        DEFAULT TRUE,
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by VARCHAR(100),
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE transact.part_requisition

@@ -17,6 +17,8 @@ import JobCards from "./pages/JobCards";
 import JobCardDetail from "./pages/JobCardDetail";
 import PartRequisitions from "./pages/PartRequisitions";
 import PartRequisitionDetails from "./pages/PartRequisitionDetails";
+import PartIssues from "./pages/PartIssues"
+import PartIssueDetails from "./pages/PartIssuesDetails"
 
 const App = () => {
   return (
@@ -37,6 +39,8 @@ const App = () => {
         <Route path="audit-logs" element={<AuditLogs />}/>
         <Route path="requisitions" element={<PartRequisitions />}/>
         <Route path="requisitions/:requisitionId"  element={<PartRequisitionDetails />}/>
+        <Route path="part-issues" element={<PartIssues />}/>
+        <Route path="part-issues/:issueId" element={<PartIssueDetails />}/>
 
       </Route>
     </Routes>
