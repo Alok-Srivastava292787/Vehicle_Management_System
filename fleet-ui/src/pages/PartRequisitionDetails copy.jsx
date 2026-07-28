@@ -8,16 +8,8 @@ import {
   Space,
   Spin,
   Table,
-  Tag,
   Typography,
   message,
-  Modal,
-  Form,
-  Input,
-  InputNumber,
-  Popconfirm,
-  Select,
-  Switch,
 } from "antd";
 
 import {
@@ -30,11 +22,6 @@ import {  getVehicles,} from "../services/vehicleService";
 import {  getEmployees,} from "../services/employeeService";
 import {  getParts,} from "../services/partService";
 import {  API_BASE_URL,} from "../utils/config";
-import {
-  createPartRequisitionDetail,
-  updatePartRequisitionDetail,
-  deactivatePartRequisitionDetail,
-} from "../services/partRequisitionDetailService";
 
 const { Title } =
   Typography;
@@ -64,17 +51,6 @@ const PartRequisitionDetails =
     const [parts,
       setParts] =
       useState([]);
-    const [modalOpen,
-      setModalOpen] =
-      useState(false);
-
-    const [editingRecord,
-      setEditingRecord] =
-      useState(null);
-
-    const [form] =
-      Form.useForm();
-
     const loadData = async () => {
         try {
           setLoading(
@@ -102,7 +78,7 @@ const PartRequisitionDetails =
                 ) ===
                 String(
                   requisitionId
-                ) 
+                )
             );
           setRequisition(
             current
@@ -114,7 +90,7 @@ const PartRequisitionDetails =
                   item.requisition_id
                 ) ===
                 String(
-                  requisitionId 
+                  requisitionId
                 )
             )
           );
@@ -239,134 +215,7 @@ const PartRequisitionDetails =
         dataIndex:
           "remarks",
       },
-      {
-  title: "Active",
-
-  render: (_, record) => (
-    <Tag
-      color={
-        record.active_flag
-          ? "green"
-          : "red"
-      }
-    >
-      {
-        record.active_flag
-          ? "Active"
-          : "Inactive"
-      }
-    </Tag>
-  ),
-},
-{
-  title:
-    "Actions",
-
-  render:
-    (_, record) => (
-
-      <Space>
-
-<Button
-  onClick={() => {
-
-    console.log("Edit Clicked");
-
-    setEditingRecord(record);
-
-    form.resetFields();
-
-    form.setFieldsValue(record);
-
-    setModalOpen(true);
-  }}
->
-  Edit
-</Button>
-        <Popconfirm
-          title=
-          "Deactivate Detail?"
-
-          onConfirm={
-            async () => {
-
-              await deactivatePartRequisitionDetail(
-                record.requisition_detail_id
-              );
-
-              message.success(
-                "Detail deactivated"
-              );
-
-              await loadData();
-            }
-          }
-        >
-
-<Button
-  danger
-  disabled={
-    !record.active_flag
-  }
->
-  Delete
-</Button>
-        </Popconfirm>
-
-      </Space>
-    ),
-}    ];
-    const handleSubmit =
-      async () => {
-
-        try {
-
-          const values =
-            await form.validateFields();
-
-          values.requisition_id =
-            Number(
-              requisitionId
-            );
-
-          if (
-            editingRecord
-          ) {
-
-            await updatePartRequisitionDetail(
-              editingRecord.requisition_detail_id,
-              values
-            );
-
-          } else {
-
-            await createPartRequisitionDetail(
-              values
-            );
-          }
-
-          message.success(
-            "Detail saved successfully"
-          );
-
-          setModalOpen(
-            false
-          );
-
-          form.resetFields();
-
-          loadData();
-
-        } catch (
-          error
-        ) {
-
-          message.error(
-            error?.response?.data?.detail
-            || "Operation failed"
-          );
-        }
-      };
+    ];
     return (
 
       <Space
@@ -404,7 +253,7 @@ const PartRequisitionDetails =
             >
               Download PDF
             </Button>
-          </Row>      
+          </Row>
           <Title
             level={2}
             style={{
@@ -478,30 +327,6 @@ const PartRequisitionDetails =
           >
             Requested Parts
           </Title>
-<Space
-  style={{
-    marginBottom: 16,
-  }}
->
-
-<Button
-  type="primary"
-  onClick={() => {
-
-    setEditingRecord(null);
-    form.resetFields();
-    form.setFieldsValue({
-      requisition_id:
-        Number(requisitionId),
-        active_flag: true,
-    });
-
-    setModalOpen(true);
-  }}
->
-  Add Part
-</Button>
-</Space>
           <Table
             rowKey={
               "requisition_detail_id"
@@ -517,123 +342,6 @@ const PartRequisitionDetails =
             }
           />
         </Card>
-<Modal
-  title={
-    editingRecord
-      ? "Edit Part Detail"
-      : "Add Part Detail"
-  }
-
-  open={modalOpen}
-
-  onOk={handleSubmit}
-
-  onCancel={() =>
-    setModalOpen(false)
-  }
->
-
-  <Form
-    form={form}
-    layout="vertical"
-  >
-
-    <Form.Item
-      name="part_id"
-      label="Part"
-      rules={[
-        {
-          required: true,
-          message:
-            "Part is required",
-        },
-      ]}
-    >
-
-      <Select
-        options={
-          parts.map(
-            part => ({
-              value:
-                part.part_id,
-
-              label:
-                part.part_name,
-            })
-          )
-        }
-      />
-
-    </Form.Item>
-
-    <Form.Item
-      name="quantity_required"
-      label="Quantity Required"
-    >
-
-      <InputNumber
-        min={0}
-        style={{
-          width: "100%",
-        }}
-      />
-
-    </Form.Item>
-
-    <Form.Item
-      name="quantity_returned"
-      label="Quantity Returned"
-    >
-
-      <InputNumber
-        min={0}
-        style={{
-          width: "100%",
-        }}
-      />
-
-    </Form.Item>
-
-    <Form.Item
-      name="required_serial_number"
-      label="Required Serial Number"
-    >
-
-      <Input />
-
-    </Form.Item>
-
-    <Form.Item
-      name="returned_serial_number"
-      label="Returned Serial Number"
-    >
-
-      <Input />
-
-    </Form.Item>
-
-    <Form.Item
-      name="remarks"
-      label="Remarks"
-    >
-
-      <Input.TextArea
-        rows={4}
-      />
-
-    </Form.Item>
-    <Form.Item
-  label="Active"
-  name="active_flag"
-  valuePropName="checked"
->
-  <Switch />
-</Form.Item>
-
-  </Form>
-
-</Modal>
-
       </Space>
     );
   };

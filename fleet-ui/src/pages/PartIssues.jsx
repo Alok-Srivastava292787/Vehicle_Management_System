@@ -39,7 +39,9 @@ import {
     updatePartIssue,
     deactivatePartIssue,
 } from "../services/partIssueService"
-
+import {
+  getPartRequisitions,
+} from "../services/partRequisitionService";
 import {
   getVehicles,
 } from "../services/vehicleService";
@@ -94,6 +96,9 @@ const PartIssues = () => {
 
   const [form] =
     Form.useForm();
+  const [requisitions,
+    setRequisitions] =
+    useState([]);
 
   const loadData =
     async () => {
@@ -102,32 +107,24 @@ const PartIssues = () => {
 
         setLoading(true);
 
-        const [
-          issueData,
-          vehicleData,
-          jobCardData,
-          employeeData,
-        ] = await Promise.all([
-          getPartIssues(),
-          getVehicles(),
-          getJobCards(),
-          getEmployees(),
-        ]);
+          const [
+            issueData,
+            employeeData,
+            requisitionData,
+          ] = await Promise.all([
+            getPartIssues(),
+            getEmployees(),
+            getPartRequisitions(),
+          ]);
 
         setIssues(
           issueData
         );
-
-        setVehicles(
-          vehicleData
-        );
-
-        setJobCards(
-          jobCardData
-        );
-
         setEmployees(
           employeeData
+        );
+        setRequisitions(
+          requisitionData
         );
 
       } catch (error) {
@@ -195,20 +192,20 @@ const PartIssues = () => {
           editingRecord
         ) {
 
-          await updatePartRequisition(
+          await updatePartIssue(
             editingRecord.issue_id,
             values
           );
 
         } else {
 
-          await createPartRequisition(
+          await createPartIssue(
             values
           );
         }
 
         message.success(
-          "Requisition saved successfully"
+          "Issue saved successfully"
         );
 
         setModalOpen(false);
@@ -234,12 +231,12 @@ const PartIssues = () => {
 
       try {
 
-        await deactivatePartRequisition(
+        await deactivatePartIssue(
           issueId
         );
 
         message.success(
-          "Requisition deactivated"
+          "Issue deactivated"
         );
 
         await loadData();
@@ -306,44 +303,33 @@ const PartIssues = () => {
 
   const columns = [
 
-    {
-      title:
-        "Req No",
+{
+  title: "Issue No",
+  dataIndex: "issue_number",
+},
 
-      dataIndex:
-        "issue_number",
-    },
+{
+  title: "Requisition",
+  dataIndex: "requisition_id",
+},
 
-    {
-      title:
-        "Vehicle",
-
-      render:
-        (_, record) =>
-          vehicleMap[
-            record.vehicle_id
-          ] ?? "-",
-    },
-
-    {
-      title:
-        "Job Card",
-
-      dataIndex:
-        "job_card_id",
-    },
-
-    {
-      title:
-        "Technician",
-
+{
+  title: "Issued By",
       render:
         (_, record) =>
           employeeMap[
-            record.technician_id
+            record.issued_by_employee_id
           ] ?? "-",
-    },
+},
 
+{
+  title: "Received By",
+      render:
+        (_, record) =>
+          employeeMap[
+            record.received_by_employee_id
+          ] ?? "-",
+},
     {
       title:
         "Status",
@@ -358,6 +344,24 @@ const PartIssues = () => {
           </Tag>
         ),
     },
+      {
+        title: "Active",
+        render: (_, record) => (
+          <Tag
+            color={
+              record.active_flag
+                ? "green"
+                : "red"
+            }
+          >
+            {
+              record.active_flag
+                ? "Active"
+                : "Inactive"
+            }
+          </Tag>
+        ),
+      },
 
     {
       title:
@@ -390,7 +394,7 @@ const PartIssues = () => {
             </Button>
 
             <Popconfirm
-              title="Deactivate Requisition?"
+              title="Deactivate Issue?"
               onConfirm={() =>
                 handleDeactivate(
                   record.issue_id
@@ -439,8 +443,8 @@ const PartIssues = () => {
         onAdd={
           openCreateModal
         }
-        searchPlaceholder="Search Requisition"
-        addLabel="Add Requisition"
+        searchPlaceholder="Search Issue"
+        addLabel="Add Issue"
       />
 
       <Card>
@@ -459,144 +463,138 @@ const PartIssues = () => {
 
       </Card>
 
-      <Modal
-        title={
-          editingRecord
-            ? "Edit Requisition"
-            : "Add Requisition"
+<Modal
+  title={
+    editingRecord
+      ? "Edit Part Issue"
+      : "Add Part Issue"
+  }
+  open={modalOpen}
+  onOk={handleSubmit}
+  onCancel={() =>
+    setModalOpen(false)
+  }
+>
+  <Form
+    form={form}
+    layout="vertical"
+  >
+
+<Form.Item
+  name="requisition_id"
+  label="Requisition"
+  rules={[
+    {
+      required: true,
+      message:
+        "Requisition is required",
+    },
+  ]}
+>
+  <Select
+    options={
+      requisitions.map(
+        req => ({
+          value:
+            req.requisition_id,
+          label:
+            req.requisition_number,
+        })
+      )
+    }
+  />
+</Form.Item>
+    <Form.Item
+      name="issued_by_employee_id"
+      label="Issued By"
+    >
+      <Select
+        allowClear
+        options={
+          employees.map(
+            emp => ({
+              value:
+                emp.employee_id,
+              label:
+                emp.full_name,
+            })
+          )
         }
-        open={
-          modalOpen
+      />
+    </Form.Item>
+
+    <Form.Item
+      name="received_by_employee_id"
+      label="Received By"
+    >
+      <Select
+        allowClear
+        options={
+          employees.map(
+            emp => ({
+              value:
+                emp.employee_id,
+              label:
+                emp.full_name,
+            })
+          )
         }
-        onOk={
-          handleSubmit
-        }
-        onCancel={() => {
-          setModalOpen(
-            false
-          );
-        }}
-      >
+      />
+    </Form.Item>
 
-        <Form
-          form={form}
-          layout="vertical"
-        >
+    <Form.Item
+      name="status"
+      label="Status"
+    >
+      <Select
+        options={[
+          {
+            value:
+              "OPEN",
+            label:
+              "OPEN",
+          },
+          {
+            value:
+              "ISSUED",
+            label:
+              "ISSUED",
+          },
+          {
+            value:
+              "PARTIAL",
+            label:
+              "PARTIAL",
+          },
+          {
+            value:
+              "CLOSED",
+            label:
+              "CLOSED",
+          },
+        ]}
+      />
+    </Form.Item>
 
-          <Form.Item
-            label="Vehicle"
-            name="vehicle_id"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Select
-              options={
-                vehicles.map(
-                  vehicle => ({
-                    label:
-                      vehicle.rc_number,
-                    value:
-                      vehicle.vehicle_id,
-                  })
-                )
-              }
-            />
-          </Form.Item>
+    <Form.Item
+      name="remarks"
+      label="Remarks"
+    >
+      <Input.TextArea
+        rows={4}
+      />
+    </Form.Item>
 
-          <Form.Item
-            label="Job Card"
-            name="job_card_id"
-          >
-            <Select
-              options={
-                jobCards.map(
-                  card => ({
-                    label:
-                      `Job Card ${card.job_card_id}`,
-                    value:
-                      card.job_card_id,
-                  })
-                )
-              }
-            />
-          </Form.Item>
+    <Form.Item
+      name="active_flag"
+      label="Active"
+      valuePropName="checked"
+    >
+      <Switch />
+    </Form.Item>
 
-          <Form.Item
-            label="Technician"
-            name="technician_id"
-          >
-            <Select
-              options={
-                employees.map(
-                  emp => ({
-                    label:
-                      emp.full_name,
-                    value:
-                      emp.employee_id,
-                  })
-                )
-              }
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Status"
-            name="status"
-          >
-            <Select
-              options={[
-                {
-                  label:
-                    "OPEN",
-                  value:
-                    "OPEN",
-                },
-                {
-                  label:
-                    "APPROVED",
-                  value:
-                    "APPROVED",
-                },
-                {
-                  label:
-                    "ISSUED",
-                  value:
-                    "ISSUED",
-                },
-                {
-                  label:
-                    "CLOSED",
-                  value:
-                    "CLOSED",
-                },
-              ]}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Remarks"
-            name="remarks"
-          >
-            <Input.TextArea
-              rows={4}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Active"
-            name="active_flag"
-            valuePropName="checked"
-          >
-            <Switch />
-          </Form.Item>
-
-        </Form>
-
-      </Modal>
-
+  </Form>
+</Modal>
     </>
   );
 };

@@ -13,15 +13,8 @@ import {
   Table,
   Typography,
   message,
-  Modal,
-  Form,
-  Input,
-  InputNumber,
-  Popconfirm,
-  Select,
-  Switch,
-  Tag,
 } from "antd";
+
 import {
   useNavigate,
   useParams,
@@ -30,12 +23,8 @@ import {
 import {  API_BASE_URL,} from "../utils/config";
 import {  getPartIssues,} from "../services/partIssueService";
 
-import {
-  createPartIssueDetail,
-  updatePartIssueDetail,
-  deactivatePartIssueDetail,
-} from "../services/partIssueDetailService";
 import {  getPartIssueDetails,} from "../services/partIssueDetailService";
+
 import {  getEmployees,} from "../services/employeeService";
 
 import {  getParts,} from "../services/partService";
@@ -68,16 +57,6 @@ const PartIssueDetails =
     const [parts,
       setParts] =
       useState([]);
-    const [modalOpen,
-      setModalOpen] =
-      useState(false);
-
-    const [editingRecord,
-      setEditingRecord] =
-      useState(null);
-
-    const [form] =
-      Form.useForm();
 
     const loadData =
       async () => {
@@ -202,119 +181,8 @@ const PartIssueDetails =
         dataIndex:
           "remarks",
       },
-      {
-        title: "Status",
-        render: (_, record) => (
-          <Tag
-            color={
-              record.active_flag
-                ? "green"
-                : "red"
-            }
-          >
-            {
-              record.active_flag
-                ? "Active"
-                : "Inactive"
-            }
-          </Tag>
-        ),
-      },
-      {
-        title: "Actions",
-        render: (_, record) => (
-          <Space>
-            <Button
-              onClick={() => {
-                setEditingRecord(
-                  record
-                );
-                form.resetFields();
-                form.setFieldsValue(
-                  record
-                );
-                setModalOpen(
-                  true
-                );
-              }}
-            >
-              Edit
-            </Button>
-            <Popconfirm
-              title="Deactivate Detail?"
-              onConfirm={async () => {
-                await deactivatePartIssueDetail(
-                  record.issue_detail_id
-                );
-                message.success(
-                  "Detail deactivated"
-                );
-                await loadData();
-              }}
-            >
-              <Button
-                danger
-                disabled={
-                  !record.active_flag
-                }
-              >
-                Delete
-              </Button>
-            </Popconfirm>
-          </Space>
-        ),
-      },
-
     ];
-const handleSubmit =
-  async () => {
 
-    try {
-
-      const values =
-        await form.validateFields();
-
-      values.issue_id =
-        Number(issueId);
-
-      if (
-        editingRecord
-      ) {
-
-        await updatePartIssueDetail(
-          editingRecord.issue_detail_id,
-          values
-        );
-
-      } else {
-
-        await createPartIssueDetail(
-          values
-        );
-      }
-
-      message.success(
-        "Detail saved successfully"
-      );
-
-      setModalOpen(
-        false
-      );
-
-      form.resetFields();
-
-      await loadData();
-
-    } catch (
-      error
-    ) {
-
-      message.error(
-        error?.response?.data?.detail
-        || "Operation failed"
-      );
-    }
-  };
     return (
 
       <Space
@@ -412,38 +280,14 @@ const handleSubmit =
             </Descriptions.Item>
 
           </Descriptions>
+
         </Card>
 
         <Card>
+
           <Title level={4}>
             Issued Parts
           </Title>
-<Button
-  type="primary"
-
-  onClick={() => {
-
-    setEditingRecord(
-      null
-    );
-
-    form.resetFields();
-
-    form.setFieldsValue({
-      issue_id:
-        Number(issueId),
-
-      active_flag:
-        true,
-    });
-
-    setModalOpen(
-      true
-    );
-  }}
->
-  Add Issued Part
-</Button>
 
           <Table
             rowKey="issue_detail_id"
@@ -453,76 +297,7 @@ const handleSubmit =
           />
 
         </Card>
-<Modal
-  title={
-    editingRecord
-      ? "Edit Part Detail"
-      : "Add Part Detail"
-  }
 
-  open={modalOpen}
-
-  onOk={handleSubmit}
-
-  onCancel={() =>
-    setModalOpen(false)
-  }
->
-
-  <Form
-    form={form}
-    layout="vertical"
-  >
-<Form.Item
-  name="part_id"
-  label="Part"
->
-  <Select
-    options={parts.map(
-      p => ({
-        value: p.part_id,
-        label: p.part_name,
-      })
-    )}
-  />
-</Form.Item>
-
-<Form.Item
-  name="quantity_issued"
-  label="Quantity Issued"
->
-  <InputNumber
-    min={0}
-    style={{
-      width: "100%",
-    }}
-  />
-</Form.Item>
-
-<Form.Item
-  name="serial_number"
-  label="Serial Number"
->
-  <Input />
-</Form.Item>
-
-<Form.Item
-  name="remarks"
-  label="Remarks"
->
-  <Input.TextArea />
-</Form.Item>
-    <Form.Item
-  label="Active"
-  name="active_flag"
-  valuePropName="checked"
->
-  <Switch />
-</Form.Item>
-
-
-</Form>
-</Modal>
       </Space>
     );
   };
