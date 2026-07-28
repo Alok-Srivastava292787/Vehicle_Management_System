@@ -133,3 +133,51 @@ def test_delete_part_issue_detail_not_found():
     )
 
     assert response.status_code == 404
+def test_issue_part_not_in_requisition():
+
+    response = client.post(
+        "/api/v1/part-issue-details",
+        json={
+            "issue_id": 1,
+            "part_id": 999999,
+            "quantity_issued": 1,
+        },
+    )
+
+    assert response.status_code == 400
+
+    assert (
+        response.json()["detail"]
+        ==
+        "Part not found in Requisition"
+    )
+def test_issue_qty_exceeds_request():
+
+    response = client.post(
+        "/api/v1/part-issue-details",
+        json={
+            "issue_id": 1,
+            "part_id": 1,
+            "quantity_issued": 999,
+        },
+    )
+
+    assert response.status_code == 400
+
+    assert (
+        response.json()["detail"]
+        ==
+        "Issued Quantity cannot exceed Requested Quantity"
+    )
+def test_issue_quantity_zero():
+
+    response = client.post(
+        "/api/v1/part-issue-details",
+        json={
+            "issue_id": 1,
+            "part_id": 1,
+            "quantity_issued": 0,
+        },
+    )
+
+    assert response.status_code == 400

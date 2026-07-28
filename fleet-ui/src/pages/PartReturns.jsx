@@ -40,13 +40,10 @@ import {
     deactivatePartReturn,
 } from "../services/partReturnService"
 
-import {
-  getVehicles,
-} from "../services/vehicleService";
 
 import {
-  getJobCards,
-} from "../services/jobCardService";
+  getPartIssues,
+} from "../services/partIssueService";
 
 import {
   getEmployees,
@@ -61,15 +58,11 @@ const PartReturns = () => {
     useState(false);
 
   const [issues,
-    setReturns] =
+    setIssues] =
     useState([]);
 
-  const [vehicles,
-    setVehicles] =
-    useState([]);
-
-  const [jobCards,
-    setJobCards] =
+  const [partReturns,
+    setPartReturns] =
     useState([]);
 
   const [employees,
@@ -103,27 +96,21 @@ const PartReturns = () => {
         setLoading(true);
 
         const [
+          returnData,
           issueData,
-          vehicleData,
-          jobCardData,
           employeeData,
         ] = await Promise.all([
           getPartReturns(),
-          getVehicles(),
-          getJobCards(),
+          getPartIssues(),
           getEmployees(),
         ]);
 
-        setReturns(
+        setPartReturns(
+          returnData
+        );
+
+        setIssues(
           issueData
-        );
-
-        setVehicles(
-          vehicleData
-        );
-
-        setJobCards(
-          jobCardData
         );
 
         setEmployees(
@@ -137,7 +124,7 @@ const PartReturns = () => {
         );
 
         message.error(
-          "Failed to load issues"
+          "Failed to load part returns"
         );
 
       } finally {
@@ -252,16 +239,6 @@ const PartReturns = () => {
       }
     };
 
-  const vehicleMap =
-    Object.fromEntries(
-      vehicles.map(
-        vehicle => [
-          vehicle.vehicle_id,
-          vehicle.rc_number,
-        ]
-      )
-    );
-
   const employeeMap =
     Object.fromEntries(
       employees.map(
@@ -271,9 +248,15 @@ const PartReturns = () => {
         ]
       )
     );
-
+  const issueMap =
+    Object.fromEntries(
+      issues.map(issue => [
+        issue.issue_id,
+        issue.issue_number,
+      ])
+    );
   const filteredData =
-    issues.filter(
+    partReturns.filter(
       item => {
 
         const matchesSearch =
@@ -296,7 +279,6 @@ const PartReturns = () => {
               "INACTIVE" &&
             !item.active_flag
           );
-
         return (
           matchesSearch &&
           matchesStatus
@@ -313,12 +295,13 @@ const PartReturns = () => {
       dataIndex:
         "return_number",
     },
-
     {
-      title:
-        "Issue",
+      title: "Issue",
 
-    dataIndex: "issue_id",
+      render: (_, record) =>
+        issueMap[
+          record.issue_id
+        ] ?? "-",
     },
 
     {
@@ -412,6 +395,9 @@ const PartReturns = () => {
             >
               <Button
                 danger
+                disabled={
+                  !record.active_flag
+                }
                 icon={
                   <DeleteOutlined />
                 }
@@ -425,7 +411,16 @@ const PartReturns = () => {
     },
 
   ];
+console.log("Issues", issues);
+const issueOptions =
+  issues
+    .filter(issue => issue.active_flag)
+    .map(issue => ({
+      value: issue.issue_id,
+      label: issue.issue_number,
+    }));
 
+console.table(issueOptions);
   return (
     <>
 
@@ -506,19 +501,11 @@ const PartReturns = () => {
         "Issue ID is required",
     },
   ]}
->console.log(issues);
+>
+
 <Select
   options={
-    issues
-      .filter(
-        issue => issue.active_flag
-      )
-      .map(
-        issue => ({
-          value: issue.issue_id,
-          label: issue.issue_number,
-        })
-      )
+    issueOptions
   }
 />
 

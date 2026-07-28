@@ -4,6 +4,14 @@ from sqlalchemy.orm import (
     Session,
 )
 
+from app.repositories.part_issue_repository import (
+    PartIssueRepository,
+)
+
+from app.repositories.part_requisition_detail_repository import (
+    PartRequisitionDetailRepository,
+)
+
 from app.db.dependencies import (
     get_db,
 )
@@ -31,18 +39,25 @@ def get_service(
     db: Session =
     Depends(get_db),
 ):
-    repository = (
-        PartIssueDetailRepository(
-            db
-        )
-    )
 
     return (
         PartIssueDetailService(
-            repository
+            repository=
+            PartIssueDetailRepository(
+                db
+            ),
+
+            issue_repository=
+            PartIssueRepository(
+                db
+            ),
+
+            requisition_detail_repository=
+            PartRequisitionDetailRepository(
+                db
+            ),
         )
     )
-
 
 @router.post("")
 def create_part_issue_detail(

@@ -37,6 +37,7 @@ import {
 } from "../services/partIssueDetailService";
 import {  getPartIssueDetails,} from "../services/partIssueDetailService";
 import {  getEmployees,} from "../services/employeeService";
+import {  getPartRequisitionDetails,} from "../services/partRequisitionDetailService";
 
 import {  getParts,} from "../services/partService";
 
@@ -68,6 +69,12 @@ const PartIssueDetails =
     const [parts,
       setParts] =
       useState([]);
+    
+    const [
+      requisitionDetailParts,
+      setRequisitionDetailParts,
+    ] = useState([]);
+
     const [modalOpen,
       setModalOpen] =
       useState(false);
@@ -107,6 +114,21 @@ const PartIssueDetails =
                   issueId
                 )
             );
+          const requisitionDetails =
+            await getPartRequisitionDetails();
+
+          const allowedParts =
+            requisitionDetails.filter(
+              detail =>
+                detail.requisition_id ===
+                  currentIssue.requisition_id
+                &&
+                detail.active_flag
+            );
+
+          setRequisitionDetailParts(
+            allowedParts
+          );
 
           setIssue(
             currentIssue
@@ -315,6 +337,29 @@ const handleSubmit =
       );
     }
   };
+  const requisitionPartOptions =
+  requisitionDetailParts.map(
+    detail => {
+
+      const part =
+        parts.find(
+          p =>
+            p.part_id ===
+            detail.part_id
+        );
+
+      return {
+
+        value:
+          detail.part_id,
+
+        label:
+          part?.part_name
+          ??
+          `Part ${detail.part_id}`,
+      };
+    }
+  );
     return (
 
       <Space
@@ -477,15 +522,11 @@ const handleSubmit =
   name="part_id"
   label="Part"
 >
-  <Select
-    options={parts.map(
-      p => ({
-        value: p.part_id,
-        label: p.part_name,
-      })
-    )}
-  />
-</Form.Item>
+<Select
+  options={
+    requisitionPartOptions
+  }
+/></Form.Item>
 
 <Form.Item
   name="quantity_issued"

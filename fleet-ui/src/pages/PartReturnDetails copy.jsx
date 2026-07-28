@@ -13,14 +13,6 @@ import {
   Table,
   Typography,
   message,
-  Modal,
-  Form,
-  Input,
-  InputNumber,
-  Popconfirm,
-  Select,
-  Switch,
-  Tag,
 } from "antd";
 
 import {
@@ -30,14 +22,8 @@ import {
 
 import {  API_BASE_URL,} from "../utils/config";
 import {  getPartReturns,} from "../services/partReturnService";
-import {
-  createPartReturnDetail,
-  updatePartReturnDetail,
-  deactivatePartReturnDetail,
-  getPartReturnDetails,
-} from "../services/partReturnDetailService";
 
-
+import {  getPartReturnDetails,} from "../services/partReturnDetailService";
 
 import {  getEmployees,} from "../services/employeeService";
 
@@ -71,16 +57,6 @@ const PartReturnDetails =
     const [parts,
       setParts] =
       useState([]);
-    const [modalOpen,
-      setModalOpen] =
-      useState(false);
-
-    const [editingRecord,
-      setEditingRecord] =
-      useState(null);
-
-    const [form] =
-      Form.useForm();
 
     const loadData =
       async () => {
@@ -205,141 +181,8 @@ const PartReturnDetails =
         dataIndex:
           "remarks",
       },
-      {
-        title: "Status",
-
-        render: (_, record) => (
-
-          <Tag
-            color={
-              record.active_flag
-                ? "green"
-                : "red"
-            }
-          >
-            {
-              record.active_flag
-                ? "Active"
-                : "Inactive"
-            }
-          </Tag>
-
-        ),
-      },
-      {
-        title: "Actions",
-
-        render: (_, record) => (
-
-          <Space>
-
-            <Button
-              onClick={() => {
-
-                setEditingRecord(
-                  record
-                );
-
-                form.resetFields();
-
-                form.setFieldsValue(
-                  record
-                );
-
-                setModalOpen(
-                  true
-                );
-              }}
-            >
-              Edit
-            </Button>
-
-            <Popconfirm
-              title="Deactivate Detail?"
-
-              onConfirm={async () => {
-
-                await deactivatePartReturnDetail(
-                  record.return_detail_id
-                );
-
-                message.success(
-                  "Detail deactivated"
-                );
-
-                await loadData();
-              }}
-            >
-
-              <Button
-                danger
-                disabled={
-                  !record.active_flag
-                }
-              >
-                Deactivate
-              </Button>
-
-            </Popconfirm>
-
-          </Space>
-
-        ),
-      }
     ];
 
-    const handleSubmit =
-      async () => {
-
-        try {
-
-          const values =
-            await form.validateFields();
-
-          values.return_id =
-            Number(
-              returnId
-            );
-
-          if (
-            editingRecord
-          ) {
-
-            await updatePartReturnDetail(
-              editingRecord.return_detail_id,
-              values
-            );
-
-          } else {
-
-            await createPartReturnDetail(
-              values
-            );
-          }
-
-          message.success(
-            "Detail saved successfully"
-          );
-
-          setModalOpen(
-            false
-          );
-
-          form.resetFields();
-
-          await loadData();
-
-        } catch (
-          error
-        ) {
-
-          message.error(
-            error?.response?.data?.detail
-            || "Operation failed"
-          );
-        }
-      };
-      
     return (
 
       <Space
@@ -429,10 +272,10 @@ const PartReturnDetails =
             </Descriptions.Item>
 
             <Descriptions.Item
-              label="Issue ID"
+              label="Requisition"
             >
               {
-                returnPart.issue_id
+                returnPart.requisition_id
               }
             </Descriptions.Item>
 
@@ -441,31 +284,7 @@ const PartReturnDetails =
         </Card>
 
         <Card>
-<Button
-  type="primary"
-  onClick={() => {
 
-    setEditingRecord(
-      null
-    );
-
-    form.resetFields();
-
-    form.setFieldsValue({
-      return_id:
-        Number(returnId),
-
-      active_flag:
-        true,
-    });
-
-    setModalOpen(
-      true
-    );
-  }}
->
-  Add Returned Part
-</Button>
           <Title level={4}>
             Returnd Parts
           </Title>
@@ -478,97 +297,7 @@ const PartReturnDetails =
           />
 
         </Card>
-<Modal
-  title={
-    editingRecord
-      ? "Edit Return Detail"
-      : "Add Return Detail"
-  }
 
-  open={modalOpen}
-
-  onOk={handleSubmit}
-
-  onCancel={() =>
-    setModalOpen(false)
-  }
->
-
-  <Form
-    form={form}
-    layout="vertical"
-  >
-
-    <Form.Item
-      name="part_id"
-      label="Part"
-      rules={[
-        {
-          required: true,
-          message:
-            "Part is required",
-        },
-      ]}
-    >
-      <Select
-        options={
-          parts.map(
-            part => ({
-              value:
-                part.part_id,
-
-              label:
-                part.part_name,
-            })
-          )
-        }
-      />
-    </Form.Item>
-
-    <Form.Item
-      name="quantity_returned"
-      label="Quantity Returned"
-      rules={[
-        {
-          required: true,
-        },
-      ]}
-    >
-      <InputNumber
-        min={0}
-        style={{
-          width: "100%",
-        }}
-      />
-    </Form.Item>
-
-    <Form.Item
-      name="serial_number"
-      label="Serial Number"
-    >
-      <Input />
-    </Form.Item>
-
-    <Form.Item
-      name="remarks"
-      label="Remarks"
-    >
-      <Input.TextArea
-        rows={4}
-      />
-    </Form.Item>
-
-    <Form.Item
-      name="active_flag"
-      label="Active"
-      valuePropName="checked"
-    >
-      <Switch />
-    </Form.Item>
-
-  </Form>
-
-</Modal>
       </Space>
     );
   };
