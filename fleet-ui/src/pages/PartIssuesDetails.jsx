@@ -337,29 +337,26 @@ const handleSubmit =
       );
     }
   };
-  const requisitionPartOptions =
-  requisitionDetailParts.map(
-    detail => {
 
-      const part =
-        parts.find(
-          p =>
-            p.part_id ===
-            detail.part_id
-        );
+  const requisitionPartOptions = [
+      ...new Map(
+        requisitionDetailParts.map(
+          detail => [
+            detail.part_id,
+            {
+              value:
+                detail.part_id,
+              label:
+                partMap[
+                  detail.part_id
+                ] ??
+                `Part ${detail.part_id}`,
+            },
+          ]
+        )
+      ).values(),
+    ];
 
-      return {
-
-        value:
-          detail.part_id,
-
-        label:
-          part?.part_name
-          ??
-          `Part ${detail.part_id}`,
-      };
-    }
-  );
     return (
 
       <Space

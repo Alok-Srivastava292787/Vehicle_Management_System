@@ -92,6 +92,10 @@ const MainLayout = () => {
       icon: <AuditOutlined />,
       label: (<Link to="/audit-logs">Audit Logs</Link>),
     },
+    {
+      key: "stockledger",
+      label: (<Link to="/stock-ledger"> Stock Ledger</Link>),
+    }
 
   ];
 

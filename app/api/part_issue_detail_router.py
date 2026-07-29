@@ -28,6 +28,7 @@ from app.schemas.part_issue_detail_schema import (
 from app.services.part_issue_detail_service import (
     PartIssueDetailService,
 )
+from app.repositories.stock_ledger_repository import    (   StockLedgerRepository)
 
 router = APIRouter(
     prefix="/api/v1/part-issue-details",
@@ -42,20 +43,10 @@ def get_service(
 
     return (
         PartIssueDetailService(
-            repository=
-            PartIssueDetailRepository(
-                db
-            ),
-
-            issue_repository=
-            PartIssueRepository(
-                db
-            ),
-
-            requisition_detail_repository=
-            PartRequisitionDetailRepository(
-                db
-            ),
+        repository=PartIssueDetailRepository(db),
+        issue_repository=PartIssueRepository(db),
+        requisition_detail_repository=PartRequisitionDetailRepository(db),
+        stock_ledger_repository=StockLedgerRepository(db),
         )
     )
 

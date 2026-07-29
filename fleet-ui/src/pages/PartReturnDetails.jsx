@@ -36,7 +36,7 @@ import {
   deactivatePartReturnDetail,
   getPartReturnDetails,
 } from "../services/partReturnDetailService";
-
+import {  getPartIssueDetails,} from "../services/partIssueDetailService";
 
 
 import {  getEmployees,} from "../services/employeeService";
@@ -67,6 +67,10 @@ const PartReturnDetails =
     const [employees,
       setEmployees] =
       useState([]);
+    const [
+      issueDetailParts,
+      setIssueDetailParts,
+    ] = useState([]);
 
     const [parts,
       setParts] =
@@ -92,12 +96,14 @@ const PartReturnDetails =
             detailData,
             employeeData,
             partData,
+            issueDetailParts,
           ] =
             await Promise.all([
               getPartReturns(),
               getPartReturnDetails(),
               getEmployees(),
               getParts(),
+              getPartIssueDetails(),
             ]);
 
           const currentReturn =
@@ -110,7 +116,21 @@ const PartReturnDetails =
                   returnId
                 )
             );
+          const issueDetails =
+            await getPartIssueDetails();
 
+          const allowedParts =
+            issueDetails.filter(
+              detail =>
+                detail.issue_id ===
+                  currentReturn.issue_id
+                &&
+                detail.active_flag===true
+            );
+
+          setIssueDetailParts(
+            allowedParts
+          );
           setReturn(
             currentReturn
           );
@@ -151,7 +171,7 @@ const PartReturnDetails =
 
     if (!returnPart)
       return null;
-
+    
     const employeeMap =
       Object.fromEntries(
         employees.map(
@@ -171,7 +191,24 @@ const PartReturnDetails =
           ]
         )
       );
-
+    const issuePartOptions = [
+      ...new Map(
+        issueDetailParts.map(
+          detail => [
+            detail.part_id,
+            {
+              value:
+                detail.part_id,
+              label:
+                partMap[
+                  detail.part_id
+                ] ??
+                `Part ${detail.part_id}`,
+            },
+          ]
+        )
+      ).values(),
+    ];
     const columns = [
 
       {
@@ -510,19 +547,11 @@ const PartReturnDetails =
         },
       ]}
     >
-      <Select
-        options={
-          parts.map(
-            part => ({
-              value:
-                part.part_id,
-
-              label:
-                part.part_name,
-            })
-          )
-        }
-      />
+<Select
+  options={
+    issuePartOptions
+  }
+/>
     </Form.Item>
 
     <Form.Item

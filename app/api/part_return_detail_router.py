@@ -18,6 +18,8 @@ from app.services.part_return_detail_service import (
 )
 from app.repositories.part_issue_detail_repository import   (PartIssueDetailRepository)
 from app.repositories.part_return_repository import (PartReturnRepository)
+from app.repositories.stock_ledger_repository import    (   StockLedgerRepository)
+
 
 router = APIRouter(
     prefix="/api/v1/part-return-details",
@@ -29,14 +31,13 @@ def get_service(
     db: Session = Depends(get_db),
 ):
 
-    return PartReturnDetailService(
-        repository=
-            PartReturnDetailRepository(db),
-        return_repository=
-            PartReturnRepository(db),
-        issue_detail_repository=
-            PartIssueDetailRepository(db),
-    )
+    return (PartReturnDetailService(
+        repository=PartReturnDetailRepository(db),
+        return_repository=PartReturnRepository(db),
+        issue_detail_repository=PartIssueDetailRepository(db),
+        stock_ledger_repository=StockLedgerRepository(db),
+            )
+        )
 
 @router.post("")
 def create_part_return_detail(

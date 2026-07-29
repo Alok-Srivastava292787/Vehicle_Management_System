@@ -10,13 +10,12 @@ def test_create_part_issue_detail():
         "/api/v1/part-issue-details",
         json={
             "issue_id": 1,
-            "part_id": 1,
-            "quantity_issued": 5,
+            "part_id": 213,
+            "quantity_issued": 1,
             "serial_number": "ISS-SN-001",
             "remarks": "Issue Test",
         },
     )
-
     assert response.status_code == 200
 
 
@@ -44,7 +43,7 @@ def test_get_part_issue_detail():
         "/api/v1/part-issue-details",
         json={
             "issue_id": 1,
-            "part_id": 1,
+            "part_id": 213,
             "quantity_issued": 2,
         },
     )
@@ -64,7 +63,7 @@ def test_update_part_issue_detail():
         "/api/v1/part-issue-details",
         json={
             "issue_id": 1,
-            "part_id": 1,
+            "part_id": 213,
             "quantity_issued": 2,
         },
     )
@@ -94,11 +93,15 @@ def test_delete_part_issue_detail():
         "/api/v1/part-issue-details",
         json={
             "issue_id": 1,
-            "part_id": 1,
+            "part_id": 213,
+            "quantity_issued": 1,
+            "serial_number": "ISS-SN-001",
+            "remarks": "Issue Test",
         },
     )
 
     detail = create_response.json()
+#    print(detail)
 
     response = client.delete(
         f"/api/v1/part-issue-details/{detail['issue_detail_id']}"
@@ -157,11 +160,11 @@ def test_issue_qty_exceeds_request():
         "/api/v1/part-issue-details",
         json={
             "issue_id": 1,
-            "part_id": 1,
-            "quantity_issued": 999,
+            "part_id": 213,
+            "quantity_issued": 9999,
         },
     )
-
+#    print(response.json())
     assert response.status_code == 400
 
     assert (
@@ -181,3 +184,4 @@ def test_issue_quantity_zero():
     )
 
     assert response.status_code == 400
+

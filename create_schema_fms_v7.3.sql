@@ -167,8 +167,28 @@ CREATE TABLE IF NOT EXISTS inventory.part_master (
     approval_required BOOLEAN,
     reorder_level INTEGER,
     max_stock INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    minimum_stock_qty NUMERIC(10,2) DEFAULT 10;
 );
+
+CREATE TABLE inventory.opening_stock
+(
+    opening_stock_id BIGSERIAL PRIMARY KEY,
+    part_id BIGINT NOT NULL
+    REFERENCES inventory.part_master(part_id),
+    opening_quantity NUMERIC(10,2)
+    NOT NULL DEFAULT 0,
+    effective_date TIMESTAMP
+    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    remarks TEXT,
+    active_flag BOOLEAN
+    NOT NULL DEFAULT TRUE,
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by VARCHAR(100),
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 -- Vendor master like
 -- Tyre Supplier
@@ -997,6 +1017,29 @@ CREATE TABLE IF NOT EXISTS transact.part_return_detail
     modified_by VARCHAR(100),
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS inventory.stock_ledger
+(
+    ledger_id BIGSERIAL PRIMARY KEY,
+    part_id BIGINT NOT NULL
+    REFERENCES inventory.part_master(part_id),
+    transaction_type VARCHAR(20) NOT NULL,
+    reference_id BIGINT,
+    transaction_date TIMESTAMP
+        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    quantity_in NUMERIC(10,2)
+        DEFAULT 0,
+    quantity_out NUMERIC(10,2)
+        DEFAULT 0,
+    balance_quantity NUMERIC(10,2)
+        DEFAULT 0,
+    remarks TEXT,
+    active_flag BOOLEAN
+        DEFAULT TRUE,
+    created_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by VARCHAR(100),
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 ALTER TABLE transact.part_requisition
 ADD CONSTRAINT fk_req_vehicle
@@ -1182,9 +1225,19 @@ BEGIN
                 to_jsonb(OLD)->>'job_card_id',
                 to_jsonb(OLD)->>'checklist_id',
                 to_jsonb(OLD)->>'part_id',
-                to_jsonb(OLD)->>'id'
+                to_jsonb(OLD)->>'requisition_id',
+                to_jsonb(OLD)->>'requisition_detail_id',
+                to_jsonb(OLD)->>'issue_id',
+                to_jsonb(OLD)->>'issue_detail_id',
+                to_jsonb(OLD)->>'return_id',
+                to_jsonb(OLD)->>'return_detail_id',
+                to_jsonb(OLD)->>'ledger_id',
+                to_jsonb(OLD)->>'id',
+                to_jsonb(OLD)->>'opening_stock_id'
             );
+
     ELSE
+
         v_record_id :=
             COALESCE(
                 to_jsonb(NEW)->>'vehicle_id',
@@ -1195,9 +1248,15 @@ BEGIN
                 to_jsonb(NEW)->>'job_card_id',
                 to_jsonb(NEW)->>'checklist_id',
                 to_jsonb(NEW)->>'part_id',
-                to_jsonb(NEW)->>'id'
-                to_jsonb(NEW)->>'requisition_id'
-                to_jsonb(NEW)->>'requisition_detail_id'
+                to_jsonb(NEW)->>'requisition_id',
+                to_jsonb(NEW)->>'requisition_detail_id',
+                to_jsonb(NEW)->>'issue_id',
+                to_jsonb(NEW)->>'issue_detail_id',
+                to_jsonb(NEW)->>'return_id',
+                to_jsonb(NEW)->>'return_detail_id',
+                to_jsonb(NEW)->>'ledger_id',
+                to_jsonb(NEW)->>'id',
+                to_jsonb(NEW)->>'opening_stock_id'
             );
     END IF;
     INSERT INTO audit.audit_log
@@ -1236,40 +1295,40 @@ $function$;
 
 -- adding constriants for fk integrity
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN IF NOT EXISTS inspection_id SET NOT NULL;
+ALTER COLUMN inspection_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN IF NOT EXISTS complaint_id SET NOT NULL;
+ALTER COLUMN complaint_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN IF NOT EXISTS vehicle_id SET NOT NULL;
+ALTER COLUMN vehicle_id SET NOT NULL;
 
 ALTER TABLE maintenance.vehicle_complaint
-ALTER COLUMN IF NOT EXISTS vehicle_id SET NOT NULL;
+ALTER COLUMN vehicle_id SET NOT NULL;
 
 ALTER TABLE maintenance.vehicle_complaint
-ALTER COLUMN IF NOT EXISTS driver_id SET NOT NULL;
+ALTER COLUMN driver_id SET NOT NULL;
 
 ALTER TABLE maintenance.technician_inspection
-ALTER COLUMN IF NOT EXISTS complaint_id SET NOT NULL;
+ALTER COLUMN complaint_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN IF NOT EXISTS complaint_id SET NOT NULL;
+ALTER COLUMN complaint_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN IF NOT EXISTS inspection_id SET NOT NULL;
+ALTER COLUMN inspection_id SET NOT NULL;
 
 ALTER TABLE transact.maintenance_job_card
-ALTER COLUMN IF NOT EXISTS vehicle_id SET NOT NULL;
+ALTER COLUMN vehicle_id SET NOT NULL;
 
 ALTER TABLE maintenance.job_card_part
-ALTER COLUMN IF NOT EXISTS job_card_id SET NOT NULL;
+ALTER COLUMN job_card_id SET NOT NULL;
 
 ALTER TABLE maintenance.job_card_part
-ALTER COLUMN IF NOT EXISTS part_id SET NOT NULL;
+ALTER COLUMN part_id SET NOT NULL;
 
 ALTER TABLE maintenance.preventive_maintenance_checklist
-ALTER COLUMN IF NOT EXISTS vehicle_id SET NOT NULL;
+ALTER COLUMN vehicle_id SET NOT NULL;
 -- adding column for enhaning job card 
 ALTER TABLE transact.maintenance_job_card
 ADD COLUMN IF NOT EXISTS driver_id INTEGER;
@@ -1304,7 +1363,7 @@ ADD COLUMN IF NOT EXISTS problem_found_action_taken TEXT;
 ALTER TABLE transact.maintenance_job_card
 ADD COLUMN requisition_slip_number VARCHAR(100);
 ALTER TABLE transact.maintenance_job_card
-ADD IF NOT EXISTS COLUMN requested_by_employee_id INTEGER;
+ADD COLUMN IF NOT EXISTS requested_by_employee_id INTEGER;
 
 ALTER TABLE transact.maintenance_job_card
 ADD COLUMN IF NOT EXISTS verified_by_employee_id INTEGER;
@@ -1332,30 +1391,18 @@ FOREIGN KEY (technician2_id)
 REFERENCES master.employee_master(employee_id);
 ALTER TABLE transact.maintenance_job_card
 ADD CONSTRAINT fk_jobcard_requested_by
-FOREIGN KEY (
-    requested_by_employee_id
-)
-REFERENCES master.employee_master(
-    employee_id
-);
+FOREIGN KEY (requested_by_employee_id)
+REFERENCES master.employee_master(employee_id);
 
 ALTER TABLE transact.maintenance_job_card
 ADD CONSTRAINT fk_jobcard_verified_by
-FOREIGN KEY (
-    verified_by_employee_id
-)
-REFERENCES master.employee_master(
-    employee_id
-);
+FOREIGN KEY (verified_by_employee_id)
+REFERENCES master.employee_master(employee_id);
 
 ALTER TABLE transact.maintenance_job_card
 ADD CONSTRAINT fk_jobcard_approved_by
-FOREIGN KEY (
-    approved_by_employee_id
-)
-REFERENCES master.employee_master(
-    employee_id
-);
+FOREIGN KEY (approved_by_employee_id)
+REFERENCES master.employee_master(employee_id);
 
 -- adding column for auditing
 ALTER TABLE maintenance.technician_inspection
@@ -1534,6 +1581,14 @@ BEFORE UPDATE ON maintenance.preventive_maintenance_checklist
 FOR EACH ROW
 EXECUTE FUNCTION audit.set_modified_at();
 
+DROP TRIGGER IF EXISTS trg_opening_stock_modified ON inventory.opening_stock;
+CREATE TRIGGER
+trg_opening_stock_modified
+BEFORE UPDATE
+ON inventory.opening_stock
+FOR EACH ROW
+EXECUTE FUNCTION
+audit.set_modified_at();
 -- trigger for part_master
 DROP TRIGGER IF EXISTS trg_part_master_modified_at
 ON inventory.part_master;
@@ -1649,6 +1704,26 @@ EXECUTE FUNCTION audit.log_changes();
 CREATE TRIGGER trg_audit_part_requisition_detail
 AFTER INSERT OR UPDATE
 ON transact.part_requisition_detail
+FOR EACH ROW
+EXECUTE FUNCTION audit.log_changes();
+
+CREATE TRIGGER trg_stock_ledger_modified
+BEFORE UPDATE
+ON inventory.stock_ledger
+FOR EACH ROW
+EXECUTE FUNCTION audit.set_modified_at();
+
+CREATE TRIGGER trg_stock_ledger_audit
+AFTER INSERT OR UPDATE OR DELETE
+ON inventory.stock_ledger
+FOR EACH ROW
+EXECUTE FUNCTION audit.log_changes();
+
+DROP TRIGGER IF EXISTS trg_opening_stock_audit ON inventory.opening_stock;
+
+CREATE TRIGGER trg_opening_stock_audit
+AFTER INSERT OR UPDATE OR DELETE
+ON inventory.opening_stock
 FOR EACH ROW
 EXECUTE FUNCTION audit.log_changes();
 

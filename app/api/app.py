@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
-from kafka import KafkaProducer
+from fastapi import FastAPI, HTTPException  #type: ignore
+from kafka import KafkaProducer #type: ignore
 import json
-from pydantic import BaseModel
+from pydantic import BaseModel  #type: ignore
 from config import KAFKA_BROKER, KAFKA_TOPIC
 
 app = FastAPI()

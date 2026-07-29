@@ -9,6 +9,9 @@ from app.repositories.part_return_detail_repository import (
 )
 from app.repositories.part_issue_detail_repository import   (PartIssueDetailRepository)
 from app.repositories.part_return_repository import (PartReturnRepository)
+from app.repositories.stock_ledger_repository import (StockLedgerRepository,)
+from app.services.stock_ledger_service import (StockLedgerService,)
+
 
 class PartReturnDetailService:
 
@@ -17,10 +20,13 @@ class PartReturnDetailService:
         repository: PartReturnDetailRepository,
         return_repository: PartReturnRepository,
         issue_detail_repository: PartIssueDetailRepository,
+        stock_ledger_repository: StockLedgerRepository,
     ):
         self.repository = repository
         self.return_repository = return_repository
         self.issue_detail_repository = issue_detail_repository
+        self.stock_ledger_repository = stock_ledger_repository
+
     def validate_quantity_returned(
         self,
         return_id: int,
@@ -120,12 +126,25 @@ class PartReturnDetailService:
                 payload.remarks,
             )
         )
-
-        return (
+        created_detail=(
             self.repository.create(
                 detail
             )
         )
+        ledger_service = (
+            StockLedgerService(
+                self.stock_ledger_repository
+            )
+        )
+        ledger_service.record_return(
+            part_id=payload.part_id,
+            quantity=float(
+                payload.quantity_returned
+            ),
+            reference_id=payload.return_id,
+        )
+
+        return created_detail
 
     def get_all(
         self,

@@ -15,6 +15,13 @@ from app.repositories.part_issue_detail_repository import (
     PartIssueDetailRepository,
 )
 
+from app.repositories.stock_ledger_repository import (
+    StockLedgerRepository,
+)
+
+from app.services.stock_ledger_service import (
+    StockLedgerService,
+)
 
 class PartIssueDetailService:
 
@@ -28,17 +35,16 @@ class PartIssueDetailService:
 
         requisition_detail_repository:
         PartRequisitionDetailRepository,
+
+        stock_ledger_repository:
+        StockLedgerRepository,
     ):
 
         self.repository = repository
+        self.issue_repository = (issue_repository)
+        self.requisition_detail_repository = (requisition_detail_repository)
+        self.stock_ledger_repository = (stock_ledger_repository)
 
-        self.issue_repository = (
-            issue_repository
-        )
-
-        self.requisition_detail_repository = (
-            requisition_detail_repository
-        )
     def validate_issue_quantity(
         self,
         issue_id: int,
@@ -91,7 +97,6 @@ class PartIssueDetailService:
                 item.active_flag
             )
         )
-
         if requested_qty <= 0:
 
             raise HTTPException(
@@ -101,7 +106,22 @@ class PartIssueDetailService:
                     "Requisition"
                 ),
             )
+        available_stock = (
+            self.stock_ledger_repository
+            .get_latest_balance(
+                part_id
+            )
+        )
 
+        if quantity_issued > available_stock:
+
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Insufficient stock available"
+                ),
+            )
+        current_issue_detail_id=None
         existing_issued_qty = sum(
             float(
                 item.quantity_issued or 0
@@ -117,6 +137,9 @@ class PartIssueDetailService:
                 == part_id
                 and
                 item.active_flag
+                and
+                item.issue_detail_id
+                != current_issue_detail_id
             )
         )
 
@@ -163,9 +186,23 @@ class PartIssueDetailService:
             )
         )
 
-        return self.repository.create(
+        created_detail=self.repository.create(
             detail
         )
+        ledger_service = (
+            StockLedgerService(
+                self.stock_ledger_repository
+            )
+        )
+
+        ledger_service.record_issue(
+            part_id=payload.part_id,
+            quantity=float(
+                payload.quantity_issued
+            ),
+            reference_id=payload.issue_id,
+        )
+        return created_detail
 
     def get_all(
         self,
