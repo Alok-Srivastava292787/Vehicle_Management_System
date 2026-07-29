@@ -16,7 +16,9 @@ from app.repositories.complaint_repository import (
 from app.repositories.vehicle_repository import (
     VehicleRepository,
 )
-
+from app.repositories.jobcard_part_repository import JobCardPartRepository
+from app.repositories.part_requisition_repository import PartRequisitionRepository
+from app.repositories.part_requisition_detail_repository import PartRequisitionDetailRepository
 from app.schemas.jobcard import (
     JobCardCreate,
     JobCardResponse,
@@ -33,6 +35,22 @@ router = APIRouter(
     prefix="/api/v1/jobcards",
     tags=["Job Card"]
 )
+
+def get_service(
+    db: Session =
+    Depends(get_db),
+):
+    return JobCardService(
+        jobcard_repo= JobCardRepository,
+        complaint_repo= ComplaintRepository,
+        vehicle_repo= VehicleRepository,
+        inspection_repo= InspectionRepository,
+        repository=JobCardRepository(db),
+        job_card_part_repository=JobCardPartRepository(db),
+        requisition_repository=PartRequisitionRepository(db),
+        requisition_detail_repository=PartRequisitionDetailRepository(db),
+
+        )
 
 #POST   /
 #Create JobCard
@@ -52,6 +70,10 @@ def create_JobCard(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
+        JobCardRepository(db),
+        JobCardPartRepository(db),
+        PartRequisitionRepository(db),
+        PartRequisitionDetailRepository(db),
     )
 
     return service.create_jobcard(
@@ -71,6 +93,10 @@ def get_all_JobCards(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
+        JobCardRepository(db),
+        JobCardPartRepository(db),
+        PartRequisitionRepository(db),
+        PartRequisitionDetailRepository(db),
     )
 #    res=service.get_all_jobcard()
 #    for item in res:
@@ -96,6 +122,10 @@ def get_JobCard(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
+        JobCardRepository(db),
+        JobCardPartRepository(db),
+        PartRequisitionRepository(db),
+        PartRequisitionDetailRepository(db),
     )
 
     return service.get_jobcard(
@@ -119,6 +149,10 @@ def update_JobCard(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
+        JobCardRepository(db),
+        JobCardPartRepository(db),
+        PartRequisitionRepository(db),
+        PartRequisitionDetailRepository(db),
     )
 
     return service.update_jobcard(
@@ -141,6 +175,10 @@ def delete_JobCard(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
+        JobCardRepository(db),
+        JobCardPartRepository(db),
+        PartRequisitionRepository(db),
+        PartRequisitionDetailRepository(db),
     )
 
     service.delete_jobcard(
@@ -152,3 +190,19 @@ def delete_JobCard(
         "message":
         "Vehicle deleted successfully",
     }
+@router.post(
+    "/{job_card_id}/generate-requisition"
+)
+def generate_requisition(
+    job_card_id: int,
+    service:
+    JobCardService =
+    Depends(get_service),
+):
+
+    return (
+        service
+        .generate_requisition(
+            job_card_id
+        )
+    )

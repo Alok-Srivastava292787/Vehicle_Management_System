@@ -93,3 +93,33 @@ class StockLedgerRepository:
         return float(
             row.balance_quantity
         )
+    def get_latest_balances(
+    self,
+):
+
+        rows = (
+            self.db.query(
+                StockLedger
+            )
+            .order_by(
+                StockLedger.part_id,
+                StockLedger.ledger_id.desc(),
+            )
+            .all()
+        )
+
+        latest = {}
+
+        for row in rows:
+
+            if (
+                row.part_id
+                not in latest
+            ):
+                latest[
+                    row.part_id
+                ] = row
+
+        return list(
+            latest.values()
+        )

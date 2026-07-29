@@ -21,7 +21,9 @@ import PartIssues from "./pages/PartIssues"
 import PartIssueDetails from "./pages/PartIssuesDetails"
 import PartReturns from "./pages/PartReturns";
 import PartReturnDetails from "./pages/PartReturnDetails";
-import StockLedger  from "./pages/StockLedger"
+import StockLedger  from "./pages/StockLedger";
+import OpeningStock  from "./pages/OpeningStock";
+import InventoryDashboard  from "./pages/InventoryDashboard";
 
 const App = () => {
   return (
@@ -47,7 +49,8 @@ const App = () => {
         <Route path="part-returns" element={<PartReturns />}/>
         <Route path="part-returns/:returnId" element={<PartReturnDetails />}/>
         <Route path="stock-ledger" element={<StockLedger />}/>
-
+        <Route path="opening-stock" element={<OpeningStock />}/>
+        <Route path="inventory-dashboard" element={<InventoryDashboard />}/>
         
 
       </Route>

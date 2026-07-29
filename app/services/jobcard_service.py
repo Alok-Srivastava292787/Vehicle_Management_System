@@ -1,7 +1,14 @@
+from fastapi import (HTTPException,)
+
+from app.models.part_requisition import (PartRequisition, PartRequisitionDetail)
+from app.repositories.part_requisition_repository import (PartRequisitionRepository,)
+from app.repositories.part_requisition_detail_repository import (PartRequisitionDetailRepository,)
+
+from app.repositories.jobcard_part_repository import (JobCardPartRepository,)
 from app.models.maintenance import MaintenanceJobCard
 from app.schemas.jobcard import JobCardCreate,JobCardUpdate,JobCardResponse
 from app.services.exceptions import NotFoundException
-from app.repositories.jobcard_repository import JobCardRepository
+from app.repositories.jobcard_repository import (JobCardRepository,)
 from app.repositories.complaint_repository import ComplaintRepository
 from app.repositories.vehicle_repository import VehicleRepository
 from app.repositories.inspection_repository import InspectionRepository
@@ -13,11 +20,21 @@ class JobCardService:
         complaint_repo: ComplaintRepository,
         vehicle_repo: VehicleRepository,
         inspection_repo: InspectionRepository,
+        repository:                     JobCardRepository,
+        job_card_part_repository:       JobCardPartRepository,
+        requisition_repository:         PartRequisitionRepository,
+        requisition_detail_repository:  PartRequisitionDetailRepository,
+
     ):
         self.jobcard_repo = (          jobcard_repo)
         self.complaint_repo = (        complaint_repo)
         self.inspection_repo = (       inspection_repo)
         self.vehicle_repo = (          vehicle_repo)
+
+        self.repository = (repository)
+        self.job_card_part_repository = (     job_card_part_repository)
+        self.requisition_repository = (       requisition_repository)
+        self.requisition_detail_repository = (requisition_detail_repository)
 
     def create_jobcard(
         self,
@@ -216,3 +233,140 @@ class JobCardService:
         self.jobcard_repo.delete(
             jobcard
         )
+    def generate_requisition_number(
+    self,
+):
+
+        latest = (
+            self.requisition_repository
+            .get_all()
+        )
+
+        running_no = (
+            len(latest) + 1
+        )
+
+        return (
+            f"PR-2026-"
+            f"{running_no:06d}"
+        )
+    def generate_requisition(
+    self,
+    job_card_id: int,
+):
+
+        job_card = (
+            self.repository
+            .get_by_id(
+                job_card_id
+            )
+        )
+
+        if not job_card:
+
+            raise HTTPException(
+                status_code=404,
+                detail=
+                "Job Card not found",
+            )
+
+        existing = (
+            self.requisition_repository
+            .get_by_id(
+                job_card_id
+            )
+        )
+
+        if existing:
+
+            raise HTTPException(
+                status_code=400,
+                detail=
+                "Requisition already exists for Job Card",
+            )
+
+        job_card_parts = (
+            self.job_card_part_repository
+            .get_all()
+        )
+
+        job_card_parts = [
+            item
+            for item in job_card_parts
+            if item.job_card_id
+            == job_card_id
+            and item.active_flag
+        ]
+
+        if not job_card_parts:
+
+            raise HTTPException(
+                status_code=400,
+                detail=
+                "No Job Card Parts found",
+            )
+
+        requisition = (
+            PartRequisition(
+                requisition_number=
+                self.generate_requisition_number(),
+
+                vehicle_id=
+                job_card.vehicle_id,
+
+                job_card_id=
+                job_card.job_card_id,
+
+                technician_id=
+                job_card.technician_id,
+
+                status="OPEN",
+
+                remarks=(
+                    "Generated from "
+                    f"Job Card "
+                    f"{job_card.job_card_id}"
+                ),
+            )
+        )
+
+        requisition = (
+            self.requisition_repository
+            .create(
+                requisition
+            )
+        )
+
+        for item in job_card_parts:
+
+            detail = (
+                PartRequisitionDetail(
+                    requisition_id=
+                    requisition.requisition_id,
+
+                    part_id=
+                    item.part_id,
+
+                    quantity_required=
+                    item.quantity_required,
+
+                    quantity_returned=0,
+
+                    remarks=(
+                        "Generated from "
+                        "Job Card Part"
+                    ),
+                )
+            )
+
+            self.requisition_detail_repository.create(
+                detail
+            )
+
+        return {
+            "requisition_id":
+            requisition.requisition_id,
+
+            "requisition_number":
+            requisition.requisition_number,
+        }

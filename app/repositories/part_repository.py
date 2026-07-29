@@ -4,13 +4,13 @@
 
 from sqlalchemy.orm import Session
 
-from app.models.inventory import (
-    PartMaster,
-)
+from app.repositories.jobcard_part_repository import JobCardPartRepository
+from app.repositories.jobcard_repository import JobCardRepository
+from app.repositories.part_requisition_detail_repository import PartRequisitionDetailRepository
+from app.repositories.part_requisition_repository import PartRequisitionRepository
+from app.models.inventory import (PartMaster,)
 
-from app.repositories.base_repository import (
-    BaseRepository,
-)
+from app.repositories.base_repository import (BaseRepository,)
 
 class PartRepository:
 
@@ -85,4 +85,21 @@ class PartRepository:
         return (
             self.get_by_id(part_id)
             is not None
+        )
+    def get_by_job_card_id(
+    self,
+    job_card_id: int,
+):
+
+        return (
+            self.db.query(
+                PartRequisition
+            )
+            .filter(
+                PartRequisition.job_card_id
+                == job_card_id,
+                PartRequisition.active_flag
+                .is_(True),
+            )
+            .first()
         )

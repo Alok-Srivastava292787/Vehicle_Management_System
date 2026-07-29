@@ -317,3 +317,33 @@ def test_create_jobcard_approval_fields():
         result["job_status"]
         == "IN_PROGRESS"
     )
+def test_generate_requisition():
+
+    response = client.post(
+        "/api/v1/jobcards/1/generate-requisition"
+    )
+    print(response.json())
+    print(response.status_code)
+    assert (
+        response.status_code
+        == 200
+    )
+
+    assert (
+        "requisition_id"
+        in response.json()
+    )
+def test_generate_requisition_duplicate():
+
+    client.post(
+        "/api/v1/job-cards/1/generate-requisition"
+    )
+
+    response = client.post(
+        "/api/v1/job-cards/1/generate-requisition"
+    )
+
+    assert (
+        response.status_code
+        == 400
+    )

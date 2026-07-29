@@ -19,6 +19,9 @@ from app.services.stock_ledger_service import (
     StockLedgerService,
 )
 
+from app.repositories.part_repository import (
+    PartRepository,
+)
 router = APIRouter(
     prefix="/api/v1/stock-ledger",
     tags=["Stock Ledger"],
@@ -30,13 +33,10 @@ def get_service(
     Depends(get_db),
 ):
 
-    return (
-        StockLedgerService(
-            StockLedgerRepository(
-                db
-            )
-        )
-    )
+    return (StockLedgerService(
+        StockLedgerRepository(db),
+        PartRepository(db),
+    ))
 
 
 @router.post("")
@@ -109,3 +109,68 @@ def get_balance(
     return service.get_balance(
         part_id
     )
+#Current Inventory Summary
+@router.get("/dashboard/summary")
+def get_inventory_summary(
+    service: StockLedgerService =
+    Depends(get_service),
+):
+    return service.get_inventory_summary()
+#Low stock parts
+@router.get("/dashboard/low-stock")
+def get_low_stock_parts(
+    service: StockLedgerService =
+    Depends(get_service),
+):
+    return service.get_low_stock_parts()
+
+#low stock parts with details
+@router.get(
+    "/dashboard/low-stock"
+)
+def get_low_stock_parts(
+    service:
+    StockLedgerService =
+    Depends(get_service),
+):
+    return (
+        service
+        .get_low_stock_parts()
+    )
+@router.get(
+    "/dashboard/top-consumed"
+)
+def get_top_consumed_parts(
+    service:
+    StockLedgerService =
+    Depends(get_service),
+):
+    return (
+        service
+        .get_top_consumed_parts()
+    )
+@router.get(
+    "/dashboard/top-returned"
+)
+def get_top_returned_parts(
+    service:
+    StockLedgerService =
+    Depends(get_service),
+):
+    return (
+        service
+        .get_top_returned_parts()
+    )
+@router.get(
+    "/dashboard/trend"
+)
+def get_issue_return_trend(
+    service:
+    StockLedgerService =
+    Depends(get_service),
+):
+    return (
+        service
+        .get_issue_return_trend()
+    )
+

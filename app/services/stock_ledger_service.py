@@ -1,5 +1,5 @@
 from fastapi import HTTPException   #type: ignore
-
+from collections import defaultdict
 from app.models.stock_ledger import (
     StockLedger,
 )
@@ -7,16 +7,25 @@ from app.models.stock_ledger import (
 from app.repositories.stock_ledger_repository import (
     StockLedgerRepository,
 )
-
+from app.repositories.part_repository import (
+    PartRepository,
+)
 
 class StockLedgerService:
     def __init__(
         self,
         repository:
         StockLedgerRepository,
+
+        part_repository:
+        PartRepository,
     ):
+
         self.repository = repository
 
+        self.part_repository = (
+            part_repository
+        )
     def create(
         self,
         payload,
@@ -207,3 +216,333 @@ class StockLedgerService:
                 item
             )
         )
+    def get_inventory_summary(
+    self,
+):
+        records = (
+            self.repository.get_all()
+        )
+        total_stock = sum(
+            float(
+                x.balance_quantity
+                or 0
+            )
+            for x in records
+        )
+
+        total_issued = sum(
+            float(
+                x.quantity_out
+                or 0
+            )
+            for x in records
+        )
+
+        total_returned = sum(
+            float(
+                x.quantity_in
+                or 0
+            )
+            for x in records
+            if (
+                x.transaction_type
+                == "RETURN"
+            )
+        )
+
+        return {
+
+            "total_stock":
+            total_stock,
+
+            "total_issued":
+            total_issued,
+
+            "total_returned":
+            total_returned,
+
+            "total_transactions":
+            len(records),
+        }
+    def get_low_stock_parts(
+    self,
+):
+        records = (
+            self.repository.get_all()
+        )
+        low_stock_parts = [
+            {
+                "part_id": x.part_id,
+                "balance_quantity": x.balance_quantity,
+            }
+            for x in records
+            if (
+                x.balance_quantity
+                < 10
+            )
+        ]
+        return low_stock_parts
+    def get_low_stock_parts(
+        self,
+    ):
+
+        balances = (
+            self.repository
+            .get_latest_balances()
+        )
+
+        results = []
+
+        for row in balances:
+
+            part = (
+                self.part_repository
+                .get_by_id(
+                    row.part_id
+                )
+            )
+
+            if not part:
+
+                continue
+
+            minimum_stock = (
+                float(
+                    part.minimum_stock_qty
+                    or 0
+                )
+            )
+
+            current_balance = (
+                float(
+                    row.balance_quantity
+                    or 0
+                )
+            )
+
+            if (
+                current_balance
+                <= minimum_stock
+            ):
+
+                results.append(
+                    {
+                        "part_id":
+                        part.part_id,
+
+                        "part_name":
+                        part.part_name,
+
+                        "balance":
+                        current_balance,
+
+                        "minimum_stock_qty":
+                        minimum_stock,
+                    }
+                )
+
+        return results
+    def get_top_consumed_parts(
+    self,
+):
+
+        ledger_rows = (
+            self.repository.get_all()
+        )
+
+        consumption = defaultdict(float)
+
+        for row in ledger_rows:
+
+            if (
+                row.transaction_type
+                == "ISSUE"
+            ):
+
+                consumption[
+                    row.part_id
+                ] += float(
+                    row.quantity_out
+                    or 0
+                )
+
+        results = []
+
+        for (
+            part_id,
+            qty,
+        ) in consumption.items():
+
+            part = (
+                self.part_repository
+                .get_by_id(
+                    part_id
+                )
+            )
+
+            if not part:
+
+                continue
+
+            results.append(
+                {
+                    "part_id":
+                    part_id,
+
+                    "part_name":
+                    part.part_name,
+
+                    "quantity_consumed":
+                    qty,
+                }
+            )
+
+        results.sort(
+            key=lambda x:
+            x[
+                "quantity_consumed"
+            ],
+            reverse=True,
+        )
+
+        return results[:10]
+#Top returned parts
+    def get_top_returned_parts(
+    self,
+):
+
+        ledger_rows = (
+            self.repository.get_all()
+        )
+
+        returned = defaultdict(float)
+
+        for row in ledger_rows:
+
+            if (
+                row.transaction_type
+                == "RETURN"
+            ):
+
+                returned[
+                    row.part_id
+                ] += float(
+                    row.quantity_in
+                    or 0
+                )
+
+        results = []
+
+        for (
+            part_id,
+            qty,
+        ) in returned.items():
+
+            part = (
+                self.part_repository
+                .get_by_id(
+                    part_id
+                )
+            )
+
+            if not part:
+
+                continue
+
+            results.append(
+                {
+                    "part_id":
+                    part_id,
+
+                    "part_name":
+                    part.part_name,
+
+                    "quantity_returned":
+                    qty,
+                }
+            )
+
+        results.sort(
+            key=lambda x:
+            x["quantity_returned"],
+            reverse=True,
+        )
+        return results[:10]
+    def get_issue_return_trend(
+    self,
+):
+
+        rows = (
+            self.repository.get_all()
+        )
+
+        trend = defaultdict(
+            lambda: {
+                "issue": 0,
+                "return": 0,
+            }
+        )
+
+        for row in rows:
+
+            if (
+                not row.transaction_date
+            ):
+                continue
+
+            month = (
+                row.transaction_date
+                .strftime("%Y-%m")
+            )
+
+            if (
+                row.transaction_type
+                == "ISSUE"
+            ):
+
+                trend[month][
+                    "issue"
+                ] += float(
+                    row.quantity_out
+                    or 0
+                )
+
+            if (
+                row.transaction_type
+                == "RETURN"
+            ):
+
+                trend[month][
+                    "return"
+                ] += float(
+                    row.quantity_in
+                    or 0
+                )
+
+        results = []
+
+        for (
+            month,
+            values,
+        ) in sorted(
+            trend.items()
+        ):
+
+            results.append(
+                {
+                    "month":
+                    month,
+
+                    "issue":
+                    values[
+                        "issue"
+                    ],
+
+                    "return":
+                    values[
+                        "return"
+                    ],
+                }
+            )
+
+        return results
