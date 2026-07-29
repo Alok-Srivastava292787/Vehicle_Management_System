@@ -120,3 +120,21 @@ def test_opening_stock_duplicate_part():
     )
 
     assert response.status_code == 400
+def test_insufficient_stock():
+
+    response = client.post(
+        "/api/v1/part-issue-details",
+        json={
+            "issue_id": 21,
+            "part_id": 136,
+            "quantity_issued": 999999,
+        },
+    )
+
+    assert response.status_code == 400
+
+    assert (
+        response.json()["detail"]
+        ==
+        "Insufficient stock available"
+    )
