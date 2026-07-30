@@ -38,7 +38,23 @@ class PartRequisitionRepository:
             )
             .first()
         )
+    def get_by_job_card_id(
+    self,
+    job_card_id: int,
+    ):
 
+        return (
+            self.db.query(
+                PartRequisition
+            )
+            .filter(
+                PartRequisition.job_card_id
+                == job_card_id,
+                PartRequisition.active_flag
+                .is_(True),
+            )
+            .first()
+        )
     def get_all(self):
         return (
             self.db.query(

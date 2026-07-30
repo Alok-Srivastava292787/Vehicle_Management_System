@@ -320,7 +320,7 @@ def test_create_jobcard_approval_fields():
 def test_generate_requisition():
 
     response = client.post(
-        "/api/v1/jobcards/1/generate-requisition"
+        "/api/v1/jobcards/335/generate-requisition"
     )
     print(response.json())
     print(response.status_code)
@@ -336,11 +336,11 @@ def test_generate_requisition():
 def test_generate_requisition_duplicate():
 
     client.post(
-        "/api/v1/job-cards/1/generate-requisition"
+        "/api/v1/job-cards/433/generate-requisition"
     )
 
     response = client.post(
-        "/api/v1/job-cards/1/generate-requisition"
+        "/api/v1/job-cards/433/generate-requisition"
     )
 
     assert (

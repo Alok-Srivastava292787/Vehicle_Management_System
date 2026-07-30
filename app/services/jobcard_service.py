@@ -1,4 +1,4 @@
-from fastapi import (HTTPException,)
+from fastapi import (HTTPException,)    #type: ignore
 
 from app.models.part_requisition import (PartRequisition, PartRequisitionDetail)
 from app.repositories.part_requisition_repository import (PartRequisitionRepository,)
@@ -317,8 +317,7 @@ class JobCardService:
                 job_card_id=
                 job_card.job_card_id,
 
-                technician_id=
-                job_card.technician_id,
+                technician_id=job_card.technician1_id,
 
                 status="OPEN",
 
@@ -348,7 +347,7 @@ class JobCardService:
                     item.part_id,
 
                     quantity_required=
-                    item.quantity_required,
+                    item.quantity,
 
                     quantity_returned=0,
 

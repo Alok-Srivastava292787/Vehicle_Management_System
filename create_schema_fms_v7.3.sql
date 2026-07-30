@@ -1486,6 +1486,7 @@ ALTER TABLE transact.maintenance_job_card ALTER COLUMN active_flag SET NOT NULL;
 update maintenance.job_card_part set active_flag=true;
 ALTER TABLE maintenance.job_card_part ALTER COLUMN active_flag SET DEFAULT TRUE;
 ALTER TABLE maintenance.job_card_part ALTER COLUMN active_flag SET NOT NULL;
+ALTER TABLE inventory.part_request ADD CONSTRAINT uq_part_request_job_card UNIQUE (job_card_id);
 
 
 -- create audit table

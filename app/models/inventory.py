@@ -30,7 +30,7 @@ class PartMaster(Base,
         default=True,
         nullable=True,
     )
-
+    minimum_stock_qty: Mapped [int] = mapped_column()
 
 
 class PartRequest(Base,
@@ -55,6 +55,7 @@ class PartRequest(Base,
             "master.vehicle_master.vehicle_id"
         ),nullable=False
     )
+    minimum_stock_qty: Mapped [int] = mapped_column()
 
 
 class StockTransaction(Base,
@@ -76,3 +77,4 @@ class StockTransaction(Base,
     )
 
     reference_id: Mapped[int] = mapped_column()
+    minimum_stock_qty: Mapped [int] = mapped_column()

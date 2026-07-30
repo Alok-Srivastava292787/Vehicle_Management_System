@@ -25,6 +25,9 @@ import {
 import {
   getInventorySummary,
   getLowStockParts,
+  getTopConsumedParts,
+  getTopReturnedParts,
+  getIssueReturnTrend,
 } from "../services/dashboardService";
 
 const { Title } =

@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import APIRouter   #type: ignore
+from fastapi import Depends     #type: ignore
 from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 
@@ -41,10 +41,10 @@ def get_service(
     Depends(get_db),
 ):
     return JobCardService(
-        jobcard_repo= JobCardRepository,
-        complaint_repo= ComplaintRepository,
-        vehicle_repo= VehicleRepository,
-        inspection_repo= InspectionRepository,
+        jobcard_repo= JobCardRepository(db),
+        complaint_repo= ComplaintRepository(db),
+        vehicle_repo= VehicleRepository(db),
+        inspection_repo= InspectionRepository(db),
         repository=JobCardRepository(db),
         job_card_part_repository=JobCardPartRepository(db),
         requisition_repository=PartRequisitionRepository(db),

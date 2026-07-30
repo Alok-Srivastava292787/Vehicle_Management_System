@@ -30,6 +30,7 @@ import {
   createJobCard,
   updateJobCard,
   deactivateJobCard,
+  generateRequisition,
 } from "../services/jobCardService";
 import dayjs from "dayjs";
 import SearchToolbar from "../components/SearchToolbar";
@@ -40,13 +41,15 @@ import {  getInspections,} from "../services/inspectionService";
 import {  getDrivers,} from "../services/driverService";
 
 import {  getEmployees,} from "../services/employeeService";
-import {  Link,} from "react-router-dom";
+import {  Link,useNavigate,} from "react-router-dom";
 const { Title } = Typography;
 
 const JobCards = () => {
 
   const [jobCards, setJobCards] =
     useState([]);
+  const navigate =
+    useNavigate();
 
   const [vehicles, setVehicles] =
     useState([]);
@@ -393,6 +396,32 @@ const handleSubmit =
               ]
             )
           );
+  const handleGenerateRequisition =
+  async jobCardId => {
+    try {
+      const data =
+        await generateRequisition(
+          jobCardId
+        );
+      message.success(`Requisition ${data.requisition_number} created successfully`);
+      navigate(`/requisitions/${data.requisition_id}`);
+    } 
+    catch (error) {
+
+      console.error(
+        "Generate Requisition Error:",
+        error
+      );
+
+      message.error(
+        error?.response?.data?.detail
+        ||
+        error?.message
+        ||
+        "Failed to generate requisition"
+      );
+    }
+  };
 
   const columns = [
 
@@ -502,16 +531,9 @@ const handleSubmit =
 
       render:
         (_, record) => (
-
           <Space>
-
             <Link
-              to={`/jobcards/${record.job_card_id}`}
-            >
-              <Button>
-                View
-              </Button>
-            </Link>
+              to={`/jobcards/${record.job_card_id}`}><Button> View</Button></Link>
             <Button
               icon={
                 <EditOutlined />
@@ -524,25 +546,16 @@ const handleSubmit =
             >
               Edit
             </Button>
-
-            <Popconfirm
-              title="Deactivate Job Card?"
-              onConfirm={() =>
-                handleDeactivate(
-                  record.job_card_id
-                )
-              }
-            >
-              <Button
-                danger
-                icon={
-                  <DeleteOutlined />
-                }
-              >
-                Deactivate
-              </Button>
-            </Popconfirm>
-
+<Button
+  type="primary"
+  onClick={() =>
+    handleGenerateRequisition(
+      record.job_card_id
+    )
+  }
+>
+  Generate Requisition
+</Button>
           </Space>
         ),
     },

@@ -56,3 +56,13 @@ export const deactivateJobCard =
 
     return response.data;
   };
+  export const generateRequisition =
+  async jobCardId => {
+
+    const response =
+      await apiClient.post(
+        `/jobcards/${jobCardId}/generate-requisition`
+      );
+
+    return response.data;
+  };
