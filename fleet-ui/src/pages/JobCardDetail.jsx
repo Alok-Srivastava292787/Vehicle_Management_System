@@ -23,7 +23,8 @@ import { getDrivers } from "../services/driverService";
 import { getEmployees } from "../services/employeeService";
 import { getJobCardParts } from "../services/jobCardPartService";
 import { getParts }  from "../services/partService";
-import {  API_BASE_URL,} from "../utils/config";
+import { API_BASE_URL,} from "../utils/config";
+import { generateRequisition,} from "../services/jobCardService";
 
 
 const { Title } = Typography;
@@ -56,12 +57,24 @@ const JobCardDetail = () => {
   const [parts,
     setParts] =
     useState([]);
+
+  const [
+    jobCardParts,
+    setJobCardParts,
+  ] = useState([]);
   const [partMaster,
     setPartMaster] =
     useState([]);  
   const navigate =
     useNavigate();
-
+const [
+  partModalOpen,
+  setPartModalOpen,
+  ] = useState(false);
+const openAddPartModal =
+  () => {
+    setPartModalOpen(true);
+  };
   const getStatusColor =
     (status) => {
 
@@ -124,7 +137,7 @@ const JobCardDetail = () => {
         setPartMaster(
           partMasterData
         );
-        setParts(
+        setJobCardParts(
           partsData.filter(
             part =>
               String(
@@ -175,7 +188,6 @@ const JobCardDetail = () => {
       </Card>
     );
   }
-
   const vehicle =
     vehicles.find(
       v =>
@@ -287,13 +299,38 @@ const getApprovalTag =
         </Tag>
       );
     }
-
     return (
       <Tag color="orange">
         Pending
       </Tag>
     );
   };
+const handleGenerateRequisition =
+  async () => {
+
+    try {
+
+      const data =
+        await generateRequisition(
+          jobCard.job_card_id
+        );
+
+      message.success(
+        `Requisition ${data.requisition_number} created successfully`
+      );
+
+      await loadData();
+
+    } catch (error) {
+
+      message.error(
+        error?.response?.data?.detail
+        ||
+        "Failed to generate requisition"
+      );
+    }
+  };
+
   return (
     <Space
       direction="vertical"
@@ -302,38 +339,68 @@ const getApprovalTag =
         width: "100%",
       }}
     >
-
       <Card>
-<Row
-  justify="space-between"
-  style={{
-    marginBottom: 1,
-  }}
->
+        <Row
+          justify="space-between"
+          style={{
+            marginBottom: 1,
+          }}
+        >
+                    <Button
+                      onClick={() =>
+                        navigate(
+                          "/jobcards"
+                        )
+                      }
+                    >
+                      Back To Job Cards
+                    </Button>
+
+        {
+          jobCard.requisition_id ? (
             <Button
+              onClick={() => navigate(`/requisitions/${jobCard.requisition_id}`        )
+              }
+            >
+              View Requisition
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              disabled={
+                jobCardParts.filter(
+                  item =>
+                    item.job_card_id ===
+                      jobCard.job_card_id
+                    &&
+                    item.active_flag
+                ).length === 0
+              }
               onClick={() =>
-                navigate(
-                  "/jobcards"
+                handleGenerateRequisition(
+                  jobCard.job_card_id
                 )
               }
             >
-              Back To Job Cards
+              Generate Requisition
             </Button>
 
-<Button
-  type="primary"
-  onClick={() =>
-    window.open(
-      `${API_BASE_URL}/jobcards_print/${
-        jobCard.job_card_id
-      }/pdf`,
-      "_blank"
-    )
-  }
->
-  Download PDF
-</Button>
-</Row>
+          )
+        }
+        <Button
+          type="primary"
+          onClick={() =>
+            window.open(
+              `${API_BASE_URL}/jobcards_print/${
+                jobCard.job_card_id
+              }/pdf`,
+              "_blank"
+            )
+          }
+        >
+          Download PDF
+        </Button>
+        </Row>
             <Title
               level={2}
               style={{
@@ -534,127 +601,142 @@ const getApprovalTag =
         </Descriptions>
 
       </Card>
-
       <Card>
+          <Card
+            title="Parts Used"
+            extra={
+              <Space>
+<Button
+  type="primary"
+  onClick={() =>
+    navigate(
+      `/jobcardparts?jobCardId=${jobCard.job_card_id}`
+    )
+  }
+>
+  Add Part
+</Button>
+              </Space>
+            }
+          >
+{/*}          <JobCardPartModal
+            open={partModalOpen}
+            
+            jobCardId={jobCard.job_card_id}
+            onCancel={() => setPartModalOpen(false)}
+            onSuccess={() => {setPartModalOpen(false);loadData();}}
+          />
+*/}
+          </Card>
+                  <Table
+                    rowKey="id"
+                    columns={
+                      partColumns
+                    }
+                    dataSource={
+                      parts
+                    }
+                    pagination={false}
+                  />
+      </Card>
+      <Card>
+        <Title level={4}>
+          Cost Summary
+        </Title>
+        <Descriptions bordered>
+          <Descriptions.Item
+            label="Total Parts Cost"
+          >
+            ₹
+            {
+              parts
+                .reduce(
+                  (
+                    total,
+                    item
+                  ) =>
+                    total +
+                    (
+                      (item.quantity || 0)
+                      *
+                      (item.unit_price || 0)
+                    ),
+                  0
+                )
+                .toFixed(2)
+            }
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
+      <Card
+        style={{
+          borderTop:
+            "4px solid #52c41a",
+        }}
+      >
 
         <Title level={4}>
-          Parts Used
+          Approval Information
         </Title>
-        <Table
-          rowKey="id"
-          columns={
-            partColumns
-          }
-          dataSource={
-            parts
-          }
-          pagination={false}
-        />
+
+        <Descriptions
+          bordered
+          column={3}
+        >
+
+          <Descriptions.Item
+            label="Requested By"
+          >
+            <Space>
+              {
+                requestedBy?.full_name
+                || "-"
+              }
+          
+              {
+                getApprovalTag(
+                  requestedBy
+                )
+              }
+            </Space>
+          </Descriptions.Item>
+            
+          <Descriptions.Item
+            label="Verified By"
+          >
+            <Space>
+              {
+                verifiedBy?.full_name
+                || "-"
+              }
+          
+              {
+                getApprovalTag(
+                  verifiedBy
+                )
+              }
+            </Space>
+          </Descriptions.Item>
+          <Descriptions.Item
+            label="Approved By"
+          >
+            <Space>
+              {
+                approvedBy?.full_name
+                || "-"
+              }
+
+              {
+                getApprovalTag(
+                  approvedBy
+                )
+              }
+            </Space>
+          </Descriptions.Item>
+
+        </Descriptions>
 
       </Card>
-<Card>
-
-  <Title level={4}>
-    Cost Summary
-  </Title>
-
-  <Descriptions bordered>
-
-    <Descriptions.Item
-      label="Total Parts Cost"
-    >
-      ₹
-      {
-        parts
-          .reduce(
-            (
-              total,
-              item
-            ) =>
-              total +
-              (
-                (item.quantity || 0)
-                *
-                (item.unit_price || 0)
-              ),
-            0
-          )
-          .toFixed(2)
-      }
-    </Descriptions.Item>
-
-  </Descriptions>
-
-</Card>
-<Card
-  style={{
-    borderTop:
-      "4px solid #52c41a",
-  }}
->
-
-  <Title level={4}>
-    Approval Information
-  </Title>
-
-  <Descriptions
-    bordered
-    column={3}
-  >
-
-    <Descriptions.Item
-      label="Requested By"
-    >
-      <Space>
-        {
-          requestedBy?.full_name
-          || "-"
-        }
-    
-        {
-          getApprovalTag(
-            requestedBy
-          )
-        }
-      </Space>
-    </Descriptions.Item>
-      
-    <Descriptions.Item
-      label="Verified By"
-    >
-      <Space>
-        {
-          verifiedBy?.full_name
-          || "-"
-        }
-    
-        {
-          getApprovalTag(
-            verifiedBy
-          )
-        }
-      </Space>
-    </Descriptions.Item>
-    <Descriptions.Item
-      label="Approved By"
-    >
-      <Space>
-        {
-          approvedBy?.full_name
-          || "-"
-        }
-
-        {
-          getApprovalTag(
-            approvedBy
-          )
-        }
-      </Space>
-    </Descriptions.Item>
-
-  </Descriptions>
-
-</Card>
     </Space>
   );
 };

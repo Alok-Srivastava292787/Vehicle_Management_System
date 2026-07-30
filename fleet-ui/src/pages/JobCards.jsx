@@ -39,6 +39,7 @@ import {  getVehicles,} from "../services/vehicleService";
 import {  getComplaints,} from "../services/complaintService";
 import {  getInspections,} from "../services/inspectionService";
 import {  getDrivers,} from "../services/driverService";
+import {  getJobCardParts,} from "../services/jobCardPartService";
 
 import {  getEmployees,} from "../services/employeeService";
 import {  Link,useNavigate,} from "react-router-dom";
@@ -48,6 +49,7 @@ const JobCards = () => {
 
   const [jobCards, setJobCards] =
     useState([]);
+
   const navigate =
     useNavigate();
 
@@ -56,6 +58,11 @@ const JobCards = () => {
 
   const [complaints, setComplaints] =
     useState([]);
+
+  const [
+    jobCardParts,
+    setJobCardParts,
+  ] = useState([]);
 
   const [inspections, setInspections] =
     useState([]);
@@ -93,6 +100,7 @@ const JobCards = () => {
 
         const [
           jobCardsData,
+          jobCardPartsData,
           vehiclesData,
           complaintsData,
           inspectionsData,
@@ -100,6 +108,7 @@ const JobCards = () => {
           EmployeesData,
         ] = await Promise.all([
           getJobCards(),
+          getJobCardParts(),
           getVehicles(),
           getComplaints(),
           getInspections(),
@@ -108,6 +117,10 @@ const JobCards = () => {
         ]);
         setJobCards(
           jobCardsData
+        );
+
+        setJobCardParts(
+          jobCardPartsData
         );
 
         setVehicles(
@@ -142,7 +155,6 @@ const JobCards = () => {
   useEffect(() => {
     loadData();
   }, []);
-
   const openCreateModal =
     () => {
 
@@ -195,7 +207,7 @@ const JobCards = () => {
 
   date_time_in:
     record.date_time_in
-      ? dayjs(jobCard.date_time_in).format("DD-MMM-YYYY HH:mm")
+      ? dayjs(record.date_time_in).format("DD-MMM-YYYY HH:mm")
       : null,
 
   date_time_out:
@@ -396,57 +408,31 @@ const handleSubmit =
               ]
             )
           );
-  const handleGenerateRequisition =
-  async jobCardId => {
-    try {
-      const data =
-        await generateRequisition(
-          jobCardId
-        );
-      message.success(`Requisition ${data.requisition_number} created successfully`);
-      navigate(`/requisitions/${data.requisition_id}`);
-    } 
-    catch (error) {
-
-      console.error(
-        "Generate Requisition Error:",
-        error
-      );
-
-      message.error(
-        error?.response?.data?.detail
-        ||
-        error?.message
-        ||
-        "Failed to generate requisition"
-      );
-    }
-  };
+  const getPartCount =
+  jobCardId =>
+    jobCardParts.filter(
+      item =>
+        String(item.job_card_id) ===
+        String(jobCardId)
+    ).length;
 
   const columns = [
 
     {
-      title:
-        "Job Card ID",
-
-      dataIndex:
-        "job_card_id",
+      title:        "Job Card ID",
+      dataIndex:        "job_card_id",
     },
 
     {
-      title:
-        "Vehicle",
-
+      title:        "Vehicle",
       render:
         (_, record) =>
-
           vehicleMap[
             record.vehicle_id
           ] ?? "-",
     },
     {
       title: "Driver",
-
       render:
         (_, record) =>
           driverMap[
@@ -456,7 +442,6 @@ const handleSubmit =
 
     {
       title: "Technician",
-    
       render:
         (_, record) =>
           technicianMap[
@@ -466,58 +451,39 @@ const handleSubmit =
 
     {
       title: "Maintenance Type",
-    
       dataIndex:
         "maintenance_type",
     },
 
     {
-      title:
-        "Complaint",
-
-      dataIndex:
-        "complaint_id",
+      title:        "Complaint",
+      dataIndex:        "complaint_id",
     },
 
     {
-      title:
-        "Inspection",
-
-      dataIndex:
-        "inspection_id",
+      title:        "Inspection",
+      dataIndex:        "inspection_id",
     },
 
     {
-      title:
-        "Description",
-
-      dataIndex:
-        "description",
+      title:        "Description",
+      dataIndex:        "description",
+    },
+    {
+      title:        "Labour Charges",
+      dataIndex:        "labour_charges",
     },
 
     {
-      title:
-        "Labour Charges",
-
-      dataIndex:
-        "labour_charges",
-    },
-
-    {
-      title:
-        "Status",
-
+      title:        "Status",
       render:
         (_, record) =>
-
           record.active_flag
-
             ? (
               <Tag color="green">
                 Active
               </Tag>
             )
-
             : (
               <Tag color="red">
                 Inactive
@@ -525,37 +491,64 @@ const handleSubmit =
             ),
     },
 
-    {
-      title:
-        "Actions",
+{
+  title: "Parts",
 
+  render: (_, record) => {
+
+    const count =
+      getPartCount(
+        record.job_card_id
+      );
+
+    return (
+      <Tag color={
+        count > 0
+          ? "blue"
+          : "default"
+      }>
+        {count} Part(s)
+      </Tag>
+    );
+  },
+},
+
+{
+  title: "Requisition",
+
+  render: (_, record) => {
+
+    if (
+      record.requisition_id
+    ) {
+
+      return (
+        <Tag color="green">
+          {
+            record.requisition_slip_number
+          }
+        </Tag>
+      );
+    }
+
+    return (
+      <Tag color="orange">
+        Not Generated
+      </Tag>
+    );
+  },
+},
+    {
+      title:        "Actions",
       render:
         (_, record) => (
           <Space>
-            <Link
-              to={`/jobcards/${record.job_card_id}`}><Button> View</Button></Link>
-            <Button
-              icon={
-                <EditOutlined />
-              }
-              onClick={() =>
-                openEditModal(
-                  record
-                )
-              }
-            >
+            <Link to={`/jobcards/${record.job_card_id}`}>
+            <Button> View</Button></Link>
+            <Button icon={<EditOutlined /> }
+              onClick={() =>openEditModal(record)}>
               Edit
             </Button>
-<Button
-  type="primary"
-  onClick={() =>
-    handleGenerateRequisition(
-      record.job_card_id
-    )
-  }
->
-  Generate Requisition
-</Button>
           </Space>
         ),
     },

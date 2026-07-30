@@ -102,3 +102,6 @@ class JobCardResponse(BaseModel):
     verified_by_employee_id: int | None = None
     approved_by_employee_id: int | None = None
     job_status: str | None = "OPEN"
+    requisition_id: int | None = None
+    requisition_number: str | None = None
+

@@ -175,9 +175,27 @@ class JobCardService:
         self,
     ):
 
-        return (
-            self.jobcard_repo.get_all()
+        job_cards = (
+            self.repository.get_all()
         )
+        for job_card in job_cards:
+            requisition = (
+                self.requisition_repository
+                .get_by_job_card_id(
+                    job_card.job_card_id
+                )
+            )
+            job_card.requisition_id = (
+                requisition.requisition_id
+                if requisition
+                else None
+            )
+            job_card.requisition_slip_number = (
+                requisition.requisition_number
+                if requisition
+                else None
+            )
+        return job_cards
 
     def get_by_complaint(
         self,
@@ -191,6 +209,40 @@ class JobCardService:
             )
         )
 
+    def get_by_id(
+        self,
+        job_card_id: int,
+    ):
+
+        job_card = (
+            self.repository.get_by_id(
+                job_card_id
+            )
+        )
+
+        if not job_card:
+            return None
+
+        requisition = (
+            self.requisition_repository
+            .get_by_job_card_id(
+                job_card_id
+            )
+        )
+
+        job_card.requisition_id = (
+            requisition.requisition_id
+            if requisition
+            else None
+        )
+
+        job_card.requisition_slip_number = (
+            requisition.request_number
+            if requisition
+            else None
+        )
+
+        return job_card
     def update_jobcard(
         self,
         jobcard_id: int,

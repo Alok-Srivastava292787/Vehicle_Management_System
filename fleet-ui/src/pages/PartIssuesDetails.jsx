@@ -462,23 +462,17 @@ const handleSubmit =
           </Title>
 <Button
   type="primary"
-
   onClick={() => {
-
     setEditingRecord(
       null
     );
-
     form.resetFields();
-
     form.setFieldsValue({
       issue_id:
         Number(issueId),
-
       active_flag:
         true,
     });
-
     setModalOpen(
       true
     );
@@ -486,14 +480,12 @@ const handleSubmit =
 >
   Add Issued Part
 </Button>
-
           <Table
             rowKey="issue_detail_id"
             columns={columns}
             dataSource={details}
             pagination={false}
           />
-
         </Card>
 <Modal
   title={
