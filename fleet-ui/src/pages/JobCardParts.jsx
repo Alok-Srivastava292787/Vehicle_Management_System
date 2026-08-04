@@ -44,7 +44,7 @@ import {
 import {
   getParts,
 } from "../services/partService";
-
+import {SearchableSelect } from "../components/SearchableSelect";
 const { Title } =
   Typography;
 
@@ -466,7 +466,7 @@ console.log(values);
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 jobCards.map(
                   (jobCard) => ({
@@ -489,7 +489,7 @@ console.log(values);
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 parts.map(
                   (part) => ({

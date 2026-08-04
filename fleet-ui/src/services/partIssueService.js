@@ -53,3 +53,13 @@ export const deactivatePartIssue =
 
     return response.data;
   };
+export const createIssueFromRequisition =
+  async requisitionId => {
+
+    const response =
+      await apiClient.post(
+        `/part-issues/create-from-requisition/${requisitionId}`
+      );
+
+    return response.data;
+  };

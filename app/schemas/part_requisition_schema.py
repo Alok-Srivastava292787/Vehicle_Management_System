@@ -44,3 +44,5 @@ class PartRequisitionResponse(
     model_config = {
         "from_attributes": True
     }
+    issue_id: int | None = None
+

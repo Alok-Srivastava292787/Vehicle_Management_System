@@ -211,6 +211,9 @@ class MaintenanceJobCard(
         default=True,
         nullable=True,
     )
+    requested_at:   Mapped[ datetime | None]
+    verified_at:   Mapped[ datetime | None]
+    approved_at:   Mapped[ datetime | None]
 
     vehicle = relationship(
         "VehicleMaster",
@@ -235,6 +238,7 @@ class MaintenanceJobCard(
         "JobCardPart",
         back_populates="job_card"
     )
+
 
 
 
@@ -284,6 +288,54 @@ class JobCardPart(
     back_populates="parts"
     )
     
+#class JobCardDetail(
+#    Base,
+#    AuditMixin,
+#    TimestampMixin,
+#):
+#
+#    __tablename__ = "job_card_part"
+#    __table_args__ = {"schema": "maintenance",
+#                      "extend_existing":True}
+#    
+#
+#    id: Mapped[int] = mapped_column(
+#        primary_key=True
+#    )
+#
+#    job_card_id: Mapped[int] = mapped_column(
+#        ForeignKey(
+#            "transact.maintenance_job_card.job_card_id"
+#        ),nullable=False
+#    )
+#
+#    part_id: Mapped[int] = mapped_column(
+#        ForeignKey(
+#            "inventory.part_master.part_id"
+#        ),nullable=False
+#    )
+#
+#    quantity: Mapped[float | None] = mapped_column(
+#        Numeric(12, 2)
+#    )
+#
+#    unit_price: Mapped[float | None] = mapped_column(
+#        Numeric(12, 2)
+#    )
+#
+#    total_price: Mapped[float | None] = mapped_column(
+#        Numeric(12, 2)
+#    )
+#    active_flag: Mapped[bool | None] = mapped_column(
+#        Boolean,
+#        default=True,
+#        nullable=True,
+#    )
+#    job_card = relationship(
+#    "MaintenanceJobCard",
+#    back_populates="parts"
+#    )
+
 class PreventiveMaintenanceChecklist(
     Base,
     AuditMixin,

@@ -1,25 +1,18 @@
 from fastapi import (    APIRouter,Depends,)    #type: ignore
 
-from sqlalchemy.orm import (
-    Session,
-)
+from sqlalchemy.orm import ( Session,)
 
-from app.db.dependencies import (
-    get_db,
-)
+from app.db.dependencies import (    get_db,)
 
-from app.repositories.part_issue_repository import (
-    PartIssueRepository,
-)
-
+from app.repositories.part_issue_repository import (    PartIssueRepository,)
 from app.schemas.part_issue_schema import (
     PartIssueCreate,
     PartIssueUpdate,
 )
-
-from app.services.part_issue_service import (
-    PartIssueService,
-)
+from app.repositories.part_requisition_repository import (    PartRequisitionRepository,)
+from app.services.part_issue_service import (    PartIssueService,)
+from app.repositories.part_requisition_detail_repository import (    PartRequisitionDetailRepository,)
+from app.repositories.part_issue_detail_repository import (    PartIssueDetailRepository,)
 
 router = APIRouter(
     prefix="/api/v1/part-issues",
@@ -32,15 +25,16 @@ def get_service(
     Depends(get_db),
 ):
 
-    repository = (
-        PartIssueRepository(
-            db
-        )
-    )
-
     return (
         PartIssueService(
-            repository
+            repository=
+                PartIssueRepository(db),
+            requisition_repository=
+                PartRequisitionRepository(db),
+            requisition_detail_repository=
+                PartRequisitionDetailRepository(db),
+            issue_detail_repository=
+                PartIssueDetailRepository(db),
         )
     )
 
@@ -138,5 +132,21 @@ def delete_part_issue(
     return (
         service.delete(
             issue_id
+        )
+    )
+
+
+@router.post(
+    "/create-from-requisition/{requisition_id}"
+)
+def create_from_requisition(
+    requisition_id: int,
+    service:
+    PartIssueService =
+    Depends(get_service),
+):
+    return (
+        service.create_from_requisition(
+            requisition_id
         )
     )

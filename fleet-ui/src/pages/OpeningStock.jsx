@@ -41,7 +41,7 @@ import {
 import {
   getParts,
 } from "../services/partService";
-
+import {SearchableSelect } from "../components/SearchableSelect";
 const { Title } =
   Typography;
 
@@ -485,7 +485,7 @@ const OpeningStock = () => {
             ]}
           >
 
-            <Select
+            <SearchableSelect
               options={
                 parts.map(
                   part => ({

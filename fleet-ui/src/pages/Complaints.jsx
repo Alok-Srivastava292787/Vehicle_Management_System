@@ -41,6 +41,7 @@ import {  getDrivers,} from "../services/driverService";
 import SearchToolbar from "../components/SearchToolbar";
 
 import tablePagination from "../utils/tablePagination";
+import {SearchableSelect } from "../components/SearchableSelect";
 
 const { Title } =
   Typography;
@@ -527,7 +528,7 @@ const Complaints = () => {
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 vehicles.map(
                   (vehicle) => ({
@@ -550,7 +551,7 @@ const Complaints = () => {
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 drivers.map(
                   (driver) => ({

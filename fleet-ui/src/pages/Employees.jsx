@@ -36,7 +36,7 @@ from "../components/SearchToolbar";
 
 import tablePagination
 from "../utils/tablePagination";
-
+import {SearchableSelect } from "../components/SearchableSelect";
 const { Title } = Typography;
 
 const employeeTypeOptions = [
@@ -398,7 +398,7 @@ const Employees = () => {
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               placeholder="Select employee type"
               options={employeeTypeOptions}
             />

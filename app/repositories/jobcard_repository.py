@@ -128,3 +128,13 @@ class JobCardRepository(
             self.get_by_id(job_card_id)
             is not None
         )
+    def update(
+        self,
+        item,
+    ):
+
+        self.db.commit()
+
+        self.db.refresh(item)
+
+        return item

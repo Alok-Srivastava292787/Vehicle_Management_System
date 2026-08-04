@@ -49,7 +49,7 @@ import {
 import {
   getJobCards,
 } from "../services/jobCardService";
-
+import {SearchableSelect } from "../components/SearchableSelect";
 import {
   getEmployees,
 } from "../services/employeeService";
@@ -491,7 +491,7 @@ const PartIssues = () => {
     },
   ]}
 >
-  <Select
+  <SearchableSelect
     options={
       requisitions.map(
         req => ({
@@ -508,7 +508,7 @@ const PartIssues = () => {
       name="issued_by_employee_id"
       label="Issued By"
     >
-      <Select
+      <SearchableSelect
         allowClear
         options={
           employees.map(
@@ -527,7 +527,7 @@ const PartIssues = () => {
       name="received_by_employee_id"
       label="Received By"
     >
-      <Select
+      <SearchableSelect
         allowClear
         options={
           employees.map(
@@ -546,7 +546,7 @@ const PartIssues = () => {
       name="status"
       label="Status"
     >
-      <Select
+      <SearchableSelect
         options={[
           {
             value:

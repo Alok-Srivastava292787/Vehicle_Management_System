@@ -4,37 +4,38 @@ import {
   Button,
   Card,
   Descriptions,
-  Row,
-  Space,
-  Spin,
-  Table,
-  Tag,
-  Typography,
-  message,
-  Modal,
   Form,
   Input,
   InputNumber,
+  message,
+  Modal,
   Popconfirm,
+  Row,
   Select,
+  Space,
+  Spin,
+  Steps,
   Switch,
+  Table,
+  Tag,
+  Typography,
 } from "antd";
 
-import {
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import {  getPartRequisitions,} from "../services/partRequisitionService";
+import {  data, useNavigate,  useParams,} from "react-router-dom";
+import dayjs from "dayjs";
+import {  getPartRequisitions, submitRequest, approveRequest,} from "../services/partRequisitionService";
 import {  getPartRequisitionDetails,} from "../services/partRequisitionDetailService";
 import {  getVehicles,} from "../services/vehicleService";
 import {  getEmployees,} from "../services/employeeService";
 import {  getParts,} from "../services/partService";
 import {  API_BASE_URL,} from "../utils/config";
+import {SearchableSelect } from "../components/SearchableSelect";
 import {
   createPartRequisitionDetail,
   updatePartRequisitionDetail,
   deactivatePartRequisitionDetail,
 } from "../services/partRequisitionDetailService";
+import {createIssueFromRequisition} from "../services/partIssueService"
 
 const { Title } =
   Typography;
@@ -67,15 +68,13 @@ const PartRequisitionDetails =
     const [modalOpen,
       setModalOpen] =
       useState(false);
-
     const [editingRecord,
       setEditingRecord] =
       useState(null);
-
     const [form] =
       Form.useForm();
 
-    const loadData = async () => {
+      const loadData = async () => {
         try {
           setLoading(
             true
@@ -170,7 +169,48 @@ const PartRequisitionDetails =
         </Card>
       );
     }
-    const vehicle =
+    const getWorkflowStep =
+      () => {
+
+        switch (
+          requisition.status
+        ) {
+
+          case "OPEN":
+            return 0;
+
+          case "APPROVED":
+            return 1;
+
+          case "ISSUED":
+            return 2;
+
+          case "CLOSED":
+            return 3;
+
+          default:
+            return 0;
+        }
+      };
+        const handleApproveRequest =
+        async () => {
+          try {
+            await approveRequest(
+              requisition.requisition_id
+            );
+            message.success(
+              "Request approved"
+            );
+            loadData();
+          } catch (error) {
+            message.error(
+              error?.response?.data?.detail
+              ||
+              "Operation failed"
+            );
+          }
+        };
+      const vehicle =
       vehicles.find(
         v =>
           v.vehicle_id ===
@@ -367,6 +407,54 @@ const PartRequisitionDetails =
           );
         }
       };
+      const handleCreateIssue =
+        async () => {
+          try {
+            const data =
+              await createIssueFromRequisition(
+                requisition.requisition_id
+              );
+            message.success(
+              `Issue ${data.issue_number} created`
+            );
+    window.open(
+      `/part-issues/${data.issue_id}`,
+      "_blank"
+    );
+} catch (error) {
+
+  console.error(
+    "Create Issue Error",
+    error
+  );
+
+  console.error(
+    "Response",
+    error?.response?.data
+  );
+
+  message.error(
+    JSON.stringify(
+      error?.response?.data
+    )
+  );
+}        };
+
+const handleViewIssue =
+  () => {
+
+    window.open(
+      `/part-issues/${requisition.issue_id}`,
+      "_blank"
+    );
+
+  };      const approved_by =
+        employees.find(
+          e =>
+          e.employee_id ===
+          (requisition.approved_by)
+      );
+
     return (
 
       <Space
@@ -393,7 +481,48 @@ const PartRequisitionDetails =
             >
               Back To Requisitions
             </Button>
-            <Button
+{
+  requisition.status ===
+  "APPROVED" ? (
+
+    <Button
+      type="primary"
+      onClick={
+        handleCreateIssue
+      }
+    >
+      Create Issue
+    </Button>
+
+  ) : requisition.status ===
+      "ISSUE_CREATED" ? (
+
+    <Button
+      onClick={
+        handleViewIssue
+      }
+    >
+      View Issue
+    </Button>
+
+  ) : (
+
+    ["DRAFT","OPEN","SUBMITTED"]
+      .includes(
+        requisition.status
+      ) && (
+
+      <Button
+        type="primary"
+        onClick={
+          handleApproveRequest
+        }
+      >
+        Approve
+      </Button>
+    )
+  )
+}            <Button
               type="primary"
               onClick={() =>
                 window.open(
@@ -473,35 +602,31 @@ const PartRequisitionDetails =
           </Descriptions>
         </Card>
         <Card>
-          <Title
-            level={4}
-          >
-            Requested Parts
-          </Title>
-<Space
-  style={{
-    marginBottom: 16,
-  }}
->
+          <Card
+            title="Requested Parts"
+            extra={
+              <Space>
+                <Button
+                     type="primary"
+                  onClick={() => {
+                    setEditingRecord(null);
+                    form.resetFields();
+                    form.setFieldsValue({
+                      requisition_id:
+                        Number(requisitionId),
+                        active_flag: true,
+                    });
 
-<Button
-  type="primary"
-  onClick={() => {
+                    setModalOpen(true);
+                  }}
+                >
+                  Add Part
+                </Button>
+              </Space>
+            }
+        >
 
-    setEditingRecord(null);
-    form.resetFields();
-    form.setFieldsValue({
-      requisition_id:
-        Number(requisitionId),
-        active_flag: true,
-    });
-
-    setModalOpen(true);
-  }}
->
-  Add Part
-</Button>
-</Space>
+        </Card>
           <Table
             rowKey={
               "requisition_detail_id"
@@ -550,7 +675,7 @@ const PartRequisitionDetails =
       ]}
     >
 
-      <Select
+      <SearchableSelect
         options={
           parts.map(
             part => ({
@@ -633,6 +758,68 @@ const PartRequisitionDetails =
   </Form>
 
 </Modal>
+<Card
+  style={{
+    borderTop:
+      "4px solid #1677ff",
+  }}
+>
+  <Title level={4}>
+    Requisition Workflow
+  </Title>
+  <Steps
+    current={
+      getWorkflowStep()
+    }
+    items={[
+      {
+        title: "Open",
+        description:"Resquested"
+      },
+      {
+        title: "Approved",
+     description: (
+        <>
+          <div>
+            {
+              approved_by?.full_name
+              || "-"
+            }
+          </div>
+
+          <div
+            style={{
+              color: "#888",
+              fontSize: 12,
+            }}
+          >
+            {
+              requisition.approved_at
+                ? dayjs(
+                    requisition.approved_at
+                  ).format(
+                    "DD-MMM-YYYY HH:mm"
+                  )
+                : "-"
+            }
+          </div>
+        </>
+      ),
+      },
+      {
+        title: "Issued",
+        description:
+          "Parts Issued",
+      },
+      {
+        title: "Closed",
+        description:
+          "Completed",
+      },
+    ]}
+  />
+</Card>
+
 
       </Space>
     );

@@ -13,6 +13,7 @@ from app.schemas.part_requisition_detail_schema import (
     PartRequisitionDetailUpdate,
 )
 
+
 from app.services.part_requisition_detail_service import (
     PartRequisitionDetailService,
 )
@@ -48,7 +49,6 @@ def get_service(
 def create_requisition_detail(
     payload:
     PartRequisitionDetailCreate,
-
     service:
     PartRequisitionDetailService =
     Depends(
@@ -56,8 +56,10 @@ def create_requisition_detail(
     ),
 ):
 
-    return service.create(
-        payload
+    return (
+        service.create(
+            payload
+        )
     )
 
 
@@ -70,7 +72,9 @@ def get_requisition_details(
     ),
 ):
 
-    return service.get_all()
+    return (
+        service.get_all()
+    )
 
 
 @router.get(
@@ -86,8 +90,10 @@ def get_requisition_detail(
     ),
 ):
 
-    return service.get_by_id(
-        requisition_detail_id
+    return (
+        service.get_by_id(
+            requisition_detail_id
+        )
     )
 
 

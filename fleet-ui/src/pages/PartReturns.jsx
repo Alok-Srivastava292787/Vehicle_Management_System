@@ -38,7 +38,8 @@ import {
     createPartReturn,
     updatePartReturn,
     deactivatePartReturn,
-} from "../services/partReturnService"
+} from "../services/partReturnService";
+import {SearchableSelect } from "../components/SearchableSelect";
 
 
 import {
@@ -503,7 +504,7 @@ console.table(issueOptions);
   ]}
 >
 
-<Select
+<SearchableSelect
   options={
     issueOptions
   }
@@ -514,7 +515,7 @@ console.table(issueOptions);
       name="returned_by_employee_id"
       label="Returned By"
     >
-      <Select
+      <SearchableSelect
         allowClear
         options={
           employees.map(
@@ -533,7 +534,7 @@ console.table(issueOptions);
       name="received_by_employee_id"
       label="Received By"
     >
-      <Select
+      <SearchableSelect
         allowClear
         options={
           employees.map(
@@ -552,7 +553,7 @@ console.table(issueOptions);
       name="status"
       label="Status"
     >
-      <Select
+      <SearchableSelect
         options={[
           {
             value:

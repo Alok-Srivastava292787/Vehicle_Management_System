@@ -140,6 +140,13 @@ CREATE TABLE IF NOT EXISTS master.employee_master (
     phone_number VARCHAR(15) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+insert into master.employee_master(
+	employee_id, employee_type, full_name, phone_number)
+	VALUES 
+	(1, 'ADMINISTRATOR', 'SYSTEM_ADMIN_1',1111111111),
+	(2, 'ADMINISTRATOR', 'SYSTEM_ADMIN_2',2222222222),
+	(3, 'ADMINISTRATOR', 'SYSTEM_ADMIN_3',3333333333)
+ON CONFLICT DO NOTHING;
 
 -- Driver Master
 CREATE TABLE IF NOT EXISTS master.driver_master (
@@ -427,6 +434,9 @@ CREATE TABLE IF NOT EXISTS transact.maintenance_job_card (
     modified_by BIGINT
         REFERENCES master.employee_master(employee_id),
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    requested_at TIMESTAMP;
+    verified_at TIMESTAMP;
+    approved_at TIMESTAMP;
 );
 
 -- Maintenance Parts Usage
@@ -884,50 +894,34 @@ CREATE TABLE  IF NOT EXISTS  maintenance.checklist_result (
 CREATE TABLE IF NOT EXISTS  transact.part_requisition
 (
     requisition_id            BIGSERIAL PRIMARY KEY,
-
     requisition_number        VARCHAR(50) UNIQUE,
-
     requisition_date          TIMESTAMP NOT NULL,
-
     vehicle_id               INTEGER NOT NULL,
-
     job_card_id              INTEGER NOT NULL,
-
     technician_id            INTEGER,
-
     remarks                  TEXT,
-
     status                   VARCHAR(30)
                              DEFAULT 'OPEN',
-
     active_flag              BOOLEAN
                              DEFAULT TRUE,
-
     created_at               TIMESTAMP
                              DEFAULT CURRENT_TIMESTAMP,
-
     modified_at              TIMESTAMP
-                             DEFAULT CURRENT_TIMESTAMP
+                             DEFAULT CURRENT_TIMESTAMP,
+    approver                 VARCHAR(100),
+    approved_at              TIMESTAMP
 );
 --transact.part_requisition_detail
 CREATE TABLE IF NOT EXISTS  transact.part_requisition_detail
 (
     requisition_detail_id     BIGSERIAL PRIMARY KEY,
-
     requisition_id           BIGINT NOT NULL,
-
     part_id                  INTEGER NOT NULL,
-
     quantity_required        NUMERIC(10,2),
-
     quantity_returned        NUMERIC(10,2),
-
     required_serial_number   VARCHAR(200),
-
     returned_serial_number   VARCHAR(200),
-
     remarks                  TEXT,
-
     active_flag             BOOLEAN
                             DEFAULT TRUE
 );
@@ -1403,6 +1397,17 @@ ALTER TABLE transact.maintenance_job_card
 ADD CONSTRAINT fk_jobcard_approved_by
 FOREIGN KEY (approved_by_employee_id)
 REFERENCES master.employee_master(employee_id);
+ALTER TABLE transact.part_requisition
+ADD CONSTRAINT part_requisition_status_check
+CHECK (
+    status IN (
+        'OPEN',
+        'APPROVED',
+        'ISSUE_CREATED',
+        'ISSUED',
+        'CLOSED'
+    )
+);
 
 -- adding column for auditing
 ALTER TABLE maintenance.technician_inspection
@@ -1445,6 +1450,8 @@ ADD COLUMN IF NOT EXISTS created_by BIGINT,
 ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN IF NOT EXISTS modified_by BIGINT,
 ADD COLUMN IF NOT EXISTS modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE transact.part_requisition
+ADD COLUMN issue_id BIGINT;
 
 -- for part_master
 ALTER TABLE inventory.part_master
@@ -1487,6 +1494,7 @@ update maintenance.job_card_part set active_flag=true;
 ALTER TABLE maintenance.job_card_part ALTER COLUMN active_flag SET DEFAULT TRUE;
 ALTER TABLE maintenance.job_card_part ALTER COLUMN active_flag SET NOT NULL;
 ALTER TABLE inventory.part_request ADD CONSTRAINT uq_part_request_job_card UNIQUE (job_card_id);
+
 
 
 -- create audit table

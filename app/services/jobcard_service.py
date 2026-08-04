@@ -1,4 +1,5 @@
 from fastapi import (HTTPException,)    #type: ignore
+from datetime import datetime
 
 from app.models.part_requisition import (PartRequisition, PartRequisitionDetail)
 from app.repositories.part_requisition_repository import (PartRequisitionRepository,)
@@ -237,7 +238,7 @@ class JobCardService:
         )
 
         job_card.requisition_slip_number = (
-            requisition.request_number
+            requisition.requisition_number
             if requisition
             else None
         )
@@ -421,3 +422,110 @@ class JobCardService:
             "requisition_number":
             requisition.requisition_number,
         }
+#submit approval
+    def submit_for_verification(
+        self,
+        job_card_id: int,
+#        employee_id: int|None,
+    ):
+        job_card = (
+            self.repository
+            .get_by_id(job_card_id)
+        )
+        
+        if not job_card:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Job Card not found",
+            )
+
+        if job_card.job_status not in [
+            "DRAFT",
+            "OPEN",
+        ]:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Job Card cannot be submitted",
+            )
+
+        job_card.job_status = "REQUESTED"
+        job_card.requested_by_employee_id = 1
+        job_card.requested_at = datetime.utcnow()
+
+        return self.repository.update(
+            job_card
+        )
+#Verify
+    def verify(
+        self,
+        job_card_id: int,
+#        employee_id: int|None,
+    ):
+
+        job_card = (
+            self.repository
+            .get_by_id(job_card_id)
+        )
+
+        if not job_card:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Job Card not found",
+            )
+
+        if (
+            job_card.job_status
+            != "REQUESTED"
+        ):
+
+            raise HTTPException(
+                status_code=400,
+                detail="Job Card must be REQUESTED first",
+            )
+
+        job_card.job_status = "VERIFIED"
+        job_card.verified_by_employee_id = 2
+        job_card.verified_at = datetime.utcnow()
+
+        return self.repository.update(
+            job_card
+        )
+#Approval
+    def approve(
+        self,
+        job_card_id: int,
+#        employee_id: int|None,
+    ):
+
+        job_card = (
+            self.repository
+            .get_by_id(job_card_id)
+        )
+
+        if not job_card:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Job Card not found",
+            )
+
+        if (
+            job_card.job_status
+            != "VERIFIED"
+        ):
+
+            raise HTTPException(
+                status_code=400,
+                detail="Job Card must be VERIFIED first",
+            )
+
+        job_card.job_status = "APPROVED"
+        job_card.approved_by_employee_id = 3
+        job_card.approved_at = datetime.utcnow()
+
+        return self.repository.update(
+            job_card
+        )

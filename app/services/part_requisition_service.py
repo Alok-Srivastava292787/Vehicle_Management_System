@@ -160,3 +160,78 @@ class PartRequisitionService:
                 requisition
             )
         )
+#submit for approval workflow
+    def submit_request(
+        self,
+        request_id: int,
+    ):
+
+        request = (
+            self.repository
+            .get_by_id(request_id)
+        )
+
+        if not request:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Request not found",
+            )
+
+        if (
+            request.status
+            != "DRAFT"
+        ):
+
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Only DRAFT requests can be submitted"
+                ),
+            )
+
+        request.status = (
+            "SUBMITTED"
+        )
+
+        return (
+            self.repository.update(
+                request
+            )
+        )
+#Approval request
+    def approve_request(
+        self,
+        request_id: int,
+    ):
+
+        request = (
+            self.repository
+            .get_by_id(request_id)
+        )
+
+        if not request:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Request not found",
+            )
+
+        if (
+            request.status!= "OPEN" 
+        ):
+
+            raise HTTPException(
+                status_code=400,
+                detail=
+                "Request must be submitted first",
+            )
+        request.status = ("APPROVED")
+        request.approved_by = 3
+        request.approved_at = (datetime.utcnow())
+
+        return (
+            self.repository.update(
+                request
+            )
+        )

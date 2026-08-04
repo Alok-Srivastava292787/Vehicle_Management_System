@@ -22,75 +22,50 @@ import {
   Switch,
   Tag,
 } from "antd";
-import {
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-
+import {  useNavigate,  useParams,} from "react-router-dom";
 import {  API_BASE_URL,} from "../utils/config";
 import {  getPartIssues,} from "../services/partIssueService";
-
+import {  getPartIssueDetails,} from "../services/partIssueDetailService";
+import {  getEmployees,} from "../services/employeeService";
+import {  getPartRequisitionDetails,} from "../services/partRequisitionDetailService";
+import {  SearchableSelect } from "../components/SearchableSelect";
+import {  useSearchParams,} from "react-router-dom";
+import {  getParts,} from "../services/partService";
 import {
   createPartIssueDetail,
   updatePartIssueDetail,
   deactivatePartIssueDetail,
 } from "../services/partIssueDetailService";
-import {  getPartIssueDetails,} from "../services/partIssueDetailService";
-import {  getEmployees,} from "../services/employeeService";
-import {  getPartRequisitionDetails,} from "../services/partRequisitionDetailService";
-
-import {  getParts,} from "../services/partService";
 
 const { Title } =
   Typography;
 
 const PartIssueDetails =
   () => {
-
-    const {
-      issueId,
-    } = useParams();
-
+    const {issueId,} = 
+      useParams();
     const navigate =
       useNavigate();
-
-    const [issue,
-      setIssue] =
+    const [issue,setIssue] =
       useState(null);
-
-    const [details,
-      setDetails] =
+    const [details,setDetails] =
       useState([]);
-
-    const [employees,
-      setEmployees] =
+    const [employees,setEmployees] =
       useState([]);
-
-    const [parts,
-      setParts] =
+    const [parts,setParts] =
       useState([]);
-    
-    const [
-      requisitionDetailParts,
-      setRequisitionDetailParts,
-    ] = useState([]);
-
-    const [modalOpen,
-      setModalOpen] =
+    const [requisitionDetailParts,setRequisitionDetailParts,] = 
+      useState([]);
+    const [modalOpen,setModalOpen] =
       useState(false);
-
-    const [editingRecord,
-      setEditingRecord] =
+    const [editingRecord,setEditingRecord] =
       useState(null);
-
     const [form] =
       Form.useForm();
 
-    const loadData =
+      const loadData =
       async () => {
-
         try {
-
           const [
             issueData,
             detailData,
@@ -103,7 +78,6 @@ const PartIssueDetails =
               getEmployees(),
               getParts(),
             ]);
-
           const currentIssue =
             issueData.find(
               item =>
@@ -116,7 +90,6 @@ const PartIssueDetails =
             );
           const requisitionDetails =
             await getPartRequisitionDetails();
-
           const allowedParts =
             requisitionDetails.filter(
               detail =>
@@ -129,48 +102,66 @@ const PartIssueDetails =
           setRequisitionDetailParts(
             allowedParts
           );
-
           setIssue(
             currentIssue
           );
-
-          setDetails(
-            detailData.filter(
-              item =>
-                String(
-                  item.issue_id
-                ) ===
-                String(
-                  issueId
-                )
+          setDetails(detailData.filter(
+              item =>String(item.issue_id) ===String(issueId)
             )
           );
-
           setEmployees(
             employeeData
           );
-
           setParts(
             partData
           );
-
         } catch {
-
           message.error(
             "Failed to load issue details"
           );
         }
       };
+useEffect(() => {
 
-    useEffect(() => {
+  loadData();
 
-      loadData();
-
-    }, [issueId]);
-
-    if (!issue)
-      return null;
-
+}, [issueId]);
+      const loadRequisition =
+        async requisitionId => {
+          try {
+            const requisition =
+              await getPartRequisitionById(
+                requisitionId
+              );
+            if (
+              requisition.status !==
+              "APPROVED"
+            ) {
+              message.error(
+                "Only APPROVED requisitions can create issues"
+              );
+              return;
+            }
+            form.setFieldsValue({
+              requisition_id:
+                requisition.requisition_id,
+              issued_by_employee_id:
+                requisition.technician_id,
+            });
+            setSelectedRequisition(
+              requisition
+            );
+          } catch (error) {
+            console.error(
+              error
+            );
+            message.error(
+              "Failed to load requisition"
+            );
+          }
+        };
+    if (!issueId)
+        return null;
     const employeeMap =
       Object.fromEntries(
         employees.map(
@@ -288,33 +279,28 @@ const PartIssueDetails =
       },
 
     ];
+const isCreateMode =
+  !issueId &&
+  !!requisitionId;
 const handleSubmit =
   async () => {
-
     try {
-
       const values =
         await form.validateFields();
-
       values.issue_id =
         Number(issueId);
-
       if (
         editingRecord
       ) {
-
         await updatePartIssueDetail(
           editingRecord.issue_detail_id,
           values
         );
-
       } else {
-
-        await createPartIssueDetail(
+       await createPartIssueDetail(
           values
         );
       }
-
       message.success(
         "Detail saved successfully"
       );
@@ -337,7 +323,6 @@ const handleSubmit =
       );
     }
   };
-
   const requisitionPartOptions = [
       ...new Map(
         requisitionDetailParts.map(
@@ -397,13 +382,15 @@ const handleSubmit =
           </Row>
           <Title level={2}
             style={{
-              textAlign:
-                "center",
+              textAlign:"center",
             }}
           >
-            Part Issue Details
+            {
+              isCreateMode
+                ? "Create Issue"
+                : `Issue # ${issue?.issue_number}`
+            }
           </Title>
-
           <Descriptions
             bordered
             column={2}
@@ -413,7 +400,7 @@ const handleSubmit =
               label="Issue Number"
             >
               {
-                issue.issue_number
+                issue?.issue_number || "New"
               }
             </Descriptions.Item>
 
@@ -421,7 +408,7 @@ const handleSubmit =
               label="Status"
             >
               {
-                issue.status
+                issue?.status || "DRAFT"
               }
             </Descriptions.Item>
 
@@ -430,7 +417,7 @@ const handleSubmit =
             >
               {
                 employeeMap[
-                  issue.issued_by_employee_id
+                  issue?.issued_by_employee_id || "-"
                 ]
               }
             </Descriptions.Item>
@@ -440,7 +427,7 @@ const handleSubmit =
             >
               {
                 employeeMap[
-                  issue.received_by_employee_id
+                  issue?.received_by_employee_id || "-"
                 ]
               }
             </Descriptions.Item>
@@ -449,7 +436,7 @@ const handleSubmit =
               label="Requisition"
             >
               {
-                issue.requisition_id
+                issue?.requisition_id || "-"
               }
             </Descriptions.Item>
 
@@ -511,7 +498,7 @@ const handleSubmit =
   name="part_id"
   label="Part"
 >
-<Select
+<SearchableSelect
   options={
     requisitionPartOptions
   }

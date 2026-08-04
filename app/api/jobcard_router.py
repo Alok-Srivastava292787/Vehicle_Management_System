@@ -206,3 +206,51 @@ def generate_requisition(
             job_card_id
         )
     )
+
+#submit for approval
+@router.post(
+    "/{job_card_id}/submit"
+)
+def submit_for_verification(
+    job_card_id: int,
+#    requested_by_employee_id: int|None,
+    service:
+    JobCardService =
+    Depends(get_service),
+):
+    return (
+        service
+        .submit_for_verification(
+            job_card_id     #,requested_by_employee_id
+        )
+    )
+
+#Verify
+@router.post(
+    "/{job_card_id}/verify"
+)
+def verify_job_card(
+    job_card_id: int,
+#    verified_by_employee_id: int|None,
+    service:
+    JobCardService =
+    Depends(get_service),
+):
+    return service.verify(
+        job_card_id     #,verified_by_employee_id
+    )
+
+#Approve
+@router.post(
+    "/{job_card_id}/approve"
+)
+def approve_job_card(
+    job_card_id: int,
+#    approved_by_employee_id: int|None,
+    service:
+    JobCardService =
+    Depends(get_service),
+):
+    return service.approve(
+        job_card_id     #,approved_by_employee_id
+    )

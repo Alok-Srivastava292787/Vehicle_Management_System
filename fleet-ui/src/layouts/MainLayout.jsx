@@ -99,10 +99,12 @@ const MainLayout = () => {
         key: "/jobcards",
         label: (<Link to="/jobcards">Job Cards</Link>        ),
       },
-      {
+/*
+        {
         key: "/jobcard-parts",
         label: (<Link to="/jobcardparts">Job Card Parts</Link>),
       },
+*/
       {
         key: "/maintenance",
         label: (<Link to="/maintenance">Maintenance</Link>),

@@ -40,7 +40,7 @@ import {  getComplaints,} from "../services/complaintService";
 import {  getInspections,} from "../services/inspectionService";
 import {  getDrivers,} from "../services/driverService";
 import {  getJobCardParts,} from "../services/jobCardPartService";
-
+import {SearchableSelect } from "../components/SearchableSelect";
 import {  getEmployees,} from "../services/employeeService";
 import {  Link,useNavigate,} from "react-router-dom";
 const { Title } = Typography;
@@ -633,7 +633,7 @@ const handleSubmit =
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 vehicles.map(
                   (vehicle) => ({
@@ -650,7 +650,7 @@ const handleSubmit =
   label="Driver"
   name="driver_id"
 >
-  <Select
+  <SearchableSelect
     allowClear
     options={
       drivers.map(
@@ -668,7 +668,7 @@ const handleSubmit =
   label="Technician 1"
   name="technician1_id"
 >
-  <Select
+  <SearchableSelect
     allowClear
     options={
       employees.map(
@@ -686,7 +686,7 @@ const handleSubmit =
   label="Technician 2"
   name="technician2_id"
 >
-  <Select
+  <SearchableSelect
     allowClear
     options={
       employees.map(
@@ -738,7 +738,7 @@ const handleSubmit =
   label="Maintenance Type"
   name="maintenance_type"
 >
-  <Select
+  <SearchableSelect
     options={[
       {
         label: "REGULAR",
@@ -778,7 +778,7 @@ const handleSubmit =
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 complaints.map(
                   (complaint) => ({
@@ -801,7 +801,7 @@ const handleSubmit =
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 inspections.map(
                   (inspection) => ({

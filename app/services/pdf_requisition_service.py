@@ -1,8 +1,9 @@
+from datetime import datetime
+from fastapi import HTTPException   #type: ignore
 from io import BytesIO
 from datetime import datetime
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-
 from reportlab.lib.styles import (
     getSampleStyleSheet,
 )

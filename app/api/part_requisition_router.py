@@ -2,7 +2,6 @@ from fastapi import (    APIRouter,Depends,)    #type: ignore
 
 from sqlalchemy.orm import Session
 
-#from app.db.session import (    get_db, )   #type: ignore
 from app.db.dependencies import get_db
 
 from app.repositories.part_requisition_repository import (
@@ -138,5 +137,37 @@ def delete_requisition(
     return (
         service.delete(
             requisition_id
+        )
+    )
+
+#Approval workflow
+#Submit
+@router.post(
+    "/{request_id}/submit"
+)
+def submit_request(
+    request_id: int,
+    service:
+    PartRequisitionService =
+    Depends(get_service),
+):
+    return (
+        service.submit_request(
+            request_id
+        )
+    )
+
+@router.post(
+    "/{request_id}/approve"
+)
+def approve_request(
+    request_id: int,
+    service:
+    PartRequisitionService =
+    Depends(get_service),
+):
+    return (
+        service.approve_request(
+            request_id
         )
     )

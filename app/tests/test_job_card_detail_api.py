@@ -94,7 +94,7 @@ def test_create_jobcard_part(db):
 
 
     response = client.post(
-        "/api/v1/jobcard-parts",
+        "/api/v1/jobcard-detail",
         json={
             "job_card_id": jobcard.job_card_id,
             "part_id": part.part_id,

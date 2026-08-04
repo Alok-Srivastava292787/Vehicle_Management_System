@@ -24,7 +24,7 @@ import {
 import SearchToolbar from "../components/SearchToolbar";
 
 import tablePagination from "../utils/tablePagination";
-
+import {SearchableSelect } from "../components/SearchableSelect";
 import {
   getChecklists,
   createChecklist,
@@ -550,7 +550,7 @@ const Checklists = () => {
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 vehicles.map(
                   (vehicle) => ({
@@ -575,7 +575,7 @@ const Checklists = () => {
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 employees.map(
                   (employee) => ({
@@ -628,7 +628,7 @@ const Checklists = () => {
             label="Final Status"
             name="final_status"
           >
-            <Select
+            <SearchableSelect
               options={[
                 {
                   label: "PASS",

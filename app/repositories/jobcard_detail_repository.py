@@ -1,12 +1,12 @@
-# app/repositories/jobcard_part_repository.py
+# app/repositories/jobcard_s=detail_repository.py
 
 
 from sqlalchemy.orm import Session
-from app.repositories.base_repository import BaseRepository
-from app.models.maintenance import JobCardPart
+from app.repositories.base_repository import (BaseRepository,)
+from app.models.maintenance import (    JobCardPart)
 
 
-class JobCardPartRepository(
+class JobCardDetailRepository(
     BaseRepository[JobCardPart]
 ):
 
@@ -21,14 +21,14 @@ class JobCardPartRepository(
 
     def get_by_id(
         self,
-        jobcard_part_id: int,
+        job_card_id: int,
     ) -> JobCardPart | None:
 
         return (
             self.db.query(JobCardPart)
             .filter(
-                JobCardPart.id
-                == jobcard_part_id
+                JobCardPart.job_card_id
+                == job_card_id
             )
             .first()
         )
@@ -58,17 +58,17 @@ class JobCardPartRepository(
             )
             .all()
         )
-
-    def update_jobcard_part(
+    
+    def update_jobcard_detail(
         self,
-        jobcard_part: JobCardPart,
+        jobcard_detail: JobCardPart,
         data: dict,
     ) -> JobCardPart:
 
         for key, value in data.items():
 
             setattr(
-                jobcard_part,
+                jobcard_detail,
                 key,
                 value,
             )
@@ -76,28 +76,28 @@ class JobCardPartRepository(
         self.db.commit()
 
         self.db.refresh(
-            jobcard_part
+            jobcard_detail
         )
 
-        return jobcard_part
+        return jobcard_detail
 
-    def delete_jobcard_part(
+    def delete_jobcard(
         self,
-        jobcard_part: JobCardPart,
+        jobcard: JobCardPart,
     ) -> None:
 
         self.db.delete(
-            jobcard_part
+            jobcard
         )
 
         self.db.commit()
-
+    
     def exists(
     self,
-    part_id: int
+    job_card_id: int
     ) -> bool:
     
         return (
-            self.get_by_id(part_id)
+            self.get_by_id(job_card_id)
             is not None
         )

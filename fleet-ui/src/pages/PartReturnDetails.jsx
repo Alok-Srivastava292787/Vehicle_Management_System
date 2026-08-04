@@ -42,7 +42,7 @@ import {  getPartIssueDetails,} from "../services/partIssueDetailService";
 import {  getEmployees,} from "../services/employeeService";
 
 import {  getParts,} from "../services/partService";
-
+import {SearchableSelect } from "../components/SearchableSelect";
 const { Title } =
   Typography;
 
@@ -547,7 +547,7 @@ const PartReturnDetails =
         },
       ]}
     >
-<Select
+<SearchableSelect
   options={
     issuePartOptions
   }

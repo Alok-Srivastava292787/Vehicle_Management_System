@@ -50,6 +50,7 @@ import {
 import {
   getEmployees,
 } from "../services/employeeService";
+import {SearchableSelect } from "../components/SearchableSelect";
 
 const { Title } = Typography;
 
@@ -491,7 +492,7 @@ const PartRequisitions = () => {
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 vehicles.map(
                   vehicle => ({
@@ -509,7 +510,7 @@ const PartRequisitions = () => {
             label="Job Card"
             name="job_card_id"
           >
-            <Select
+            <SearchableSelect
               options={
                 jobCards.map(
                   card => ({
@@ -527,7 +528,7 @@ const PartRequisitions = () => {
             label="Technician"
             name="technician_id"
           >
-            <Select
+            <SearchableSelect
               options={
                 employees.map(
                   emp => ({
@@ -545,7 +546,7 @@ const PartRequisitions = () => {
             label="Status"
             name="status"
           >
-            <Select
+            <SearchableSelect
               options={[
                 {
                   label:

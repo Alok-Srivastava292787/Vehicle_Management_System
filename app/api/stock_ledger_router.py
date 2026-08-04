@@ -116,13 +116,6 @@ def get_inventory_summary(
     Depends(get_service),
 ):
     return service.get_inventory_summary()
-#Low stock parts
-@router.get("/dashboard/low-stock")
-def get_low_stock_parts(
-    service: StockLedgerService =
-    Depends(get_service),
-):
-    return service.get_low_stock_parts()
 
 #low stock parts with details
 @router.get(

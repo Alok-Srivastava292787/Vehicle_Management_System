@@ -9,7 +9,7 @@ import Employees from "./pages/Employees";
 import Complaints from "./pages/Complaints";
 import Maintenance from "./pages/Maintenance";
 import Inspections from "./pages/Inspections";
-import JobCardParts from "./pages/JobCardParts";
+{/* import JobCardParts from "./pages/JobCardParts"; */}
 import Parts from "./pages/Parts";
 import Checklists from "./pages/Checklists";
 import AuditLogs  from "./pages/AuditLogs";
@@ -38,7 +38,7 @@ const App = () => {
         <Route path="complaints" element={<Complaints />} />
         <Route path="maintenance" element={<Maintenance />} />
         <Route path="inspections" element={<Inspections />}/>
-        <Route path="jobcardparts" element={<JobCardParts />}/>
+{/*         <Route path="jobcardparts" element={<JobCardParts />}/> */}
         <Route path="parts" element={<Parts />}/>
         <Route path="checklists" element={<Checklists />}/>
         <Route path="audit-logs" element={<AuditLogs />}/>
@@ -46,6 +46,7 @@ const App = () => {
         <Route path="requisitions/:requisitionId"  element={<PartRequisitionDetails />}/>
         <Route path="part-issues" element={<PartIssues />}/>
         <Route path="part-issues/:issueId" element={<PartIssueDetails />}/>
+        <Route path="issues/create" element={<PartIssueDetails />}/>
         <Route path="part-returns" element={<PartReturns />}/>
         <Route path="part-returns/:returnId" element={<PartReturnDetails />}/>
         <Route path="stock-ledger" element={<StockLedger />}/>

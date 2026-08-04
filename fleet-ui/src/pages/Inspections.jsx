@@ -41,6 +41,8 @@ import {  getEmployees,} from "../services/employeeService";
 import SearchToolbar from "../components/SearchToolbar";
 
 import tablePagination from "../utils/tablePagination";
+import {SearchableSelect } from "../components/SearchableSelect";
+
 const { Title } = Typography;
 
 const Inspections = () => {
@@ -539,7 +541,7 @@ const Inspections = () => {
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 complaints.map(
                   (complaint) => ({
@@ -562,7 +564,7 @@ const Inspections = () => {
               },
             ]}
           >
-            <Select
+            <SearchableSelect
               options={
                 employees.map(
                   (employee) => ({
@@ -598,7 +600,7 @@ const Inspections = () => {
             label="Status"
             name="status"
           >
-            <Select
+            <SearchableSelect
               options={[
                 {
                   label: "OPEN",

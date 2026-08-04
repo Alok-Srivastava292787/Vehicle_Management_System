@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey,String,Text,Boolean,DateTime,Numeric
+from sqlalchemy import ForeignKey,String,Text,Boolean,DateTime,Numeric,BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.mixins import AuditMixin,TimestampMixin
 
@@ -39,6 +39,9 @@ class PartRequisition(Base,
         ForeignKey(
             "master.vehicle_master.vehicle_id"
         )
+    )
+    issue_id: Mapped[int | None] = mapped_column(
+        BigInteger,nullable=True,
     )
 
     job_card_id: Mapped[int] = mapped_column(
@@ -85,6 +88,18 @@ class PartRequisition(Base,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
     )
+    approved_by: Mapped[int | None] = mapped_column(
+        ForeignKey(
+        "master.employee_master.employee_id"
+    ),
+        nullable=True,
+    )
+
+    approved_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
 
 class PartRequisitionDetail(Base):
 

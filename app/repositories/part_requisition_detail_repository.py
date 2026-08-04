@@ -66,3 +66,21 @@ class PartRequisitionDetailRepository:
         self.db.refresh(detail)
 
         return detail
+    
+    def get_by_requisition_id(
+        self,
+        requisition_id: int,
+    ):
+
+        return (
+            self.db.query(
+                PartRequisitionDetail
+            )
+            .filter(
+                PartRequisitionDetail.requisition_id
+                == requisition_id,
+                PartRequisitionDetail.active_flag
+                .is_(True),
+            )
+            .all()
+        )
