@@ -19,7 +19,7 @@ from app.repositories.part_issue_detail_repository import (
 from app.repositories.employee_repository import (
     EmployeeRepository,
 )
-
+from app.repositories.part_requisition_repository import (PartRequisitionRepository)
 from app.repositories.part_repository import (
     PartRepository,
 )
@@ -42,15 +42,9 @@ def generate_issue_pdf(
     db: Session = Depends(get_db),
 ):
 
-    issue_repo = (
-        PartIssueRepository(db)
-    )
+    issue_repo = ( PartIssueRepository(db))
 
-    issue = (
-        issue_repo.get_by_id(
-            issue_id
-        )
-    )
+    issue = (issue_repo.get_by_id(issue_id))
 
     if not issue:
         return {
@@ -58,40 +52,24 @@ def generate_issue_pdf(
             "Issue not found"
         }
 
-    detail_repo = (
-        PartIssueDetailRepository(
-            db
-        )
-    )
+    detail_repo = (PartIssueDetailRepository(db))
 
     details = [
-
         item
-
         for item in detail_repo.get_all()
-
         if item.issue_id
         == issue_id
-
     ]
 
-    employee_repo = (
-        EmployeeRepository(
-            db
-        )
-    )
-
+    employee_repo = (EmployeeRepository(db))
     issued_by = None
     received_by = None
-
     if issue.issued_by_employee_id:
-
         issued_by = (
             employee_repo.get_by_id(
                 issue.issued_by_employee_id
             )
         )
-
     if issue.received_by_employee_id:
 
         received_by = (
@@ -121,7 +99,23 @@ def generate_issue_pdf(
             ] = (
                 part.part_name
             )
+    requisition_repository=PartRequisitionRepository(db)
+    requisition =requisition_repository.get_by_id(issue.requisition_id)
+    setattr(
+    issue,
+    "requisition_number",
+    requisition.requisition_number
+    if requisition
+    else None,
+    )
 
+    setattr(
+        issue,
+        "job_card_id",
+        requisition.job_card_id
+        if requisition
+        else None,
+    )
     pdf = (
         PDFIssueService
         .generate_issue_pdf(

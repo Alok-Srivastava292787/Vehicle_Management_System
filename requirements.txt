@@ -4,3 +4,5 @@ kafka-python
 psycopg2-binary
 pandas
 requests
+python-jose[cryptography]
+passlib[bcrypt]

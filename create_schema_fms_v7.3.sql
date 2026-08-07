@@ -1514,6 +1514,47 @@ CREATE TABLE IF NOT EXISTS audit.audit_log (
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create Security and role related tables
+CREATE TABLE if not exists security.roles 
+(
+    role_id BIGSERIAL PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL UNIQUE,
+    active_flag BOOL DEFAULT TRUE
+);
+
+INSERT INTO security.roles(role_name)
+VALUES
+('Admin'),
+('Fleet Manager'),
+('Supervisor'),
+('Technician'),
+('Store Keeper'),
+('Viewer');
+
+CREATE TABLE security.users
+(
+    user_id BIGSERIAL PRIMARY KEY,
+    employee_id BIGINT
+        REFERENCES master.employee_master(employee_id),
+    username VARCHAR(100)
+        UNIQUE NOT NULL,
+    password_hash TEXT
+        NOT NULL,
+    email VARCHAR(200),
+    active_flag BOOLEAN DEFAULT TRUE,
+    last_login TIMESTAMP,
+    created_at TIMESTAMP
+        DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE security.user_roles
+(
+    user_role_id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT
+        REFERENCES security.users(user_id),
+    role_id BIGINT
+        REFERENCES security.roles(role_id)
+);
 --Trigger to capture the changes
 CREATE OR REPLACE FUNCTION audit.set_modified_at()
 RETURNS TRIGGER AS $$

@@ -25,6 +25,8 @@ from app.repositories.employee_repository import (
 from app.repositories.part_repository import (
     PartRepository,
 )
+from app.repositories.part_issue_repository import  (   PartIssueRepository)
+from app.repositories.part_requisition_repository import    (   PartRequisitionRepository)
 
 from app.services.pdf_return_service import (
     PDFReturnService,
@@ -134,7 +136,40 @@ def generate_return_pdf(
             ] = (
                 part.part_name
             )
+    issue_repository=PartIssueRepository(db)
+    issue = (
+        issue_repository.get_by_id(
+            part_return.issue_id
+        )
+    )
+    setattr(
+        part_return,
+        "issue_number",
+        issue.issue_number
+        if issue
+        else None,
+    )
+    requisition_repository=PartRequisitionRepository(db)
+    requisition = (
+        requisition_repository.get_by_id(
+            issue.requisition_id
+        )
+    )
+    setattr(
+        part_return,
+        "requisition_number",
+        requisition.requisition_number
+        if requisition
+        else None,
+    )
 
+    setattr(
+        part_return,
+        "job_card_id",
+        requisition.job_card_id
+        if requisition
+        else None,
+    )
     pdf_stream = (
         PDFReturnService
         .generate_return_pdf(

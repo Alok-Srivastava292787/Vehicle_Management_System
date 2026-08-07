@@ -29,7 +29,7 @@ from app.services.jobcard_service import (
     JobCardService,
 )
 from app.api.dependencies import get_current_user_id
-
+from app.api.auth_router import get_current_user
 
 router = APIRouter(
     prefix="/api/v1/jobcards",
@@ -45,7 +45,6 @@ def get_service(
         complaint_repo= ComplaintRepository(db),
         vehicle_repo= VehicleRepository(db),
         inspection_repo= InspectionRepository(db),
-        repository=JobCardRepository(db),
         job_card_part_repository=JobCardPartRepository(db),
         requisition_repository=PartRequisitionRepository(db),
         requisition_detail_repository=PartRequisitionDetailRepository(db),
@@ -70,7 +69,6 @@ def create_JobCard(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
-        JobCardRepository(db),
         JobCardPartRepository(db),
         PartRequisitionRepository(db),
         PartRequisitionDetailRepository(db),
@@ -93,7 +91,6 @@ def get_all_JobCards(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
-        JobCardRepository(db),
         JobCardPartRepository(db),
         PartRequisitionRepository(db),
         PartRequisitionDetailRepository(db),
@@ -122,7 +119,6 @@ def get_JobCard(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
-        JobCardRepository(db),
         JobCardPartRepository(db),
         PartRequisitionRepository(db),
         PartRequisitionDetailRepository(db),
@@ -149,7 +145,6 @@ def update_JobCard(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
-        JobCardRepository(db),
         JobCardPartRepository(db),
         PartRequisitionRepository(db),
         PartRequisitionDetailRepository(db),
@@ -175,7 +170,6 @@ def delete_JobCard(
         ComplaintRepository(db),
         VehicleRepository(db),
         InspectionRepository(db),
-        JobCardRepository(db),
         JobCardPartRepository(db),
         PartRequisitionRepository(db),
         PartRequisitionDetailRepository(db),
@@ -213,15 +207,16 @@ def generate_requisition(
 )
 def submit_for_verification(
     job_card_id: int,
-#    requested_by_employee_id: int|None,
+    current_user = Depends(get_current_user),
     service:
-    JobCardService =
-    Depends(get_service),
+    JobCardService = Depends(get_service),
 ):
+    print("USER:",current_user.username)
     return (
         service
         .submit_for_verification(
-            job_card_id     #,requested_by_employee_id
+            job_card_id,     #,requested_by_employee_id
+            current_user
         )
     )
 
@@ -231,13 +226,15 @@ def submit_for_verification(
 )
 def verify_job_card(
     job_card_id: int,
-#    verified_by_employee_id: int|None,
+    current_user = Depends(get_current_user),
     service:
     JobCardService =
     Depends(get_service),
+
 ):
     return service.verify(
-        job_card_id     #,verified_by_employee_id
+        job_card_id,     #,verified_by_employee_id
+        current_user
     )
 
 #Approve
@@ -246,11 +243,11 @@ def verify_job_card(
 )
 def approve_job_card(
     job_card_id: int,
-#    approved_by_employee_id: int|None,
+    current_user=Depends(get_current_user),
     service:
     JobCardService =
     Depends(get_service),
 ):
     return service.approve(
-        job_card_id     #,approved_by_employee_id
+        job_card_id,current_user
     )

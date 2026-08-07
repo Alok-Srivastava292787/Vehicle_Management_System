@@ -13,7 +13,7 @@ from app.repositories.jobcard_repository import (JobCardRepository,)
 from app.repositories.complaint_repository import ComplaintRepository
 from app.repositories.vehicle_repository import VehicleRepository
 from app.repositories.inspection_repository import InspectionRepository
-
+from app.security.auth_dependency import get_current_user
 class JobCardService:
     def __init__(
         self,
@@ -21,7 +21,6 @@ class JobCardService:
         complaint_repo: ComplaintRepository,
         vehicle_repo: VehicleRepository,
         inspection_repo: InspectionRepository,
-        repository:                     JobCardRepository,
         job_card_part_repository:       JobCardPartRepository,
         requisition_repository:         PartRequisitionRepository,
         requisition_detail_repository:  PartRequisitionDetailRepository,
@@ -32,7 +31,6 @@ class JobCardService:
         self.inspection_repo = (       inspection_repo)
         self.vehicle_repo = (          vehicle_repo)
 
-        self.repository = (repository)
         self.job_card_part_repository = (     job_card_part_repository)
         self.requisition_repository = (       requisition_repository)
         self.requisition_detail_repository = (requisition_detail_repository)
@@ -158,7 +156,7 @@ class JobCardService:
     ) :
 
         jobcard = (
-            self.jobcard_repo.get_by_id(
+            self.get_by_id(
                 jobcard_id
             )
         )
@@ -177,7 +175,7 @@ class JobCardService:
     ):
 
         job_cards = (
-            self.repository.get_all()
+            self.jobcard_repo.get_all()
         )
         for job_card in job_cards:
             requisition = (
@@ -191,11 +189,13 @@ class JobCardService:
                 if requisition
                 else None
             )
-            job_card.requisition_slip_number = (
+            setattr(
+                job_card,
+                "requisition_slip_number",
                 requisition.requisition_number
                 if requisition
-                else None
-            )
+                else None,
+                )
         return job_cards
 
     def get_by_complaint(
@@ -216,7 +216,7 @@ class JobCardService:
     ):
 
         job_card = (
-            self.repository.get_by_id(
+            self.jobcard_repo.get_by_id(
                 job_card_id
             )
         )
@@ -237,13 +237,15 @@ class JobCardService:
             else None
         )
 
-        job_card.requisition_slip_number = (
+        setattr(
+            job_card,
+            "requisition_slip_number",
             requisition.requisition_number
             if requisition
-            else None
-        )
-
+            else None,
+            )
         return job_card
+
     def update_jobcard(
         self,
         jobcard_id: int,
@@ -309,7 +311,7 @@ class JobCardService:
 ):
 
         job_card = (
-            self.repository
+            self.jobcard_repo
             .get_by_id(
                 job_card_id
             )
@@ -426,10 +428,10 @@ class JobCardService:
     def submit_for_verification(
         self,
         job_card_id: int,
-#        employee_id: int|None,
+        current_user,
     ):
         job_card = (
-            self.repository
+            self.jobcard_repo
             .get_by_id(job_card_id)
         )
         
@@ -451,10 +453,10 @@ class JobCardService:
             )
 
         job_card.job_status = "REQUESTED"
-        job_card.requested_by_employee_id = 1
+        job_card.requested_by_employee_id = (current_user.employee_id)
         job_card.requested_at = datetime.utcnow()
 
-        return self.repository.update(
+        return self.jobcard_repo.update(
             job_card
         )
 #Verify
@@ -462,10 +464,11 @@ class JobCardService:
         self,
         job_card_id: int,
 #        employee_id: int|None,
+        current_user,
     ):
 
         job_card = (
-            self.repository
+            self.jobcard_repo
             .get_by_id(job_card_id)
         )
 
@@ -487,10 +490,10 @@ class JobCardService:
             )
 
         job_card.job_status = "VERIFIED"
-        job_card.verified_by_employee_id = 2
+        job_card.verified_by_employee_id = (current_user.employee_id)
         job_card.verified_at = datetime.utcnow()
 
-        return self.repository.update(
+        return self.jobcard_repo.update(
             job_card
         )
 #Approval
@@ -498,10 +501,11 @@ class JobCardService:
         self,
         job_card_id: int,
 #        employee_id: int|None,
+        current_user,
     ):
 
         job_card = (
-            self.repository
+            self.jobcard_repo
             .get_by_id(job_card_id)
         )
 
@@ -523,9 +527,9 @@ class JobCardService:
             )
 
         job_card.job_status = "APPROVED"
-        job_card.approved_by_employee_id = 3
+        job_card.approved_by_employee_id = (current_user.employee_id)
         job_card.approved_at = datetime.utcnow()
 
-        return self.repository.update(
+        return self.jobcard_repo.update(
             job_card
         )

@@ -60,11 +60,16 @@ class PDFIssueService:
                 issue.issue_number,
             ],
 
-            [
-                "Issue Date",
-                str(issue.issue_date),
-            ],
-
+        [
+            "Issue Date",
+            (
+                issue.issue_date.strftime(
+                    "%d-%b-%Y %H:%M"
+                )
+                if issue.issue_date
+                else "-"
+            ),
+        ],
             [
                 "Status",
                 issue.status,
@@ -85,10 +90,12 @@ class PDFIssueService:
             ],
 
             [
-                "Requisition Id",
-                str(
-                    issue.requisition_id
-                ),
+                "Requisition",
+                getattr(
+                    issue,
+                    "requisition_number",
+                    "-"
+                ) or "-",
             ],
         ]
 
@@ -231,8 +238,45 @@ class PDFIssueService:
             summary
         )
 
+#        elements.append(
+#            Spacer(1, 35)
+#        )
+
         elements.append(
-            Spacer(1, 35)
+            Spacer(1, 18)
+        )
+
+        elements.append(
+            Paragraph(
+                f"<b>Issue Status: </b>{issue.status}",
+                styles["Normal"],
+            )
+        )
+        elements.append(
+            Spacer(1, 4)
+        )
+
+        elements.append(
+            Paragraph(
+                "Related Documents",
+                styles["Heading2"],
+            )
+        )
+        related_text = f"""
+            <b>Requisition :</b>
+            {getattr(issue, "requisition_number", "-")}
+            <b>Job Card :</b>
+            {getattr(issue, "job_card_id", "-")}
+            """
+
+        elements.append(
+            Paragraph(
+                related_text,
+                styles["Normal"],
+            )
+        )
+        elements.append(
+            Spacer(1, 8)
         )
 
         signature = Table(

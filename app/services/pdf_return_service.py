@@ -63,18 +63,23 @@ class PDFReturnService:
 
             [
                 "Return Date",
-                str(
-                    part_return.return_date
+                (
+                    part_return.return_date.strftime(
+                        "%d-%b-%Y %H:%M"
+                    )
+                    if part_return.return_date
+                    else "-"
                 ),
             ],
 
             [
-                "Issue Reference",
-                str(
-                    part_return.issue_id
-                ),
+                "Issue",
+                getattr(
+                    part_return,
+                    "issue_number",
+                    "-"
+                ) or "-",
             ],
-
             [
                 "Returned By",
                 returned_by.full_name
@@ -241,9 +246,50 @@ class PDFReturnService:
         elements.append(
             totals_table
         )
+        elements.append(
+            Spacer(1, 20)
+        )
+
+        status_text = f"""
+        <b>Return Status :</b>
+        {part_return.status}
+        """
 
         elements.append(
-            Spacer(1, 35)
+            Paragraph(
+                status_text,
+                styles["Normal"],
+            )
+        )
+        elements.append(
+            Spacer(1, 10)
+        )
+
+        elements.append(
+            Paragraph(
+                "Related Documents",
+                styles["Heading2"],
+            )
+        )
+        related_text = f"""
+        <b>Issue :</b>
+        {getattr(part_return, "issue_number", "-")}
+
+        <b>Requisition :</b>
+        {getattr(part_return, "requisition_number", "-")}
+
+        <b>Job Card :</b>
+        {getattr(part_return, "job_card_id", "-")}
+        """
+
+        elements.append(
+            Paragraph(
+                related_text,
+                styles["Normal"],
+            )
+        )
+        elements.append(
+            Spacer(1, 20)
         )
 
         signature_table = Table(

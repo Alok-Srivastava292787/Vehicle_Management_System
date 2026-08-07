@@ -27,6 +27,7 @@ from app.api.part_return_detail_router import (     router as part_return_detail
 from app.api.pdf_return_router import (    router as pdf_return_router,)
 from app.api.stock_ledger_router import (   router as stock_ledger_router)
 from app.api.opening_stock_router import    (   router as opening_stock_router)
+from app.api.auth_router import (    router as auth_router,)
 
 
 @asynccontextmanager
@@ -85,3 +86,4 @@ app.include_router(    pdf_return_router)
 app.include_router(    stock_ledger_router)
 app.include_router(    opening_stock_router)
 app.include_router(     jobcard_detail)
+app.include_router(     auth_router)

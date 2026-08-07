@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.db.dependencies import (
     get_db,
 )
-
+from app.repositories.employee_repository import EmployeeRepository
 from app.repositories.part_requisition_repository import (
     PartRequisitionRepository,
 )
@@ -31,7 +31,7 @@ from app.repositories.part_repository import (
 from app.services.pdf_requisition_service import (
     PDFRequisitionService,
 )
-
+from app.repositories.part_issue_repository import  (   PartIssueRepository)
 router = APIRouter(
     prefix="/api/v1/requisitions_print",
     tags=["Requisition PDF"],
@@ -45,7 +45,6 @@ def generate_requisition_pdf(
     requisition_id: int,
     db: Session = Depends(get_db),
 ):
-
     requisition = (
         PartRequisitionRepository(db)
         .get_by_id(
@@ -60,6 +59,35 @@ def generate_requisition_pdf(
             "Requisition not found"
         }
 
+    part_issue_repository=PartIssueRepository(db)
+    employee_repository=EmployeeRepository(db)
+    issue = (
+        part_issue_repository
+        .get_by_id(
+            requisition.issue_id
+        )
+    )
+    setattr(
+    requisition,
+    "issue_number",
+    issue.issue_number
+    if issue
+    else None,
+    )
+    approved_by = (
+        employee_repository.get_by_id(
+            requisition.approved_by
+        )
+        if requisition.approved_by
+        else None
+    )
+    setattr(
+        requisition,
+        "approved_by",
+        approved_by.full_name
+        if approved_by
+        else "-"
+    )
     vehicle = (
         VehicleRepository(db)
         .get_by_id(

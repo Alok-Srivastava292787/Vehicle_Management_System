@@ -1,4 +1,4 @@
-import { Layout, Menu, Typography } from "antd";
+import { Button, Layout, Menu, Typography } from "antd";
 import {
   DashboardOutlined,
   CarOutlined,
@@ -8,14 +8,69 @@ import {
   FileTextOutlined,
   AuditOutlined,
 } from "@ant-design/icons";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation,useNavigate } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
 
 const MainLayout = () => {
   const location = useLocation();
+const navigate =
+  useNavigate();
 
+const handleLogout =
+  () => {
+
+    localStorage.removeItem(
+      "token"
+    );
+
+    localStorage.removeItem(
+      "username"
+    );
+
+    localStorage.removeItem(
+      "employee_id"
+    );
+
+    navigate(
+      "/login"
+    );
+  };
+  <Header
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  }}
+>
+
+  <div>
+    Fleet Management System
+  </div>
+
+  <div>
+
+    {
+      localStorage.getItem(
+        "username"
+      )
+    }
+
+    <Button
+      style={{
+        marginLeft: 12,
+      }}
+      onClick={
+        handleLogout
+      }
+    >
+      Logout
+    </Button>
+
+  </div>
+
+</Header>
   const menuItems = [
   {
     key: "/",

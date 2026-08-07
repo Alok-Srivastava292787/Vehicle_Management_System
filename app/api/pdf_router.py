@@ -13,6 +13,7 @@ from app.repositories.employee_repository import (    EmployeeRepository,)
 from app.repositories.jobcard_repository import (    JobCardRepository,)
 from app.repositories.jobcard_part_repository import (    JobCardPartRepository,)
 from app.repositories.part_repository import (    PartRepository,)
+from app.repositories.part_requisition_repository import (PartRequisitionRepository)
 
 
 router = APIRouter(
@@ -32,6 +33,20 @@ def generate_jobcard_pdf(
     part_lookup = {}
     job_card = (
         JobCardRepository(db).get_by_id(job_card_id)
+    )
+    requisition = (
+        PartRequisitionRepository(db)
+        .get_by_job_card_id(
+            job_card_id
+        )
+    )
+
+    setattr(
+        job_card,
+        "requisition_slip_number",
+        requisition.requisition_number
+        if requisition
+        else None,
     )
     vehicle = None
     driver = None
@@ -106,6 +121,7 @@ def generate_jobcard_pdf(
             ] = master_part.part_name
 
     print(job_card)
+    
     pdf = PDFService.generate_job_card_pdf(
             job_card=job_card,
             vehicle=vehicle,
@@ -116,7 +132,7 @@ def generate_jobcard_pdf(
             verified_by=verified_by,
             approved_by=approved_by,
             parts=parts,
-            part_lookup=part_lookup,
+            part_lookup=part_lookup,            
             )
         
     return StreamingResponse(

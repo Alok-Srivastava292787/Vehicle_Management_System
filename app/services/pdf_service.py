@@ -31,82 +31,52 @@ class PDFService:
         part_lookup,
     ):
         buffer = BytesIO()
-
         doc = SimpleDocTemplate(
             buffer,
             pagesize=A4,
         )
-
         styles = (
             getSampleStyleSheet()
         )
-
         elements = []
-
         title = Paragraph(
             "VEHICLE JOB CARD",
             styles["Title"],
         )
-
         elements.append(title)
-
         elements.append(
             Spacer(1, 2)
         )
-
         header_data = [
-        
-            [
-                "Job Card No",
-                str(job_card.job_card_id),
-            ],
-
-            [
-                "Vehicle",
-                vehicle.vehicle_id
+            [ "Job Card No", str(job_card.job_card_id),],
+            [ "Vehicle",   vehicle.vehicle_id
                 if vehicle
                 else "-",
             ],
-
-            [
-                "Driver",
-                driver.driver_name
+            [ "Driver",   driver.driver_name
                 if driver
                 else "-",
             ],
-
-            [
-                "Technician 1",
-                technician1.full_name
+            [ "Technician 1",   technician1.full_name
                 if technician1
                 else "-",
             ],
-
-            [
-                "Technician 2",
-                technician2.full_name
+            [ "Technician 2",   technician2.full_name
                 if technician2
                 else "-",
             ],
-
-            [
-                "Status",
+            [ "Status",
                 job_card.job_status
                 or "-",
             ],
-
-            [
-                "Maintenance Type",
+            [ "Maintenance Type",
                 job_card.maintenance_type
                 or "-",
             ],
-
-            [
-                "Zone",
+            [ "Zone",
                 job_card.zone_area
                 or "-",
             ],
-
             [
                 "Mileage",
                 job_card.mileage_hours
@@ -128,7 +98,6 @@ class PDFService:
                 ),
             ],
         ]
-
         header_table = Table(
             header_data,
             colWidths=[
@@ -136,11 +105,8 @@ class PDFService:
                 320,
             ],
         )
-
         header_table.setStyle(
-
             TableStyle([
-
                 (
                     "GRID",
                     (0, 0),
@@ -148,7 +114,6 @@ class PDFService:
                     1,
                     colors.black,
                 ),
-
                 (
                     "BACKGROUND",
                     (0, 0),
@@ -157,22 +122,18 @@ class PDFService:
                 ),
             ])
         )
-
         elements.append(
             header_table
         )
-
         elements.append(
             Spacer(1, 4)
         )
-
         elements.append(
             Paragraph(
                 "<b>Issue Reported</b>",
                 styles["Heading2"],
             )
         )
-
         elements.append(
             Paragraph(
                 job_card.issue_reported
@@ -180,18 +141,15 @@ class PDFService:
                 styles["Normal"],
             )
         )
-
         elements.append(
             Spacer(1, 4)
         )
-
         elements.append(
             Paragraph(
                 "<b>Problems Found & Action Taken</b>",
                 styles["Heading2"],
             )
         )
-
         elements.append(
             Paragraph(
                 job_card.problem_found_action_taken
@@ -199,11 +157,9 @@ class PDFService:
                 styles["Normal"],
             )
         )
-
         elements.append(
             Spacer(1, 4)
         )
-        
         elements.append(
             Paragraph(
                 "Parts Used",
@@ -213,6 +169,17 @@ class PDFService:
         elements.append(
             Spacer(1, 2)
         )
+        active_parts = [
+            part
+            for part in parts
+            if part.active_flag
+        ]
+
+        part_count = len(
+            active_parts
+        )
+
+        total_parts_cost = 0
         grand_total=0
         part_rows = [    
             [
@@ -222,7 +189,7 @@ class PDFService:
                 "Total"
             ]
         ]
-        for part in parts:
+        for part in active_parts:
             part_name = part_lookup.get(
                 part.part_id,
                 "-"
@@ -230,7 +197,7 @@ class PDFService:
             qty = part.quantity or 0
             price = ( part.unit_price or 0 )
             total = qty * price
-            grand_total += total
+            total_parts_cost += total
             part_rows.append(
                 [
                     part_name,
@@ -243,6 +210,32 @@ class PDFService:
             part_rows,
             colWidths=[150, 100],
             
+        )
+        labour_charges = (
+            job_card.labour_charges
+            or 0
+        )
+
+        grand_total = (
+            total_parts_cost
+            + labour_charges
+        )
+
+        part_rows.append(
+            [
+                "",
+                "",
+                "Parts Total",
+                f"{total_parts_cost:.2f}",
+            ]
+        )
+        part_rows.append(
+            [
+                "",
+                "",
+                "Labour",
+                f"{labour_charges:.2f}",
+            ]
         )
         part_rows.append(
             [
@@ -278,36 +271,105 @@ class PDFService:
         elements.append(
             part_table
         )
+        elements.append(
+            Spacer(1, 8)
+        )
 
+        elements.append(
+            Paragraph(
+                "<b>Cost Summary</b>",
+                styles["Heading2"],
+            )
+        )
 
+        cost_text = f"""
+        Active Parts : {part_count}
 
+        Parts Cost : Rs.{total_parts_cost:.2f}
+
+        Labour Cost : Rs.{labour_charges:.2f}
+
+        <b>Grand Total : Rs.{grand_total:.2f}</b>
+        """
+
+        elements.append(
+            Paragraph(
+                cost_text,
+                styles["Normal"],
+            )
+        )
+        v_approved_at=(
+            job_card.approved_at.strftime(
+                "%d-%b-%Y %H:%M"
+            )
+            if job_card.approved_at
+            else "-"
+        )
+        v_requested_at=(
+                job_card.requested_at.strftime(
+                    "%d-%b-%Y %H:%M"
+                )
+                if job_card.requested_at
+                else "-"
+            )
+        v_verified_at=(
+            job_card.verified_at.strftime(
+                "%d-%b-%Y %H:%M"
+            )
+            if job_card.verified_at
+            else "-"
+        )
+        requisition_number = (
+            getattr(
+                job_card,
+                "requisition_slip_number",
+                None
+            )
+            or "-"
+        )
 
         approval_data = [
 
-        [
-            "Requested By",
+            [
+                "Current Status",
+                job_card.job_status
+                or "-"
+            ],
+            [
+                "Requested By",
+                requested_by.full_name
+                if requested_by
+                else "-"
+            ],
 
-            requested_by.full_name
-            if requested_by
-            else "-",
-        ],
+            [
+                "Requested At",v_requested_at
+            ],
 
-        [
-            "Verified By",
+            [
+                "Verified By",
+                verified_by.full_name
+                if verified_by
+                else "-"
+            ],
 
-            verified_by.full_name
-            if verified_by
-            else "-",
-        ],
+            [
+                "Verified At",v_verified_at
+            ],
 
-        [
-            "Approved By",
+            [
+                "Approved By",
+                approved_by.full_name
+                if approved_by
+                else "-"
+            ],
 
-            approved_by.full_name
-            if approved_by
-            else "-",
-        ],
-    ]
+            [
+                "Approved At",v_approved_at
+            ],
+
+        ]
+
         approval_table = Table(
             approval_data,
             colWidths=[
@@ -315,9 +377,7 @@ class PDFService:
                 320,
             ],
         )
-
         approval_table.setStyle(
-
             TableStyle([
 
                 (
@@ -327,7 +387,6 @@ class PDFService:
                     1,
                     colors.black,
                 ),
-
                 (
                     "BACKGROUND",
                     (0, 0),
@@ -336,21 +395,73 @@ class PDFService:
                 ),
             ])
         )
+        elements.append(
+            Paragraph(
+                "<b>Approval Workflow</b>",
+                styles["Heading2"],
+            )
+        )
+        elements.append(
+            Paragraph(
+                f'<b>STATUS :→</b> {job_card.job_status or "-"}',
+                styles["Normal"],
+            )
+        )
+        approval_text = f"""
+
+        <b>Requested By:</b> {
+            requested_by.full_name
+            if requested_by else "-"
+        }
+        
+        ({v_requested_at})
+
+        <b> → Verified By:</b> {
+            verified_by.full_name
+            if verified_by else "-"
+        }
+        
+        ({v_verified_at})
+
+        <b> → Approved By</b> : {
+            approved_by.full_name
+            if approved_by else "-"
+        }
+        
+        ({v_approved_at})
+        """
+                
+        elements.append(
+            Paragraph(
+                approval_text,
+                styles["Normal"],
+            )
+        )
+        elements.append(
+            Spacer(1, 4)
+        )
 
         elements.append(
             Paragraph(
-                "<b>Approval Information</b>",
+                "<b>Related Documents</b>",
                 styles["Heading2"],
             )
         )
 
+        related_text = f"""
+        Requisition :
+        {requisition_number        }
+        """
+
         elements.append(
-            approval_table
+            Paragraph(
+                related_text,
+                styles["Normal"],
+            )
         )
         elements.append(
             Spacer(1, 40)
         )
-
         signature_table = Table(
             [[
                 "Requested By",
@@ -363,10 +474,8 @@ class PDFService:
                 170,
             ],
         )
-
         signature_table.setStyle(
             TableStyle([
-            
                 (
                     "LINEABOVE",
                     (0, 0),
@@ -374,7 +483,6 @@ class PDFService:
                     1,
                     colors.black,
                 ),
-
                 (
                     "ALIGN",
                     (0, 0),
@@ -383,16 +491,12 @@ class PDFService:
                 ),
             ])
         )
-
         elements.append(
             signature_table
         )
         add_pdf_footer(elements)
-        
         doc.build(
             elements
         )
-
         buffer.seek(0)
-
         return buffer

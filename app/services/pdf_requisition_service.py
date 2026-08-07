@@ -68,11 +68,12 @@ class PDFRequisitionService:
 
             [
                 "Date",
-#                datetime.'requisition.requisition_date'.strftime(
-#                                "%d-%b-%Y %H:%M"
-#                            ),
-                str(
-                    requisition.requisition_date
+                (
+                    requisition.requisition_date.strftime(
+                        "%d-%b-%Y %H:%M"
+                    )
+                    if requisition.requisition_date
+                    else "-"
                 ),
             ],
 
@@ -295,68 +296,85 @@ class PDFRequisitionService:
 
         elements.append(
             Paragraph(
-                "Authorization",
+                "Approval Workflow",
                 styles["Heading2"],
             )
         )
 
-        signature_table = Table(
-            [[
-                "Requested By",
-                "Store Issued By",
-                "Approved By",
-            ]],
-
-            colWidths=[
-                170,
-                170,
-                170,
-            ],
+        elements.append(
+            Spacer(1, 6)
         )
 
-        signature_table.setStyle(
-            TableStyle([
+        approved_at = (
+            requisition.approved_at.strftime(
+                "%d-%b-%Y %H:%M"
+            )
+            if requisition.approved_at
+            else "-"
+        )
 
-                (
-                    "LINEABOVE",
-                    (0, 0),
-                    (-1, 0),
-                    1,
-                    colors.black,
-                ),
+        approval_text = f"""
+        <b>Status :</b> {requisition.status}
 
-                (
-                    "ALIGN",
-                    (0, 0),
-                    (-1, -1),
-                    "CENTER",
-                ),
+        <b>Approved By :</b> {
+            requisition.approved_by
+            if hasattr(
+                requisition,
+                "approved_by"
+            )
+            else "-"
+        }
+        <b>Approved At :</b>
+        {approved_at}
+        <b>Remark :</b> {
+            requisition.remarks
+            if hasattr(
+                requisition,
+                "remarks"
+            )
+            else "-"
+        }
+        """
 
-                (
-                    "TEXTCOLOR",
-                    (0, 0),
-                    (0, 0),
-                    colors.blue,
-                ),
-
-                (
-                    "TEXTCOLOR",
-                    (1, 0),
-                    (1, 0),
-                    colors.red,
-                ),
-
-                (
-                    "TEXTCOLOR",
-                    (2, 0),
-                    (2, 0),
-                    colors.green,
-                ),
-            ])
+        elements.append(
+            Paragraph(
+                approval_text,
+                styles["Normal"],
+            )
+        )
+        elements.append(
+            Spacer(1, 10)
         )
 
         elements.append(
-            signature_table
+            Paragraph(
+                "Related Documents",
+                styles["Heading2"],
+            )
+        )
+
+        issue_number = (
+            getattr(
+                requisition,
+                "issue_number",
+                "-"
+            )
+            or "-"
+        )
+
+        related_text = f"""
+        <b>Job Card :</b>
+        {requisition.job_card_id}
+
+        <b>Issue :</b>
+        {issue_number}
+        """
+
+        elements.append(
+            Paragraph(
+                related_text,
+                styles["Normal"],
+            )
         )
         add_pdf_footer(elements)
         

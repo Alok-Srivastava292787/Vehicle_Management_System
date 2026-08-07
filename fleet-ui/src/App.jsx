@@ -24,36 +24,39 @@ import PartReturnDetails from "./pages/PartReturnDetails";
 import StockLedger  from "./pages/StockLedger";
 import OpeningStock  from "./pages/OpeningStock";
 import InventoryDashboard  from "./pages/InventoryDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="jobcards" element={<JobCards />}/>
-        <Route path="jobcards/:jobCardId" element={<JobCardDetail />}/>
-        <Route path="vehicles" element={<Vehicles />} />
-        <Route path="drivers" element={<Drivers />} />
-        <Route path="employees" element={<Employees />} />
-        <Route path="complaints" element={<Complaints />} />
-        <Route path="maintenance" element={<Maintenance />} />
-        <Route path="inspections" element={<Inspections />}/>
+      <Route path="/login" element={<Login />}/>
+      <Route path="/" element={<ProtectedRoute> <MainLayout /></ProtectedRoute> }>
+        <Route index element={<ProtectedRoute> <Dashboard /></ProtectedRoute> } />
+        <Route path="jobcards" element={<ProtectedRoute> <JobCards /></ProtectedRoute> }/>
+        <Route path="/jobcards" element={<ProtectedRoute> <JobCards /> </ProtectedRoute> }/>
+        <Route path="jobcards/:jobCardId" element={<ProtectedRoute> <JobCardDetail /></ProtectedRoute> }/>
+        <Route path="vehicles" element={<ProtectedRoute> <Vehicles /></ProtectedRoute> } />
+        <Route path="drivers" element={<ProtectedRoute> <Drivers /></ProtectedRoute> } />
+        <Route path="employees" element={<ProtectedRoute> <Employees /></ProtectedRoute> } />
+        <Route path="complaints" element={<ProtectedRoute> <Complaints /></ProtectedRoute> } />
+        <Route path="maintenance" element={<ProtectedRoute> <Maintenance /></ProtectedRoute> } />
+        <Route path="inspections" element={<ProtectedRoute> <Inspections /></ProtectedRoute> }/>
 {/*         <Route path="jobcardparts" element={<JobCardParts />}/> */}
-        <Route path="parts" element={<Parts />}/>
-        <Route path="checklists" element={<Checklists />}/>
-        <Route path="audit-logs" element={<AuditLogs />}/>
-        <Route path="requisitions" element={<PartRequisitions />}/>
-        <Route path="requisitions/:requisitionId"  element={<PartRequisitionDetails />}/>
-        <Route path="part-issues" element={<PartIssues />}/>
-        <Route path="part-issues/:issueId" element={<PartIssueDetails />}/>
-        <Route path="issues/create" element={<PartIssueDetails />}/>
-        <Route path="part-returns" element={<PartReturns />}/>
-        <Route path="part-returns/:returnId" element={<PartReturnDetails />}/>
-        <Route path="stock-ledger" element={<StockLedger />}/>
-        <Route path="opening-stock" element={<OpeningStock />}/>
-        <Route path="inventory-dashboard" element={<InventoryDashboard />}/>
-        
-
+        <Route path="parts" element={<ProtectedRoute> <Parts /></ProtectedRoute> }/>
+        <Route path="checklists" element={<ProtectedRoute> <Checklists /></ProtectedRoute> }/>
+        <Route path="audit-logs" element={<ProtectedRoute> <AuditLogs /></ProtectedRoute> }/>
+        <Route path="requisitions" element={<ProtectedRoute> <PartRequisitions /></ProtectedRoute> }/>
+        <Route path="requisitions/:requisitionId"  element={<ProtectedRoute> <PartRequisitionDetails /></ProtectedRoute> }/>
+        <Route path="part-issues" element={<ProtectedRoute> <PartIssues /></ProtectedRoute> }/>
+        <Route path="part-issues/:issueId" element={<ProtectedRoute> <PartIssueDetails /></ProtectedRoute> }/>
+        <Route path="issues/create" element={<ProtectedRoute> <PartIssueDetails /></ProtectedRoute> }/>
+        <Route path="part-returns" element={<ProtectedRoute> <PartReturns /></ProtectedRoute> }/>
+        <Route path="part-returns/:returnId" element={<ProtectedRoute> <PartReturnDetails /></ProtectedRoute> }/>
+        <Route path="stock-ledger" element={<ProtectedRoute> <StockLedger /></ProtectedRoute> }/>
+        <Route path="opening-stock" element={<ProtectedRoute> <OpeningStock /></ProtectedRoute> }/>
+        <Route path="inventory-dashboard" element={<ProtectedRoute> <InventoryDashboard /></ProtectedRoute> }/>
       </Route>
     </Routes>
   );
